@@ -36,6 +36,22 @@
             ],
             "group": "build",
             "problemMatcher": "$msCompile",
-        }
+        },
+        {
+            "label": "start",
+            "command": "dotnet",
+            "type": "process",
+            "group": "build",
+            "args": [
+                "run",
+                "--project",
+                "src/SampleExam"
+            ],
+            "dependsOn": [
+                "build"
+            ],
+            "isBackground": false,
+            "problemMatcher": "$msCompile"
+        },
     ]
 }

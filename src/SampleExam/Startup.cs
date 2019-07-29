@@ -11,7 +11,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MediatR;
-
+using Swashbuckle.AspNetCore.Swagger;
+using SampleExam.Infrastructure;
 
 namespace SampleExam
 {
@@ -28,7 +29,21 @@ namespace SampleExam
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMediatR(typeof(Startup).Assembly);
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddSwaggerGen(options =>
+            {
+                options.SwaggerDoc("v1", new Info() { Title = "SampleExam API", Version = "v1" });
+                options.CustomSchemaIds(y => y.FullName);
+                options.DocInclusionPredicate((version, apiDescription) => true);
+                //use custom convention set GroupName as tag labels
+                options.TagActionsBy(y => new List<string>()
+                {
+                    y.GroupName
+                });
+            });
+            services.AddMvc(options =>
+            {
+                options.Conventions.Add(new AppApiConvention());
+            }).SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -46,6 +61,15 @@ namespace SampleExam
 
             app.UseHttpsRedirection();
             app.UseMvc();
+
+            app.UseSwagger(options =>
+            {
+                options.RouteTemplate = "/swagger/{documentName}/swagger.json";
+            });
+            app.UseSwaggerUI(options =>
+            {
+                options.SwaggerEndpoint("/swagger/v1/swagger.json", "SampleExam API");
+            });
         }
     }
 }
