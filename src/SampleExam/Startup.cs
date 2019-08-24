@@ -12,7 +12,9 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MediatR;
 using Swashbuckle.AspNetCore.Swagger;
+using AutoMapper;
 using SampleExam.Infrastructure;
+using Microsoft.EntityFrameworkCore;
 
 namespace SampleExam
 {
@@ -29,6 +31,7 @@ namespace SampleExam
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMediatR(typeof(Startup).Assembly);
+
             services.AddSwaggerGen(options =>
             {
                 options.SwaggerDoc("v1", new Info() { Title = "SampleExam API", Version = "v1" });
@@ -40,10 +43,21 @@ namespace SampleExam
                     y.GroupName
                 });
             });
+
+            services.AddCors();
+
             services.AddMvc(options =>
             {
                 options.Conventions.Add(new AppApiConvention());
             }).SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+
+            services.AddAutoMapper(GetType().Assembly);
+
+            var connStringKey = "ASPNETCORE_SampleExam_ConnectionString";
+
+            var connectionString = Configuration.GetValue<string>(connStringKey);
+
+            services.AddDbContext<SampleExamContext>(opt => opt.UseNpgsql(connectionString));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

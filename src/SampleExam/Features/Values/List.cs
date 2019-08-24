@@ -1,14 +1,17 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using AutoMapper;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using SampleExam.Domain;
+using SampleExam.Infrastructure;
 
 namespace SampleExam.Features.Values
 {
     public class List
     {
-        public class Query : IRequest<ValuesEnvelop>
+        public class Query : IRequest<ValuesDTOEnvelop>
         {
             public Query(int? limit, int? offset)
             {
@@ -20,18 +23,22 @@ namespace SampleExam.Features.Values
             public int? Offset { get; }
         }
 
-        public class QueryHandler : IRequestHandler<Query, ValuesEnvelop>
+        public class QueryHandler : IRequestHandler<Query, ValuesDTOEnvelop>
         {
-            public Task<ValuesEnvelop> Handle(Query request, CancellationToken cancellationToken)
+            private IMapper mapper;
+            private SampleExamContext context;
+
+            public QueryHandler(IMapper mapper, SampleExamContext context)
             {
-                return Task.FromResult(new ValuesEnvelop()
-                {
-                    Values = new List<Value>() {
-                                new Value() {Id = 1, Text = "value1"},
-                                new Value() { Id = 2, Text = "value2" },
-                                },
-                    ValuesCount = 2
-                });
+                this.mapper = mapper;
+                this.context = context;
+            }
+            public async Task<ValuesDTOEnvelop> Handle(Query request, CancellationToken cancellationToken)
+            {
+                var values = await context.Values.AsNoTracking().ToListAsync(cancellationToken);
+                var valueList = mapper.Map<List<Value>, List<ValueDTO>>(values);
+
+                return new ValuesDTOEnvelop() { Values = valueList, ValuesCount = valueList.Count };
             }
         }
     }

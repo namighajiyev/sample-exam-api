@@ -1,13 +1,17 @@
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using AutoMapper;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using SampleExam.Domain;
+using SampleExam.Infrastructure;
 
 namespace SampleExam.Features.Values
 {
     public class Details
     {
-        public class Query : IRequest<ValueEnvelop>
+        public class Query : IRequest<ValueDTOEnvelope>
         {
             public Query(int id)
             {
@@ -18,11 +22,27 @@ namespace SampleExam.Features.Values
         }
 
 
-        public class QueryHandler : IRequestHandler<Query, ValueEnvelop>
+        public class QueryHandler : IRequestHandler<Query, ValueDTOEnvelope>
         {
-            public Task<ValueEnvelop> Handle(Query request, CancellationToken cancellationToken)
+            private IMapper mapper;
+            private SampleExamContext context;
+
+            public QueryHandler(IMapper mapper, SampleExamContext context)
             {
-                return Task.FromResult(new ValueEnvelop(new Value() { Id = 1, Text = "value1" }));
+                this.mapper = mapper;
+                this.context = context;
+            }
+            public async Task<ValueDTOEnvelope> Handle(Query request, CancellationToken cancellationToken)
+            {
+                var value = await context.Values.Where(e => e.Id == request.Id).FirstOrDefaultAsync(cancellationToken);
+                if (value == null)
+                {
+                    throw Exceptions.ValueNotFoundException;
+                }
+
+                var valueDto = mapper.Map<Value, ValueDTO>(value);
+
+                return new ValueDTOEnvelope(valueDto);
             }
         }
 

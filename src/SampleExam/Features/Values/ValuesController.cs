@@ -19,35 +19,38 @@ namespace SampleExam.Features.Values
         }
 
         [HttpGet]
-        public async Task<ValuesEnvelop> Get([FromQuery] int? limit, [FromQuery] int? offset)
+        public async Task<ValuesDTOEnvelop> Get([FromQuery] int? limit, [FromQuery] int? offset)
         {
             return await _mediator.Send(new List.Query(limit, offset));
         }
 
         // GET api/values/5
         [HttpGet("{id}")]
-        public async Task<ValueEnvelop> Get(int id)
+        public async Task<ValueDTOEnvelope> Get(int id)
         {
             return await _mediator.Send(new Details.Query(id));
         }
 
         // POST api/values
         [HttpPost]
-        public async Task<ValueEnvelop> Post([FromBody] Create.Command command)
+        public async Task<ValueDTOEnvelope> Post([FromBody] Create.Command command)
         {
             return await _mediator.Send(command);
         }
 
         // PUT api/values/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public async Task<ValueDTOEnvelope> Put(int id, [FromBody] Edit.Request value)
         {
+            value.Id = id;
+            return await _mediator.Send(value);
         }
 
         // DELETE api/values/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public async Task Delete(int id)
         {
+            await _mediator.Send(new Delete.Request(id));
         }
     }
 }

@@ -3,9 +3,9 @@ using SampleExam.Domain;
 
 namespace SampleExam.Features.Values
 {
-    public class ValuesEnvelop
+    public class ValuesDTOEnvelop
     {
-        public List<Value> Values { get; set; }
+        public List<ValueDTO> Values { get; set; }
 
         public int ValuesCount { get; set; }
     }
