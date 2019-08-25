@@ -15,6 +15,8 @@ using Swashbuckle.AspNetCore.Swagger;
 using AutoMapper;
 using SampleExam.Infrastructure;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
+using FluentValidation.AspNetCore;
 
 namespace SampleExam
 {
@@ -46,10 +48,20 @@ namespace SampleExam
 
             services.AddCors();
 
-            services.AddMvc(options =>
-            {
-                options.Conventions.Add(new AppApiConvention());
-            }).SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services
+                    .AddMvc(options =>
+                    {
+                        options.Conventions.Add(new AppApiConvention());
+                    })
+                    .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
+                    .AddJsonOptions(opt =>
+                    {
+                        opt.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
+                    })
+                    .AddFluentValidation(cfg =>
+                    {
+                        cfg.RegisterValidatorsFromAssemblyContaining<Startup>();
+                    });
 
             services.AddAutoMapper(GetType().Assembly);
 

@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
+using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
@@ -13,13 +14,34 @@ namespace SampleExam.Features.Values
 {
     public class Edit
     {
-        public class Request : IRequest<ValueDTOEnvelope>
+
+        public class ValueData
         {
             [JsonIgnore]
             public int Id { get; set; }
             public string Text { get; set; }
         }
 
+        public class Request : IRequest<ValueDTOEnvelope>
+        {
+            public ValueData Value { get; set; }
+        }
+
+        public class ValueDataValidator : AbstractValidator<ValueData>
+        {
+            public ValueDataValidator()
+            {
+                RuleFor(x => x.Text).NotNull().NotEmpty();
+            }
+        }
+
+        public class RequestValidator : AbstractValidator<Request>
+        {
+            public RequestValidator()
+            {
+                RuleFor(x => x.Value).NotNull().SetValidator(new ValueDataValidator());
+            }
+        }
         public class Handler : IRequestHandler<Request, ValueDTOEnvelope>
         {
             private IMapper mapper;
@@ -32,13 +54,13 @@ namespace SampleExam.Features.Values
             }
             public async Task<ValueDTOEnvelope> Handle(Request request, CancellationToken cancellationToken)
             {
-                var value = await context.Values.Where(e => e.Id == request.Id).FirstOrDefaultAsync(cancellationToken);
+                var value = await context.Values.Where(e => e.Id == request.Value.Id).FirstOrDefaultAsync(cancellationToken);
                 if (value == null)
                 {
                     throw Exceptions.ValueNotFoundException;
                 }
 
-                value.Text = request.Text;
+                value.Text = request.Value.Text;
                 value.UpdatedAt = DateTime.UtcNow;
 
                 await context.SaveChangesAsync(cancellationToken);

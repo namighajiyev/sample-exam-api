@@ -33,7 +33,7 @@ namespace SampleExam.Features.Values
 
         // POST api/values
         [HttpPost]
-        public async Task<ValueDTOEnvelope> Post([FromBody] Create.Command command)
+        public async Task<ValueDTOEnvelope> Post([FromBody] Create.Request command)
         {
             return await _mediator.Send(command);
         }
@@ -42,7 +42,7 @@ namespace SampleExam.Features.Values
         [HttpPut("{id}")]
         public async Task<ValueDTOEnvelope> Put(int id, [FromBody] Edit.Request value)
         {
-            value.Id = id;
+            value.Value.Id = id;
             return await _mediator.Send(value);
         }
 
