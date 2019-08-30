@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc.Routing;
 
 namespace SampleExam.Infrastructure
 {
-    public class AppApiConvention : IControllerModelConvention
+    public class AppControllerModelConvention : IControllerModelConvention
     {
         public void Apply(ControllerModel controller)
         {

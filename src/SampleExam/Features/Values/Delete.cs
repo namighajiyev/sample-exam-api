@@ -6,12 +6,14 @@ using Microsoft.EntityFrameworkCore;
 using SampleExam.Infrastructure;
 using SampleExam.Infrastructure.Errors;
 using System.Linq;
+using AutoMapper;
+using SampleExam.Domain;
 
 namespace SampleExam.Features.Values
 {
     public class Delete
     {
-        public class Request : IRequest
+        public class Request : IRequest<ValueDTOEnvelope>
         {
             public Request(int id)
             {
@@ -21,12 +23,17 @@ namespace SampleExam.Features.Values
             public int Id { get; }
         }
 
-        public class Handler : IRequestHandler<Request>
+        public class Handler : IRequestHandler<Request, ValueDTOEnvelope>
         {
+            private IMapper mapper;
             private SampleExamContext context;
 
-            public Handler(SampleExamContext context) => this.context = context;
-            public async Task<Unit> Handle(Request request, CancellationToken cancellationToken)
+            public Handler(IMapper mapper, SampleExamContext context)
+            {
+                this.mapper = mapper;
+                this.context = context;
+            }
+            public async Task<ValueDTOEnvelope> Handle(Request request, CancellationToken cancellationToken)
             {
                 var value = await context.Values.Where(e => e.Id == request.Id).FirstOrDefaultAsync(cancellationToken);
                 if (value == null)
@@ -37,7 +44,9 @@ namespace SampleExam.Features.Values
                 context.Values.Remove(value);
                 await context.SaveChangesAsync(cancellationToken);
 
-                return Unit.Value;
+                var valueDto = mapper.Map<Value, ValueDTO>(value);
+
+                return new ValueDTOEnvelope(valueDto);
             }
         }
     }

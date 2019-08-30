@@ -22,7 +22,7 @@ namespace SampleExam.Features.Values
             public string Text { get; set; }
         }
 
-        public class Request : IRequest<ValueDTOEnvelope>
+        public class Request : IRequest
         {
             public ValueData Value { get; set; }
         }
@@ -42,7 +42,7 @@ namespace SampleExam.Features.Values
                 RuleFor(x => x.Value).NotNull().SetValidator(new ValueDataValidator());
             }
         }
-        public class Handler : IRequestHandler<Request, ValueDTOEnvelope>
+        public class Handler : IRequestHandler<Request>
         {
             private IMapper mapper;
             private SampleExamContext context;
@@ -52,7 +52,7 @@ namespace SampleExam.Features.Values
                 this.mapper = mapper;
                 this.context = context;
             }
-            public async Task<ValueDTOEnvelope> Handle(Request request, CancellationToken cancellationToken)
+            public async Task<Unit> Handle(Request request, CancellationToken cancellationToken)
             {
                 var value = await context.Values.Where(e => e.Id == request.Value.Id).FirstOrDefaultAsync(cancellationToken);
                 if (value == null)
@@ -65,9 +65,7 @@ namespace SampleExam.Features.Values
 
                 await context.SaveChangesAsync(cancellationToken);
 
-                var valueDto = mapper.Map<Value, ValueDTO>(value);
-
-                return new ValueDTOEnvelope(valueDto);
+                return Unit.Value;
             }
         }
     }

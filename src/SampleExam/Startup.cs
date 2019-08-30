@@ -17,6 +17,12 @@ using SampleExam.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Diagnostics;
+using SampleExam.Infrastructure.Errors;
+
+//[assembly: ApiConventionType(typeof(DefaultApiConventions))]
+[assembly: ApiConventionType(typeof(AppApiConventions))]
 
 namespace SampleExam
 {
@@ -51,7 +57,7 @@ namespace SampleExam
             services
                     .AddMvc(options =>
                     {
-                        options.Conventions.Add(new AppApiConvention());
+                        options.Conventions.Add(new AppControllerModelConvention());
                     })
                     .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
                     .AddJsonOptions(opt =>
@@ -84,8 +90,12 @@ namespace SampleExam
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
-
+            app.UseExceptionHandler(errorApp =>
+            {
+                errorApp.Run(ExceptionHandler.HandleException);
+            });
             app.UseHttpsRedirection();
+
             app.UseMvc();
 
             app.UseSwagger(options =>

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -35,22 +36,25 @@ namespace SampleExam.Features.Values
         [HttpPost]
         public async Task<ValueDTOEnvelope> Post([FromBody] Create.Request command)
         {
-            return await _mediator.Send(command);
+            var result = await _mediator.Send(command);
+            HttpContext.Response.StatusCode = (int)HttpStatusCode.Created;
+            return result;
         }
 
         // PUT api/values/5
         [HttpPut("{id}")]
-        public async Task<ValueDTOEnvelope> Put(int id, [FromBody] Edit.Request value)
+        public async Task Put(int id, [FromBody] Edit.Request value)
         {
             value.Value.Id = id;
-            return await _mediator.Send(value);
+            await _mediator.Send(value);
+            HttpContext.Response.StatusCode = (int)HttpStatusCode.NoContent;
         }
 
         // DELETE api/values/5
         [HttpDelete("{id}")]
-        public async Task Delete(int id)
+        public async Task<ValueDTOEnvelope> Delete(int id)
         {
-            await _mediator.Send(new Delete.Request(id));
+            return await _mediator.Send(new Delete.Request(id));
         }
     }
 }
