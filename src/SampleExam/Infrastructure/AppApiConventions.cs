@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
-
+using SampleExam.Infrastructure.Errors;
 
 namespace SampleExam.Infrastructure
 {
@@ -9,8 +9,8 @@ namespace SampleExam.Infrastructure
     {
         #region GET
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status404NotFound)]
-        [ProducesDefaultResponseType(typeof(ValidationProblemDetails))]
+        [ProducesResponseType(typeof(ApiProblemDetails), StatusCodes.Status404NotFound)]
+        [ProducesDefaultResponseType(typeof(ApiProblemDetails))]
         [ApiConventionNameMatch(ApiConventionNameMatchBehavior.Prefix)]
         public static void Get(
             [ApiConventionNameMatch(ApiConventionNameMatchBehavior.Suffix)]
@@ -19,8 +19,8 @@ namespace SampleExam.Infrastructure
         { }
 
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status404NotFound)]
-        [ProducesDefaultResponseType(typeof(ValidationProblemDetails))]
+        [ProducesResponseType(typeof(ApiProblemDetails), StatusCodes.Status404NotFound)]
+        [ProducesDefaultResponseType(typeof(ApiProblemDetails))]
         [ApiConventionNameMatch(ApiConventionNameMatchBehavior.Prefix)]
         public static void Find(
             [ApiConventionNameMatch(ApiConventionNameMatchBehavior.Suffix)]
@@ -31,8 +31,8 @@ namespace SampleExam.Infrastructure
 
         #region POST
         [ProducesResponseType(StatusCodes.Status201Created)]
-        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-        [ProducesDefaultResponseType(typeof(ValidationProblemDetails))]
+        [ProducesResponseType(typeof(ApiProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesDefaultResponseType(typeof(ApiProblemDetails))]
         [ApiConventionNameMatch(ApiConventionNameMatchBehavior.Prefix)]
         public static void Post(
             [ApiConventionNameMatch(ApiConventionNameMatchBehavior.Any)]
@@ -41,8 +41,8 @@ namespace SampleExam.Infrastructure
         { }
 
         [ProducesResponseType(StatusCodes.Status201Created)]
-        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-        [ProducesDefaultResponseType(typeof(ValidationProblemDetails))]
+        [ProducesResponseType(typeof(ApiProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesDefaultResponseType(typeof(ApiProblemDetails))]
         [ApiConventionNameMatch(ApiConventionNameMatchBehavior.Prefix)]
         public static void Create(
             [ApiConventionNameMatch(ApiConventionNameMatchBehavior.Any)]
@@ -53,9 +53,9 @@ namespace SampleExam.Infrastructure
 
         #region PUT
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status404NotFound)]
-        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-        [ProducesDefaultResponseType(typeof(ValidationProblemDetails))]
+        [ProducesResponseType(typeof(ApiProblemDetails), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesDefaultResponseType(typeof(ApiProblemDetails))]
         [ApiConventionNameMatch(ApiConventionNameMatchBehavior.Prefix)]
         public static void Put(
             [ApiConventionNameMatch(ApiConventionNameMatchBehavior.Suffix)]
@@ -68,9 +68,9 @@ namespace SampleExam.Infrastructure
         { }
 
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status404NotFound)]
-        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-        [ProducesDefaultResponseType(typeof(ValidationProblemDetails))]
+        [ProducesResponseType(typeof(ApiProblemDetails), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesDefaultResponseType(typeof(ApiProblemDetails))]
         [ApiConventionNameMatch(ApiConventionNameMatchBehavior.Prefix)]
         public static void Edit(
             [ApiConventionNameMatch(ApiConventionNameMatchBehavior.Suffix)]
@@ -83,9 +83,9 @@ namespace SampleExam.Infrastructure
         { }
 
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status404NotFound)]
-        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-        [ProducesDefaultResponseType(typeof(ValidationProblemDetails))]
+        [ProducesResponseType(typeof(ApiProblemDetails), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesDefaultResponseType(typeof(ApiProblemDetails))]
         [ApiConventionNameMatch(ApiConventionNameMatchBehavior.Prefix)]
         public static void Update(
             [ApiConventionNameMatch(ApiConventionNameMatchBehavior.Suffix)]
@@ -100,9 +100,9 @@ namespace SampleExam.Infrastructure
 
         #region DELETE
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status404NotFound)]
-        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-        [ProducesDefaultResponseType(typeof(ValidationProblemDetails))]
+        [ProducesResponseType(typeof(ApiProblemDetails), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesDefaultResponseType(typeof(ApiProblemDetails))]
         [ApiConventionNameMatch(ApiConventionNameMatchBehavior.Prefix)]
         public static void Delete(
             [ApiConventionNameMatch(ApiConventionNameMatchBehavior.Suffix)]

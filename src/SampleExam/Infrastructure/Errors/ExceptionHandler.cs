@@ -14,7 +14,7 @@ namespace SampleExam.Infrastructure.Errors
             var errorFeature = context.Features.Get<IExceptionHandlerFeature>();
             var exception = errorFeature.Error;
 
-            var problemDetails = new ValidationProblemDetails()
+            var problemDetails = new ApiProblemDetails()
             {
                 Title = "An unexpected error occurred!",
                 Status = 500,
@@ -27,7 +27,7 @@ namespace SampleExam.Infrastructure.Errors
                     problemDetails.Title = re.Caption;
                     problemDetails.Detail = re.Error;
                     problemDetails.Status = (int)re.Code;
-                    problemDetails.Errors.Add(re.Caption, new string[] { re.Error });
+                    problemDetails.Errors.Add(re.Caption, new Error[] { new Error(re.Caption, re.Error) });
                     context.Response.StatusCode = (int)re.Code;
                     break;
             }

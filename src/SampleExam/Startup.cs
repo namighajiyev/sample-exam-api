@@ -20,6 +20,7 @@ using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Diagnostics;
 using SampleExam.Infrastructure.Errors;
+using SampleExam.Infrastructure.Filters;
 
 //[assembly: ApiConventionType(typeof(DefaultApiConventions))]
 [assembly: ApiConventionType(typeof(AppApiConventions))]
@@ -58,6 +59,7 @@ namespace SampleExam
                     .AddMvc(options =>
                     {
                         options.Conventions.Add(new AppControllerModelConvention());
+                        options.Filters.Add(typeof(ValidatorActionFilter));
                     })
                     .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
                     .AddJsonOptions(opt =>
@@ -68,6 +70,8 @@ namespace SampleExam
                     {
                         cfg.RegisterValidatorsFromAssemblyContaining<Startup>();
                     });
+
+            services.AddTransient<IValidatorInterceptor, ApiValidatorInterceptor>();
 
             services.AddAutoMapper(GetType().Assembly);
 

@@ -1,7 +1,8 @@
 using System;
-namespace SampleExam.Domain
+
+namespace SampleExam.Features.User
 {
-    public class User
+    public class UserDTO
     {
         public int Id { get; set; }
 
@@ -17,14 +18,5 @@ namespace SampleExam.Domain
 
         public string Email { get; set; }
 
-        public string Password { get; set; }
-
-        public bool IsEmailConfirmed { get; set; }
-
-        public DateTime CreatedAt { get; set; }
-
-        public DateTime? UpdatedAt { get; set; }
-
-        public Gender Gender { get; set; }
     }
 }
