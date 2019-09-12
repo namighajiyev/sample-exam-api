@@ -21,6 +21,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Diagnostics;
 using SampleExam.Infrastructure.Errors;
 using SampleExam.Infrastructure.Filters;
+using SampleExam.Infrastructure.Security;
+using Microsoft.AspNetCore.Identity;
 
 //[assembly: ApiConventionType(typeof(DefaultApiConventions))]
 [assembly: ApiConventionType(typeof(AppApiConventions))]
@@ -75,11 +77,16 @@ namespace SampleExam
 
             services.AddAutoMapper(GetType().Assembly);
 
-            var connStringKey = "ASPNETCORE_SampleExam_ConnectionString";
-
+            var connStringKey = "ASPNETCORE_SampleExamApi_ConnectionString";
             var connectionString = Configuration.GetValue<string>(connStringKey);
-
             services.AddDbContext<SampleExamContext>(opt => opt.UseNpgsql(connectionString));
+
+            var jwtKey = "ASPNETCORE_SampleExamApi_Jwt_Key";
+            var jwtSecret = Configuration.GetValue<string>(jwtKey);
+            Console.WriteLine(jwtSecret);
+            services.AddJwt(jwtSecret);
+
+            services.AddTransient<IPasswordHasher<Domain.User>, PasswordHasher<Domain.User>>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -4,7 +4,10 @@ using System.Threading.Tasks;
 using AutoMapper;
 using FluentValidation;
 using MediatR;
+using Microsoft.AspNetCore.Identity;
+using SampleExam.Domain;
 using SampleExam.Infrastructure;
+using SampleExam.Infrastructure.Security;
 
 namespace SampleExam.Features.User
 {
@@ -115,14 +118,18 @@ namespace SampleExam.Features.User
         {
             private IMapper mapper;
             private SampleExamContext context;
-            public Handler(IMapper mapper, SampleExamContext context)
+            private IPasswordHasher<Domain.User> hasher;
+
+            public Handler(IMapper mapper, IPasswordHasher<Domain.User> hasher, SampleExamContext context)
             {
                 this.mapper = mapper;
                 this.context = context;
+                this.hasher = hasher;
             }
             public async Task<UserDTOEnvelope> Handle(Request request, CancellationToken cancellationToken)
             {
                 var user = mapper.Map<UserData, Domain.User>(request.User);
+                user.Password = hasher.HashPassword(user, user.Password);
 
                 await this.context.Users.AddAsync(user, cancellationToken);
                 await context.SaveChangesAsync(cancellationToken);
