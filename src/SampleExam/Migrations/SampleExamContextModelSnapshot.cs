@@ -44,6 +44,26 @@ namespace SampleExam.Migrations
                         });
                 });
 
+            modelBuilder.Entity("SampleExam.Domain.RefreshToken", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<DateTime>("CreatedAt");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasMaxLength(128);
+
+                    b.Property<int>("UserId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("RefreshToken");
+                });
+
             modelBuilder.Entity("SampleExam.Domain.User", b =>
                 {
                     b.Property<int>("Id")
@@ -109,6 +129,14 @@ namespace SampleExam.Migrations
                             Text = "Sample value 1",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         });
+                });
+
+            modelBuilder.Entity("SampleExam.Domain.RefreshToken", b =>
+                {
+                    b.HasOne("SampleExam.Domain.User", "User")
+                        .WithMany("RefreshTokens")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("SampleExam.Domain.User", b =>

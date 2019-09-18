@@ -15,9 +15,10 @@ namespace SampleExam.Infrastructure.Security
             services.AddOptions();
 
             var signingKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtSecret));
-            var signingCredentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256);
+            var signingCredentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha512);
             var issuer = "sampleexamapi";
             var audience = "sampleexam";
+
 
             services.Configure<JwtIssuerOptions>(options =>
             {
@@ -25,6 +26,7 @@ namespace SampleExam.Infrastructure.Security
                 options.Audience = audience;
                 options.SigningCredentials = signingCredentials;
             });
+
 
             var tokenValidationParameters = new TokenValidationParameters
             {

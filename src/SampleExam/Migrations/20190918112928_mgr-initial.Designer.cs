@@ -11,8 +11,8 @@ using SampleExam.Infrastructure;
 namespace SampleExam.Migrations
 {
     [DbContext(typeof(SampleExamContext))]
-    [Migration("20190904105808_mgr_initial")]
-    partial class mgr_initial
+    [Migration("20190918112928_mgr-initial")]
+    partial class mgrinitial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -44,6 +44,26 @@ namespace SampleExam.Migrations
                             Id = 2,
                             Name = "Female"
                         });
+                });
+
+            modelBuilder.Entity("SampleExam.Domain.RefreshToken", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<DateTime>("CreatedAt");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasMaxLength(128);
+
+                    b.Property<int>("UserId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("RefreshToken");
                 });
 
             modelBuilder.Entity("SampleExam.Domain.User", b =>
@@ -111,6 +131,14 @@ namespace SampleExam.Migrations
                             Text = "Sample value 1",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         });
+                });
+
+            modelBuilder.Entity("SampleExam.Domain.RefreshToken", b =>
+                {
+                    b.HasOne("SampleExam.Domain.User", "User")
+                        .WithMany("RefreshTokens")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("SampleExam.Domain.User", b =>

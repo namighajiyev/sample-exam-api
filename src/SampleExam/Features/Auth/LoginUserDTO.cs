@@ -1,8 +1,8 @@
 using System;
 
-namespace SampleExam.Features.User
+namespace SampleExam.Features.Auth
 {
-    public class UserLoginDTO
+    public class LoginUserDTO
     {
 
         public int Id { get; set; }
@@ -20,6 +20,8 @@ namespace SampleExam.Features.User
         public string Email { get; set; }
 
         public string Token { get; set; }
+
+        public string RefresToken { get; set; }
 
 
     }

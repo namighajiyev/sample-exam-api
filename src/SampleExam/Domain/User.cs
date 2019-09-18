@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+
 namespace SampleExam.Domain
 {
     public class User
@@ -26,5 +28,7 @@ namespace SampleExam.Domain
         public DateTime? UpdatedAt { get; set; }
 
         public Gender Gender { get; set; }
+
+        public ICollection<RefreshToken> RefreshTokens { get; set; }
     }
 }

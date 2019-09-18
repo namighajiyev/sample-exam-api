@@ -34,6 +34,8 @@ namespace SampleExam.Features.User
         {
             public UserData User { get; set; }
         }
+
+        //TODO add unique email validator and db index
         public class UserDataValidator : AbstractValidator<UserData>
         {
             public UserDataValidator()
@@ -130,6 +132,8 @@ namespace SampleExam.Features.User
             {
                 var user = mapper.Map<UserData, Domain.User>(request.User);
                 user.Password = hasher.HashPassword(user, user.Password);
+                user.CreatedAt = DateTime.UtcNow;
+                user.UpdatedAt = DateTime.UtcNow;
 
                 await this.context.Users.AddAsync(user, cancellationToken);
                 await context.SaveChangesAsync(cancellationToken);

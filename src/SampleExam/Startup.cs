@@ -85,8 +85,10 @@ namespace SampleExam
             var jwtSecret = Configuration.GetValue<string>(jwtKey);
             Console.WriteLine(jwtSecret);
             services.AddJwt(jwtSecret);
-
+            services.Configure<PasswordHasherOptions>(options => options.CompatibilityMode = PasswordHasherCompatibilityMode.IdentityV3);
             services.AddTransient<IPasswordHasher<Domain.User>, PasswordHasher<Domain.User>>();
+            services.AddTransient<IApiJwtTokenGenerator, ApiJwtTokenGenerator>();
+            services.AddTransient<IApiTokenRefreshTokenGenrator, ApiTokenRefreshTokenGenrator>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

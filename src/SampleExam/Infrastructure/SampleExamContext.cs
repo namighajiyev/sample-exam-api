@@ -39,6 +39,10 @@ namespace SampleExam.Infrastructure
             modelBuilder.Entity<User>().Property(e => e.CreatedAt).IsRequired();
             modelBuilder.Entity<User>().Property(e => e.UpdatedAt).IsRequired(false);
 
+            modelBuilder.Entity<RefreshToken>().Property(e => e.CreatedAt).IsRequired();
+            modelBuilder.Entity<RefreshToken>().Property(e => e.Token).IsRequired().HasMaxLength(128);
+
+
         }
 
     }

@@ -4,7 +4,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace SampleExam.Infrastructure.Security
 {
-    internal class JwtIssuerOptions
+    public class JwtIssuerOptions
     {
         //public const string Schemes = "Bearer"; //JwtBearerDefaults.AuthenticationScheme
         public string Issuer { get; set; }
