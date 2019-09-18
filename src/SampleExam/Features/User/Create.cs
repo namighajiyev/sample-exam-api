@@ -35,7 +35,6 @@ namespace SampleExam.Features.User
             public UserData User { get; set; }
         }
 
-        //TODO add unique email validator and db index
         public class UserDataValidator : AbstractValidator<UserData>
         {
             public UserDataValidator()
@@ -76,7 +75,9 @@ namespace SampleExam.Features.User
                 .NotEmpty()
                 .WithErrorCode("CreateUserEmailNotEmpty")
                 .EmailAddress()
-                .WithErrorCode("CreateUserEmailEmailAddress");
+                .WithErrorCode("CreateUserEmailEmailAddress")
+                .UniqueEmail()
+                .WithErrorCode("CreateUserEmailUniqueEmail");
 
                 RuleFor(x => x.Password)
                 .NotNull()

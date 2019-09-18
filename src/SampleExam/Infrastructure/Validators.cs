@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using FluentValidation;
 using FluentValidation.Resources;
 using FluentValidation.Validators;
@@ -11,6 +12,12 @@ namespace SampleExam.Infrastructure
         {
             return ruleBuilder.SetValidator(new StrongPasswordValidator("Password is not strong enough"));
         }
+
+        public static IRuleBuilderOptions<T, string> UniqueEmail<T>(this IRuleBuilder<T, string> ruleBuilder)
+        {
+            return ruleBuilder.SetValidator(new UniqueEmailValidator("Email is in use"));
+        }
+
 
         public static IRuleBuilderOptions<T, string> NotMatches<T>(this IRuleBuilder<T, string> ruleBuilder, string expression)
         {
@@ -33,6 +40,23 @@ namespace SampleExam.Infrastructure
             return !isWeakPassword;
         }
     }
+
+    internal class UniqueEmailValidator : PropertyValidator
+    {
+        public UniqueEmailValidator(string errorMessage) : base(errorMessage)
+        {
+        }
+
+        protected override bool IsValid(PropertyValidatorContext context)
+        {
+            string email = context.PropertyValue?.ToString();
+            var dbContext = (SampleExamContext)context.GetServiceProvider().GetService(typeof(SampleExamContext));
+            var count = dbContext.Users.Where(e => e.Email == email).Count();
+            return count == 0 ? true : false;
+        }
+    }
+
+
 
     internal class NegativeRegularExpressionValidator : RegularExpressionValidator
     {

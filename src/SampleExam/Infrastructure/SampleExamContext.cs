@@ -28,7 +28,7 @@ namespace SampleExam.Infrastructure
 
             modelBuilder.Entity<Gender>().HasData(SeedData.Genders.Male, SeedData.Genders.Female);
 
-
+            modelBuilder.Entity<User>().HasIndex(e => e.Email).IsUnique();
             modelBuilder.Entity<User>().Property(e => e.Firstname).IsRequired().HasMaxLength(200);
             modelBuilder.Entity<User>().Property(e => e.Lastname).IsRequired().HasMaxLength(200);
             modelBuilder.Entity<User>().Property(e => e.Middlename).HasMaxLength(200);
