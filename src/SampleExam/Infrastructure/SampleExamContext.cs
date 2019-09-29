@@ -42,6 +42,7 @@ namespace SampleExam.Infrastructure
             modelBuilder.Entity<User>().Property(e => e.CreatedAt).IsRequired();
             modelBuilder.Entity<User>().Property(e => e.UpdatedAt).IsRequired();
             modelBuilder.Entity<User>().Property(e => e.DeletedAt).IsRequired(false);
+            modelBuilder.Entity<User>().HasQueryFilter(e => !e.IsDeleted);
 
             modelBuilder.Entity<RefreshToken>().Property(e => e.CreatedAt).IsRequired();
             modelBuilder.Entity<RefreshToken>().Property(e => e.Token).IsRequired().HasMaxLength(Constants.REFRESH_TOKEN_LEN);
@@ -54,6 +55,7 @@ namespace SampleExam.Infrastructure
             modelBuilder.Entity<Exam>().Property(e => e.CreatedAt).IsRequired();
             modelBuilder.Entity<Exam>().Property(e => e.UpdatedAt).IsRequired();
             modelBuilder.Entity<Exam>().Property(e => e.DeletedAt).IsRequired(false);
+            modelBuilder.Entity<Exam>().HasQueryFilter(e => e.IsDeleted);
 
             modelBuilder.Entity<AnswerOption>().Property(e => e.Text).IsRequired().HasMaxLength(Constants.ANSWEROPTION_TEXT_LEN);
             modelBuilder.Entity<AnswerOption>().Property(e => e.IsRight).IsRequired();

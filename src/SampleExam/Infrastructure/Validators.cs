@@ -51,7 +51,7 @@ namespace SampleExam.Infrastructure
         {
             string email = context.PropertyValue?.ToString();
             var dbContext = (SampleExamContext)context.GetServiceProvider().GetService(typeof(SampleExamContext));
-            var count = dbContext.Users.Where(e => e.Email == email && e.IsDeleted == false).Count();
+            var count = dbContext.Users.Where(e => e.Email == email).Count();
             return count == 0 ? true : false;
         }
     }

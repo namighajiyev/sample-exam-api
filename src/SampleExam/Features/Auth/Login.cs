@@ -82,7 +82,7 @@ namespace SampleExam.Features.Auth
             public async Task<LoginUserDTOEnvelope> Handle(Request request, CancellationToken cancellationToken)
             {
                 var userData = request.User;
-                var user = context.Users.Include(e => e.RefreshTokens).Where(u => u.Email == userData.Email && u.IsDeleted == false).FirstOrDefault();
+                var user = context.Users.Include(e => e.RefreshTokens).Where(u => u.Email == userData.Email).FirstOrDefault();
                 var failException = new RestException(HttpStatusCode.Unauthorized,
                     "Invalid email / password.",
                     "Email or password is invalid");
