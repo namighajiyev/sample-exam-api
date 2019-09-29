@@ -11,7 +11,7 @@ using SampleExam.Infrastructure;
 namespace SampleExam.Migrations
 {
     [DbContext(typeof(SampleExamContext))]
-    [Migration("20190929091615_initial migration")]
+    [Migration("20190929121834_initial migration")]
     partial class initialmigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -238,7 +238,7 @@ namespace SampleExam.Migrations
 
                     b.HasIndex("Email")
                         .IsUnique()
-                        .HasFilter("[IsDeleted] = 0");
+                        .HasFilter("\"IsDeleted\" = false");
 
                     b.HasIndex("GenderId");
 

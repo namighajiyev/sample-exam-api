@@ -355,7 +355,7 @@ namespace SampleExam.Migrations
                 table: "Users",
                 column: "Email",
                 unique: true,
-                filter: "[IsDeleted] = 0");
+                filter: "\"IsDeleted\" = false");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Users_GenderId",

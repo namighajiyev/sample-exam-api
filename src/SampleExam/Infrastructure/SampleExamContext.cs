@@ -30,7 +30,7 @@ namespace SampleExam.Infrastructure
              System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
             modelBuilder.Entity<Gender>().HasData(SeedData.Genders.Male, SeedData.Genders.Female);
 
-            modelBuilder.Entity<User>().HasIndex(e => e.Email).IsUnique().HasFilter($"[{nameof(User.IsDeleted)}] = 0");
+            modelBuilder.Entity<User>().HasIndex(e => e.Email).IsUnique().HasFilter("\"IsDeleted\" = false");
             modelBuilder.Entity<User>().Property(e => e.Firstname).IsRequired().HasMaxLength(Constants.USER_FIRSTNAME_LEN);
             modelBuilder.Entity<User>().Property(e => e.Lastname).IsRequired().HasMaxLength(Constants.USER_LASTNAME_LEN);
             modelBuilder.Entity<User>().Property(e => e.Middlename).HasMaxLength(Constants.USER_MIDDLENAME_LEN);
