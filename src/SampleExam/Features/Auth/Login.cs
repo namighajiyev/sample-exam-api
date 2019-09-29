@@ -78,10 +78,11 @@ namespace SampleExam.Features.Auth
                 this.refreshTokenGenerator = refreshTokenGenerator;
             }
 
+            //TODO add middleware to check if user is deleted for authorized action.
             public async Task<LoginUserDTOEnvelope> Handle(Request request, CancellationToken cancellationToken)
             {
                 var userData = request.User;
-                var user = context.Users.Include(e => e.RefreshTokens).Where(u => u.Email == userData.Email).FirstOrDefault();
+                var user = context.Users.Include(e => e.RefreshTokens).Where(u => u.Email == userData.Email && u.IsDeleted == false).FirstOrDefault();
                 var failException = new RestException(HttpStatusCode.Unauthorized,
                     "Invalid email / password.",
                     "Email or password is invalid");

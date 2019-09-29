@@ -1,4 +1,4 @@
-namespace SampleExam.Infrastructure
+namespace SampleExam.Common
 {
     public static class Consts
     {

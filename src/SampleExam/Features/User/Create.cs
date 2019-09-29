@@ -5,6 +5,7 @@ using AutoMapper;
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
+using SampleExam.Common;
 using SampleExam.Domain;
 using SampleExam.Infrastructure;
 using SampleExam.Infrastructure.Security;
@@ -43,13 +44,21 @@ namespace SampleExam.Features.User
                 .NotNull()
                 .WithErrorCode("CreateUserFirstnameNotNull")
                 .NotEmpty()
-                .WithErrorCode("CreateUserFirstnameNotEmpty");
+                .WithErrorCode("CreateUserFirstnameNotEmpty")
+                .MaximumLength(Constants.USER_FIRSTNAME_LEN)
+                .WithErrorCode("CreateUserFirstnameMaximumLength");
+
+                RuleFor(x => x.Middlename)
+                .MaximumLength(Constants.USER_MIDDLENAME_LEN)
+                .WithErrorCode("CreateUserMiddlenameMaximumLength");
 
                 RuleFor(x => x.Lastname)
                 .NotNull()
                 .WithErrorCode("CreateUserLastnameNotNull")
                 .NotEmpty()
-                .WithErrorCode("CreateUserLastnameNotEmpty");
+                .WithErrorCode("CreateUserLastnameNotEmpty")
+                .MaximumLength(Constants.USER_LASTNAME_LEN)
+                .WithErrorCode("CreateUserLastnameMaximumLength");
 
                 RuleFor(x => x.GenderId)
                 .NotNull()
@@ -77,7 +86,9 @@ namespace SampleExam.Features.User
                 .EmailAddress()
                 .WithErrorCode("CreateUserEmailEmailAddress")
                 .UniqueEmail()
-                .WithErrorCode("CreateUserEmailUniqueEmail");
+                .WithErrorCode("CreateUserEmailUniqueEmail")
+                .MaximumLength(Constants.USER_EMAIL_LEN)
+                .WithErrorCode("CreateUserEmailMaximumLength");
 
                 RuleFor(x => x.Password)
                 .NotNull()
@@ -133,8 +144,9 @@ namespace SampleExam.Features.User
             {
                 var user = mapper.Map<UserData, Domain.User>(request.User);
                 user.Password = hasher.HashPassword(user, user.Password);
-                user.CreatedAt = DateTime.UtcNow;
-                user.UpdatedAt = DateTime.UtcNow;
+                var utcNow = DateTime.UtcNow;
+                user.CreatedAt = utcNow;
+                user.UpdatedAt = utcNow;
 
                 await this.context.Users.AddAsync(user, cancellationToken);
                 await context.SaveChangesAsync(cancellationToken);
