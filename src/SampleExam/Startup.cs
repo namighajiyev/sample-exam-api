@@ -89,6 +89,7 @@ namespace SampleExam
             services.AddTransient<IPasswordHasher<Domain.User>, PasswordHasher<Domain.User>>();
             services.AddTransient<IApiJwtTokenGenerator, ApiJwtTokenGenerator>();
             services.AddTransient<IApiTokenRefreshTokenGenrator, ApiTokenRefreshTokenGenrator>();
+            services.AddTransient<ICurrentUserAccessor, CurrentUserAccessor>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

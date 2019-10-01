@@ -22,8 +22,7 @@ namespace SampleExam.Infrastructure
         public static int TAG_TEXT_LEN = 50;
 
         public static int QUESTION_TEXT_LEN = 3000;
-
-
-
+        public static int FETCH_OFFSET = 0;
+        internal static int FETCH_LIMIT = 20;
     }
 }
