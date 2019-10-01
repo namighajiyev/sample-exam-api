@@ -53,5 +53,20 @@
             "isBackground": false,
             "problemMatcher": "$msCompile"
         },
+        {
+            "label": "unit-test",
+            "command": "dotnet",
+            "type": "process",
+            "group": "build",
+            "args": [
+                "test",
+                "tests/SampleExamUnitTests"
+            ],
+            "dependsOn": [
+                "build"
+            ],
+            "isBackground": false,
+            "problemMatcher": "$msCompile",
+        },
     ]
 }
