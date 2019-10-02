@@ -1,4 +1,5 @@
 using AutoMapper;
+using System.Linq;
 
 namespace SampleExam.Features.Exam
 {
@@ -6,7 +7,9 @@ namespace SampleExam.Features.Exam
     {
         public ExamMappingProfile()
         {
-            CreateMap<Domain.Exam, ExamDTO>(MemberList.Destination);
+            CreateMap<Domain.Exam, ExamDTO>(MemberList.Destination)
+            .ForMember(e => e.Tags, options =>
+             options.MapFrom(e => e.ExamTags.Select(ext => ext.Tag)));
         }
     }
 }

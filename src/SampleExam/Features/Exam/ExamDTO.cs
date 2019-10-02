@@ -26,9 +26,11 @@ namespace SampleExam.Features.Exam
 
         public DateTime CreatedAt { get; set; }
 
+        public DateTime UpdatedAt { get; set; }
+
         public User.UserDTO User { get; set; }
 
-        public ICollection<Tag.TagDTO> ExamTags { get; set; }
+        public ICollection<Tag.TagDTO> Tags { get; set; }
 
     }
 }
