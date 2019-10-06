@@ -45,6 +45,19 @@ namespace SampleExam
 
             services.AddSwaggerGen(options =>
             {
+                options.AddSecurityDefinition("Bearer", new ApiKeyScheme
+                {
+                    In = "header",
+                    Description = "Please insert JWT with Bearer into field",
+                    Name = "Authorization",
+                    Type = "apiKey"
+                });
+
+                options.AddSecurityRequirement(new Dictionary<string, IEnumerable<string>>
+                {
+                    {"Bearer", new string[] { }}
+                });
+
                 options.SwaggerDoc("v1", new Info() { Title = "SampleExam API", Version = "v1" });
                 options.CustomSchemaIds(y => y.FullName);
                 options.DocInclusionPredicate((version, apiDescription) => true);

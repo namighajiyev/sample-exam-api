@@ -6,6 +6,7 @@ using NUnit.Framework;
 using SampleExam.Domain;
 using SampleExam.Features.Exam;
 using SampleExam.Features.Tag;
+using SampleExam.Features.User;
 
 namespace Tests
 {
@@ -35,6 +36,79 @@ namespace Tests
         [Test]
         public void ShouldMapExamToExamDTO()
         {
+            var exam = CreateExamEntity(true, true);
+            var user = exam.User;
+            var dto = mapper.Map<ExamDTO>(exam);
+            AssertExam(dto, exam);
+            AsserExamTags(dto, exam);
+            var userDto = dto.User;
+            AssertUser(userDto, user);
+        }
+
+        [Test]
+        public void ShouldMapExamToExamDTWithoutIncludes()
+        {
+            var exam = CreateExamEntity(false, false);
+            var user = exam.User;
+            var dto = mapper.Map<ExamDTO>(exam);
+            AssertExam(dto, exam);
+            Assert.Zero(dto.Tags.Count);
+            Assert.IsNull(dto.User);
+        }
+
+
+        private void AsserExamTags(ExamDTO dto, Exam exam)
+        {
+            foreach (var examTag in exam.ExamTags)
+            {
+                var tag = examTag.Tag;
+                var count = dto.Tags.Where(t => t.Id == tag.Id && t.Text == tag.Text).Count();
+                Assert.IsTrue(count == 1);
+            }
+        }
+        private void AssertExam(ExamDTO dto, Exam exam)
+        {
+            Assert.AreEqual(dto.Id, exam.Id);
+            Assert.AreEqual(dto.Title, exam.Title);
+            Assert.AreEqual(dto.Description, exam.Description);
+            Assert.AreEqual(dto.TimeInMinutes, exam.TimeInMinutes);
+            Assert.AreEqual(dto.PassPercentage, exam.PassPercentage);
+            Assert.AreEqual(dto.IsPrivate, exam.IsPrivate);
+            Assert.AreEqual(dto.IsPublished, exam.IsPublished);
+            Assert.AreEqual(dto.IsDeleted, exam.IsDeleted);
+            Assert.AreEqual(dto.CreatedAt, exam.CreatedAt);
+            Assert.AreEqual(dto.UpdatedAt, exam.UpdatedAt);
+        }
+
+        private void AssertUser(UserDTO userDto, User user)
+        {
+            Assert.AreEqual(userDto.Id, user.Id);
+            Assert.AreEqual(userDto.Firstname, user.Firstname);
+            Assert.AreEqual(userDto.Lastname, user.Lastname);
+            Assert.AreEqual(userDto.Middlename, user.Middlename);
+            Assert.AreEqual(userDto.GenderId, user.GenderId);
+            Assert.AreEqual(userDto.Dob, user.Dob);
+            Assert.AreEqual(userDto.Email, user.Email);
+        }
+        private Exam CreateExamEntity(bool includeTags, bool includeUser)
+        {
+            var user = new User()
+            {
+                Id = 1,
+                Firstname = "firstname",
+                Lastname = "lastname",
+                Middlename = "middlename",
+                GenderId = 1,
+                Dob = DateTime.UtcNow.AddYears(-20),
+                Email = "example@example.com",
+                Password = "asdadasd",
+                IsEmailConfirmed = true,
+                IsDeleted = true,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow,
+                DeletedAt = DateTime.UtcNow
+            };
+
             var tags = new List<ExamTag>(){
                     new ExamTag() { ExamId = 1, TagId = 1, Tag = new Tag() { Id = 1, Text = "Java"}},
                     new ExamTag() { ExamId = 1, TagId = 2, Tag = new Tag() { Id = 2, Text = "C#"}},
@@ -53,30 +127,21 @@ namespace Tests
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow,
                 DeletedAt = DateTime.UtcNow,
-                ExamTags = tags
+
             };
 
-            var dto = mapper.Map<ExamDTO>(exam);
-            Assert.AreEqual(dto.Id, exam.Id);
-            Assert.AreEqual(dto.Title, exam.Title);
-
-            Assert.AreEqual(dto.Description, exam.Description);
-            Assert.AreEqual(dto.TimeInMinutes, exam.TimeInMinutes);
-            Assert.AreEqual(dto.PassPercentage, exam.PassPercentage);
-            Assert.AreEqual(dto.IsPrivate, exam.IsPrivate);
-            Assert.AreEqual(dto.IsPublished, exam.IsPublished);
-            Assert.AreEqual(dto.IsDeleted, exam.IsDeleted);
-            Assert.AreEqual(dto.CreatedAt, exam.CreatedAt);
-            Assert.AreEqual(dto.UpdatedAt, exam.UpdatedAt);
-
-            foreach (var examTag in exam.ExamTags)
+            if (includeTags)
             {
-                var tag = examTag.Tag;
-                var count = dto.Tags.Where(t => t.Id == tag.Id && t.Text == tag.Text).Count();
-                Assert.IsTrue(count == 1);
+                exam.ExamTags = tags;
             }
-        }
 
+            if (includeTags)
+            {
+                exam.User = user;
+            }
+
+            return exam;
+        }
 
 
     }

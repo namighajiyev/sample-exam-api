@@ -40,25 +40,15 @@ namespace SampleExam.Infrastructure.Security
                 ClockSkew = TimeSpan.Zero
             };
 
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(options =>
-                {
-                    options.TokenValidationParameters = tokenValidationParameters;
-                    options.Events = new JwtBearerEvents
-                    {
-                        OnMessageReceived = (context) =>
-                        {
-                            var token = context.HttpContext.Request.Headers["Authorization"];
-                            if (token.Count > 0 && token[0].StartsWith("Token ", StringComparison.OrdinalIgnoreCase))
-                            {
-                                context.Token = token[0].Substring("Token ".Length).Trim();
-                            }
-
-                            return Task.CompletedTask;
-                        }
-                    };
-
-                });
+            services.AddAuthentication((options) =>
+            {
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = tokenValidationParameters;
+            });
         }
     }
 }

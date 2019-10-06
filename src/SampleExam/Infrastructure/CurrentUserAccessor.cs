@@ -34,7 +34,7 @@ namespace SampleExam.Infrastructure
 
         public int GetCurrentUserId()
         {
-            var subject = httpContextAccessor.HttpContext.User?.Claims?.FirstOrDefault(x => x.Type == JwtRegisteredClaimNames.Sub)?.Value;
+            var subject = httpContextAccessor.HttpContext.User?.Claims?.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
             return int.Parse(subject);
         }
 

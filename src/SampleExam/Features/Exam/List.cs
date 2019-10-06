@@ -50,7 +50,6 @@ namespace SampleExam.Features.Exam
                 this.mapper = mapper;
                 this.currentUserAccessor = currentUserAccessor;
                 this.context = context;
-
             }
             public async Task<ExamsDTOEnvelope> Handle(Query request, CancellationToken cancellationToken)
             {
@@ -89,8 +88,6 @@ namespace SampleExam.Features.Exam
                 var examDTOs = mapper.Map<List<Domain.Exam>, List<ExamDTO>>(exams);
 
                 return new ExamsDTOEnvelope(examDTOs, examCount);
-
-
             }
         }
 
