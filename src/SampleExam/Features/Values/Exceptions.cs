@@ -1,5 +1,5 @@
 using System.Net;
-using SampleExam.Infrastructure;
+using SampleExam.Common;
 using SampleExam.Infrastructure.Errors;
 
 namespace SampleExam.Features.Values

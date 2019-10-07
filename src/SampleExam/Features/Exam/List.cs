@@ -1,11 +1,14 @@
 using System.Threading;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 using AutoMapper;
 using MediatR;
 using SampleExam.Infrastructure;
-using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
+using SampleExam.Common;
+
+
 
 namespace SampleExam.Features.Exam
 {
@@ -70,6 +73,7 @@ namespace SampleExam.Features.Exam
                 if (!request.IsCurrentUser)
                 {
                     queryable = queryable.Where(e => e.IsPublished);
+                    queryable = queryable.Where(e => !e.IsPrivate);
                 }
 
                 if (userId.HasValue)

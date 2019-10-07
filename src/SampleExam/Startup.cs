@@ -23,6 +23,7 @@ using SampleExam.Infrastructure.Errors;
 using SampleExam.Infrastructure.Filters;
 using SampleExam.Infrastructure.Security;
 using Microsoft.AspNetCore.Identity;
+using SampleExam.Common;
 
 //[assembly: ApiConventionType(typeof(DefaultApiConventions))]
 [assembly: ApiConventionType(typeof(AppApiConventions))]
@@ -90,13 +91,10 @@ namespace SampleExam
 
             services.AddAutoMapper(GetType().Assembly);
 
-            var connStringKey = "ASPNETCORE_SampleExamApi_ConnectionString";
-            var connectionString = Configuration.GetValue<string>(connStringKey);
+            var connectionString = Configuration.GetValue<string>(Constants.CONN_STRING_KEY);
             services.AddDbContext<SampleExamContext>(opt => opt.UseNpgsql(connectionString));
 
-            var jwtKey = "ASPNETCORE_SampleExamApi_Jwt_Key";
-            var jwtSecret = Configuration.GetValue<string>(jwtKey);
-            Console.WriteLine(jwtSecret);
+            var jwtSecret = Configuration.GetValue<string>(Constants.API_JWT_KEY);
             services.AddJwt(jwtSecret);
             services.Configure<PasswordHasherOptions>(options => options.CompatibilityMode = PasswordHasherCompatibilityMode.IdentityV3);
             services.AddTransient<IPasswordHasher<Domain.User>, PasswordHasher<Domain.User>>();

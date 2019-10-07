@@ -6,9 +6,8 @@ using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using SampleExam.Common;
-using SampleExam.Domain;
 using SampleExam.Infrastructure;
-using SampleExam.Infrastructure.Security;
+
 
 namespace SampleExam.Features.User
 {
@@ -95,12 +94,12 @@ namespace SampleExam.Features.User
                 .WithErrorCode("CreateUserPasswordNotNull")
                 .NotEmpty()
                 .WithErrorCode("CreateUserPasswordNotEmpty")
-                .MinimumLength(Consts.PASSWORD_MIN_LENGTH)
+                .MinimumLength(Constants.PASSWORD_MIN_LENGTH)
                 .WithErrorCode("CreateUserPasswordMinimumLength")
-                .Matches(Consts.ASCII_PRINTABLE_CHARS_REGEX)
+                .Matches(Constants.ASCII_PRINTABLE_CHARS_REGEX)
                 .WithErrorCode("CreateUserPasswordMatchesAsciiPrintableChars")
                 .WithMessage("Password must contain only printable ASCII characters")
-                .NotMatches(Consts.NOT_BEGINING_OR_ENDING_WITH_ASCII_SPACE_REGEX)
+                .NotMatches(Constants.NOT_BEGINING_OR_ENDING_WITH_ASCII_SPACE_REGEX)
                 .WithErrorCode("CreateUserPasswordMatchesNotBeginsOrEndsWithAsciiSpace")
                 .WithMessage("Your password cannot start or end with a blank space")
                 .StrongPassword()

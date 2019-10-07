@@ -1,6 +1,7 @@
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using SampleExam.Domain;
+using SampleExam.Common;
 
 namespace SampleExam.Infrastructure
 {
@@ -55,7 +56,7 @@ namespace SampleExam.Infrastructure
             modelBuilder.Entity<Exam>().Property(e => e.CreatedAt).IsRequired();
             modelBuilder.Entity<Exam>().Property(e => e.UpdatedAt).IsRequired();
             modelBuilder.Entity<Exam>().Property(e => e.DeletedAt).IsRequired(false);
-            modelBuilder.Entity<Exam>().HasQueryFilter(e => e.IsDeleted);
+            modelBuilder.Entity<Exam>().HasQueryFilter(e => !e.IsDeleted);
 
             modelBuilder.Entity<AnswerOption>().Property(e => e.Text).IsRequired().HasMaxLength(Constants.ANSWEROPTION_TEXT_LEN);
             modelBuilder.Entity<AnswerOption>().Property(e => e.IsRight).IsRequired();

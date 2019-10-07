@@ -8,7 +8,7 @@ using SampleExam.Features.Exam;
 using SampleExam.Features.Tag;
 using SampleExam.Features.User;
 
-namespace Tests
+namespace Tests.Mapper
 {
     public class MapperTests
     {
@@ -55,7 +55,20 @@ namespace Tests
             Assert.Zero(dto.Tags.Count);
             Assert.IsNull(dto.User);
         }
+        [Test]
+        public void ShouldMapExamDataToExam()
+        {
+            var data = new SampleExam.Features.Exam.Create.ExamData()
+            {
+                Title = "title",
+                Description = "desc",
+                TimeInMinutes = 10,
+                PassPercentage = 55,
+                IsPrivate = true
+            };
+            var exam = mapper.Map<Exam>(data);
 
+        }
 
         private void AsserExamTags(ExamDTO dto, Exam exam)
         {

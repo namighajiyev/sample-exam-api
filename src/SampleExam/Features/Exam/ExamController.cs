@@ -1,3 +1,4 @@
+using System.Net;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -52,6 +53,15 @@ namespace SampleExam.Features.Exam
             )
         {
             return await _mediator.Send(new List.Query(userId, limit, offset, false, includeTags, includeUser));
+        }
+
+        [HttpPost]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<ExamDTOEnvelope> Signup([FromBody] Create.Request command)
+        {
+            var result = await _mediator.Send(command);
+            HttpContext.Response.StatusCode = (int)HttpStatusCode.Created;
+            return result;
         }
 
     }
