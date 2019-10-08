@@ -38,7 +38,7 @@ namespace SampleExam.Features.Values
                 var value = await context.Values.Where(e => e.Id == request.Id).FirstOrDefaultAsync(cancellationToken);
                 if (value == null)
                 {
-                    throw Exceptions.ValueNotFoundException;
+                    throw new Exceptions.ValueNotFoundException();
                 }
 
                 context.Values.Remove(value);

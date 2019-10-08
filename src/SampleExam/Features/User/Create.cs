@@ -39,82 +39,16 @@ namespace SampleExam.Features.User
         {
             public UserDataValidator()
             {
-                RuleFor(x => x.Firstname)
-                .NotNull()
-                .WithErrorCode("CreateUserFirstnameNotNull")
-                .NotEmpty()
-                .WithErrorCode("CreateUserFirstnameNotEmpty")
-                .MaximumLength(Constants.USER_FIRSTNAME_LEN)
-                .WithErrorCode("CreateUserFirstnameMaximumLength");
-
-                RuleFor(x => x.Middlename)
-                .MaximumLength(Constants.USER_MIDDLENAME_LEN)
-                .WithErrorCode("CreateUserMiddlenameMaximumLength");
-
-                RuleFor(x => x.Lastname)
-                .NotNull()
-                .WithErrorCode("CreateUserLastnameNotNull")
-                .NotEmpty()
-                .WithErrorCode("CreateUserLastnameNotEmpty")
-                .MaximumLength(Constants.USER_LASTNAME_LEN)
-                .WithErrorCode("CreateUserLastnameMaximumLength");
-
-                RuleFor(x => x.GenderId)
-                .NotNull()
-                .WithErrorCode("CreateUserGenderIdNotNull")
-                .NotEmpty()
-                .WithErrorCode("CreateUserGenderIdNotEmpty")
-                .Must(id => id == SeedData.Genders.Male.Id || id == SeedData.Genders.Female.Id)
-                .WithMessage($"User GenderId must be either {SeedData.Genders.Male.Id} ({SeedData.Genders.Male.Name}) or {SeedData.Genders.Female.Id} ({SeedData.Genders.Female.Name})")
-                .WithErrorCode("CreateUserGenderIdMustBeMaleOrFemale");
-
-                RuleFor(x => x.Dob)
-                .NotNull()
-                .WithErrorCode("CreateUserDobNotNull")
-                .NotEmpty()
-                .WithErrorCode("CreateUserDobNotEmpty")
-                .LessThan(DateTime.UtcNow.Date)
-                .WithMessage($"User DOB must be less than {DateTime.UtcNow.Date}")
-                .WithErrorCode("CreateUserDobLessThanUtcNowDate");
-
-                RuleFor(x => x.Email)
-                .NotNull()
-                .WithErrorCode("CreateUserEmailNotNull")
-                .NotEmpty()
-                .WithErrorCode("CreateUserEmailNotEmpty")
-                .EmailAddress()
-                .WithErrorCode("CreateUserEmailEmailAddress")
-                .UniqueEmail()
-                .WithErrorCode("CreateUserEmailUniqueEmail")
-                .MaximumLength(Constants.USER_EMAIL_LEN)
-                .WithErrorCode("CreateUserEmailMaximumLength");
-
-                RuleFor(x => x.Password)
-                .NotNull()
-                .WithErrorCode("CreateUserPasswordNotNull")
-                .NotEmpty()
-                .WithErrorCode("CreateUserPasswordNotEmpty")
-                .MinimumLength(Constants.PASSWORD_MIN_LENGTH)
-                .WithErrorCode("CreateUserPasswordMinimumLength")
-                .Matches(Constants.ASCII_PRINTABLE_CHARS_REGEX)
-                .WithErrorCode("CreateUserPasswordMatchesAsciiPrintableChars")
-                .WithMessage("Password must contain only printable ASCII characters")
-                .NotMatches(Constants.NOT_BEGINING_OR_ENDING_WITH_ASCII_SPACE_REGEX)
-                .WithErrorCode("CreateUserPasswordMatchesNotBeginsOrEndsWithAsciiSpace")
-                .WithMessage("Your password cannot start or end with a blank space")
-                .StrongPassword()
-                .WithErrorCode("CreateUserPasswordStrongPassword");
-
-                RuleFor(x => x.ConfirmPassword)
-                .NotNull()
-                .WithErrorCode("CreateUserConfirmPasswordNotNull")
-                .NotEmpty()
-                .WithErrorCode("CreateUserConfirmPasswordNotEmpty")
-                .Equal(x => x.Password)
-                .WithErrorCode("CreateUserConfirmPasswordEqualPassword")
-                .WithMessage("Passwords do not match");
-
-
+                var errorCodePrefix = nameof(Create);
+                RuleFor(x => x.Firstname).UserFirstname<UserData, string>(errorCodePrefix);
+                RuleFor(x => x.Middlename).UserMiddlename<UserData, string>(errorCodePrefix);
+                RuleFor(x => x.Lastname).UserLastname<UserData, string>(errorCodePrefix);
+                RuleFor(x => x.GenderId).UserGenderId<UserData, string>(errorCodePrefix);
+                RuleFor(x => x.Dob).UserDob<UserData, string>(errorCodePrefix);
+                RuleFor(x => x.Email).UserEmail<UserData, string>(errorCodePrefix);
+                RuleFor(x => x.Password).UserPassword<UserData, string>(errorCodePrefix);
+                RuleFor(x => x.ConfirmPassword).UserConfirmPassword<UserData, string>(x => x.Password,
+                errorCodePrefix);
             }
         }
 

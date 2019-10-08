@@ -9,7 +9,7 @@ using SampleExam.Infrastructure;
 
 namespace SampleExam.Features.Exam
 {
-    public class Delete
+    public class Publish
     {
         public class Request : IRequest<ExamDTOEnvelope>
         {
@@ -36,14 +36,14 @@ namespace SampleExam.Features.Exam
             public async Task<ExamDTOEnvelope> Handle(Request request, CancellationToken cancellationToken)
             {
                 var userId = currentUserAccessor.GetCurrentUserId();
-                var exam = await context.Exams.ByIdAndUserId(request.Id, userId).FirstOrDefaultAsync(cancellationToken);
+                var exam = await context.Exams.NotPublishedByIdAndUserId(request.Id, userId).FirstOrDefaultAsync(cancellationToken);
                 if (exam == null)
                 {
                     throw new Exceptions.ExamNotFoundException();
                 }
 
-                exam.IsDeleted = true;
-                exam.DeletedAt = DateTime.UtcNow;
+                exam.IsPublished = true;
+                exam.UpdatedAt = DateTime.UtcNow;
 
                 await context.SaveChangesAsync(cancellationToken);
                 var examDto = mapper.Map<Domain.Exam, ExamDTO>(exam);

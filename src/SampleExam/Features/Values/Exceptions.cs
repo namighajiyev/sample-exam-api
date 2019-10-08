@@ -4,9 +4,13 @@ using SampleExam.Infrastructure.Errors;
 
 namespace SampleExam.Features.Values
 {
-    public static class Exceptions
+    public class Exceptions
     {
-        public static readonly RestException ValueNotFoundException =
-        new RestException(HttpStatusCode.NotFound, "Value", Constants.NOT_FOUND);
+        public class ValueNotFoundException : RestException
+        {
+            public ValueNotFoundException() : base(HttpStatusCode.NotFound, nameof(Domain.Value), Constants.NOT_FOUND)
+            {
+            }
+        }
     }
 }

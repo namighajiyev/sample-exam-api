@@ -37,46 +37,12 @@ namespace SampleExam.Features.Exam
         {
             public ExamDataValidator()
             {
-                RuleFor(x => x.Title)
-                        .NotNull()
-                        .WithErrorCode("CreateExamTitleNotNull")
-                        .NotEmpty()
-                        .WithErrorCode("CreateExamTitleNotEmpty")
-                        .MaximumLength(Constants.EXAM_TITLE_LEN)
-                        .WithErrorCode("CreateExamTitleMaximumLength");
-
-                RuleFor(x => x.Description)
-                        .NotNull()
-                        .WithErrorCode("CreateExamDescriptionNotNull")
-                        .NotEmpty()
-                        .WithErrorCode("CreateExamDescriptionNotEmpty")
-                        .MaximumLength(Constants.EXAM_DESCRIPTIION_LEN)
-                        .WithErrorCode("CreateExamDescriptionMaximumLength");
-
-                RuleFor(x => x.TimeInMinutes)
-                        .NotNull()
-                        .WithErrorCode("CreateExamTimeInMinutesNotNull")
-                        .NotEmpty()
-                        .WithErrorCode("CreateExamTimeInMinutesNotEmpty")
-                        .LessThanOrEqualTo(Constants.EXAM_TIME_IN_MINUTES_MAX)
-                        .WithErrorCode("CreateExamTimeInMinutesLessThanOrEqualTo")
-                        .GreaterThanOrEqualTo(Constants.EXAM_TIME_IN_MINUTES_MIN)
-                        .WithErrorCode("CreateExamTimeInMinutesGreaterThanOrEqualTo");
-
-                RuleFor(x => x.PassPercentage)
-                        .NotNull()
-                        .WithErrorCode("CreateExamPassPercentageNotNull")
-                        .NotEmpty()
-                        .WithErrorCode("CreateExamPassPercentageNotEmpty")
-                        .LessThanOrEqualTo(Constants.EXAM_PASS_PERCENTAGE_MAX)
-                        .WithErrorCode("CreateExamPassPercentageLessThanOrEqualTo")
-                        .GreaterThanOrEqualTo(Constants.EXAM_PASS_PERCENTAGE_MIN)
-                        .WithErrorCode("CreateExamPassPercentageGreaterThanOrEqualTo");
-
-                RuleFor(x => x.IsPrivate)
-                        .NotNull()
-                        .WithErrorCode("CreateExamIsPrivateNotNull");
-
+                var errorCodePrefix = nameof(Create);
+                RuleFor(x => x.Title).ExamTitle<ExamData, string>(errorCodePrefix);
+                RuleFor(x => x.Description).ExamDescription<ExamData, string>(errorCodePrefix);
+                RuleFor(x => x.TimeInMinutes).ExamTimeInMinutes<ExamData, int>(errorCodePrefix);
+                RuleFor(x => x.PassPercentage).ExamPassPercentage<ExamData, int>(errorCodePrefix);
+                RuleFor(x => x.IsPrivate).ExamIsPrivate<ExamData, bool>(errorCodePrefix);
             }
         }
 

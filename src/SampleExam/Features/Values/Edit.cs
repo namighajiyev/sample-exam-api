@@ -57,7 +57,7 @@ namespace SampleExam.Features.Values
                 var value = await context.Values.Where(e => e.Id == request.Value.Id).FirstOrDefaultAsync(cancellationToken);
                 if (value == null)
                 {
-                    throw Exceptions.ValueNotFoundException;
+                    throw new Exceptions.ValueNotFoundException();
                 }
 
                 value.Text = request.Value.Text;

@@ -20,7 +20,7 @@ namespace SampleExam.Features.Exam
 
 
         [HttpGet]
-        public async Task<ExamsDTOEnvelope> Get(
+        public async Task<ExamsDTOEnvelope> GetAllPublishedExams(
             [FromQuery] int? limit,
             [FromQuery] int? offset,
             [FromQuery] bool? includeTags,
@@ -57,12 +57,35 @@ namespace SampleExam.Features.Exam
 
         [HttpPost]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public async Task<ExamDTOEnvelope> Signup([FromBody] Create.Request command)
+        public async Task<ExamDTOEnvelope> CreateExam([FromBody] Create.Request command)
         {
             var result = await _mediator.Send(command);
             HttpContext.Response.StatusCode = (int)HttpStatusCode.Created;
             return result;
         }
 
+        [HttpDelete("{id}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<ExamDTOEnvelope> DeleteExam(int id)
+        {
+            return await _mediator.Send(new Delete.Request(id));
+        }
+
+
+        [HttpPut("publish/{id}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<ExamDTOEnvelope> PublishExam(int id)
+        {
+            return await _mediator.Send(new Publish.Request(id));
+        }
+
+
+        [HttpPut("{id}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<ExamDTOEnvelope> Edit(int id, [FromBody]Edit.Request request)
+        {
+            request.Exam.Id = id;
+            return await _mediator.Send(request);
+        }
     }
 }
