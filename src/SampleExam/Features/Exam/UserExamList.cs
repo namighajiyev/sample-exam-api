@@ -7,33 +7,34 @@ using AutoMapper;
 using MediatR;
 using SampleExam.Infrastructure;
 using SampleExam.Common;
-
-
+using static SampleExam.Features.Exam.Enums;
 
 namespace SampleExam.Features.Exam
 {
-    public class List
+    public class UserExamList
     {
 
         public class Query : IRequest<ExamsDTOEnvelope>
         {
             public Query(
-                    int? userId,
-                    int? limit,
-                    int? offset,
-                    bool? includeTags,
-                    bool? includeUser
-                 )
+            PublishType publishType,
+            PrivateType privateType,
+            int? limit,
+            int? offset,
+            bool? includeTags,
+            bool? includeUser
+            )
             {
-                this.UserId = userId;
+                this.PublishType = publishType;
+                this.PrivateType = privateType;
                 this.Limit = limit ?? Constants.FETCH_LIMIT;
                 this.Offset = offset ?? Constants.FETCH_OFFSET;
                 this.IncludeTags = includeTags ?? false;
                 this.IncludeUser = includeUser ?? false;
 
             }
-
-            public int? UserId { get; }
+            public PublishType PublishType { get; }
+            public PrivateType PrivateType { get; }
             public int Limit { get; }
             public int Offset { get; }
             public bool IncludeTags { get; }
@@ -42,25 +43,54 @@ namespace SampleExam.Features.Exam
         public class QueryHandler : IRequestHandler<Query, ExamsDTOEnvelope>
         {
             private IMapper mapper;
+            private ICurrentUserAccessor currentUserAccessor;
             private SampleExamContext context;
 
-            public QueryHandler(IMapper mapper,
+            public QueryHandler(IMapper mapper, ICurrentUserAccessor currentUserAccessor,
              SampleExamContext context)
             {
                 this.mapper = mapper;
+                this.currentUserAccessor = currentUserAccessor;
                 this.context = context;
             }
             public async Task<ExamsDTOEnvelope> Handle(Query request, CancellationToken cancellationToken)
             {
+                int userId = currentUserAccessor.GetCurrentUserId();
 
                 var queryable = context.Exams.AsNoTracking();
 
-                queryable = queryable.PublishedAndNotPrivate();
+                queryable = queryable.Where(e => e.UserId == userId);
 
-                if (request.UserId.HasValue)
+                switch (request.PublishType)
                 {
-                    queryable = queryable.Where(e => e.UserId == request.UserId.Value);
+                    case PublishType.Published:
+                        queryable = queryable.Where(e => e.IsPublished);
+                        break;
+                    case PublishType.NotPublished:
+                        queryable = queryable.Where(e => !e.IsPublished);
+                        break;
+                    case PublishType.Both:
+                        break;
+                    default:
+                        queryable = queryable.Where(e => e.IsPublished);
+                        break;
                 }
+
+                switch (request.PrivateType)
+                {
+                    case PrivateType.Private:
+                        queryable = queryable.Where(e => e.IsPrivate);
+                        break;
+                    case PrivateType.NotPrivate:
+                        queryable = queryable.Where(e => !e.IsPrivate);
+                        break;
+                    case PrivateType.Both:
+                        break;
+                    default:
+                        queryable = queryable.Where(e => !e.IsPrivate);
+                        break;
+                }
+
                 if (request.IncludeTags)
                 {
                     queryable = queryable.IncludeTags();
@@ -79,9 +109,7 @@ namespace SampleExam.Features.Exam
                 .ToListAsync(cancellationToken);
 
                 var examCount = await queryable.CountAsync();
-
                 var examDTOs = mapper.Map<List<Domain.Exam>, List<ExamDTO>>(exams);
-
                 return new ExamsDTOEnvelope(examDTOs, examCount);
             }
         }

@@ -4,6 +4,7 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using static SampleExam.Features.Exam.Enums;
 
 namespace SampleExam.Features.Exam
 {
@@ -18,46 +19,30 @@ namespace SampleExam.Features.Exam
             _mediator = mediator;
         }
 
-
-        [HttpGet]
-        public async Task<ExamsDTOEnvelope> GetAllPublishedExams(
-            [FromQuery] int? limit,
-            [FromQuery] int? offset,
+        [HttpGet("{id}")]
+        public async Task<ExamDTOEnvelope> GetPublishedExam(
+            int id,
             [FromQuery] bool? includeTags,
             [FromQuery] bool? includeUser
             )
         {
-            return await _mediator.Send(new List.Query(null, limit, offset, false, includeTags, includeUser));
+            return await _mediator.Send(new Details.Query(id, includeTags, includeUser));
         }
 
-
-        [HttpGet("user")]
+        [HttpGet("user_exam/{id}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public async Task<ExamsDTOEnvelope> GetCurrenUserExams(
-            [FromQuery] int? limit,
-            [FromQuery] int? offset,
+        public async Task<ExamDTOEnvelope> GetCurrentUserExam(
+            int id,
             [FromQuery] bool? includeTags,
             [FromQuery] bool? includeUser
             )
         {
-            return await _mediator.Send(new List.Query(null, limit, offset, true, includeTags, includeUser));
-        }
-
-        [HttpGet("user/{userId}")]
-        public async Task<ExamsDTOEnvelope> GetUserExams(
-             int userId,
-            [FromQuery] int? limit,
-            [FromQuery] int? offset,
-            [FromQuery] bool? includeTags,
-            [FromQuery] bool? includeUser
-            )
-        {
-            return await _mediator.Send(new List.Query(userId, limit, offset, false, includeTags, includeUser));
+            return await _mediator.Send(new UserExamDetail.Query(id, includeTags, includeUser));
         }
 
         [HttpPost]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public async Task<ExamDTOEnvelope> CreateExam([FromBody] Create.Request command)
+        public async Task<ExamDTOEnvelope> Create([FromBody] Create.Request command)
         {
             var result = await _mediator.Send(command);
             HttpContext.Response.StatusCode = (int)HttpStatusCode.Created;
@@ -66,7 +51,7 @@ namespace SampleExam.Features.Exam
 
         [HttpDelete("{id}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public async Task<ExamDTOEnvelope> DeleteExam(int id)
+        public async Task<ExamDTOEnvelope> Delete(int id)
         {
             return await _mediator.Send(new Delete.Request(id));
         }
@@ -74,7 +59,7 @@ namespace SampleExam.Features.Exam
 
         [HttpPut("publish/{id}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public async Task<ExamDTOEnvelope> PublishExam(int id)
+        public async Task<ExamDTOEnvelope> Publish(int id)
         {
             return await _mediator.Send(new Publish.Request(id));
         }

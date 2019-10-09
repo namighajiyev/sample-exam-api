@@ -67,6 +67,8 @@ namespace SampleExam
                 {
                     y.GroupName
                 });
+                options.DescribeAllEnumsAsStrings();
+
             });
 
             services.AddCors();

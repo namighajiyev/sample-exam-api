@@ -10,7 +10,7 @@ namespace SampleExam.Features.Exam
             this.ExamCount = examCount;
         }
 
-        public IEnumerable<ExamDTO> Exams { get; private set; }
-        public int ExamCount { get; private set; }
+        public IEnumerable<ExamDTO> Exams { get; }
+        public int ExamCount { get; }
     }
 }

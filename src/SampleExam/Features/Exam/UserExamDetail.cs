@@ -8,7 +8,7 @@ using SampleExam.Infrastructure;
 
 namespace SampleExam.Features.Exam
 {
-    public class Details
+    public class UserExamDetail
     {
         public class Query : IRequest<ExamDTOEnvelope>
         {
@@ -22,7 +22,6 @@ namespace SampleExam.Features.Exam
                 this.IncludeTags = includeTags ?? false;
                 this.IncludeUser = includeUser ?? false;
             }
-
             public int Id { get; }
             public bool IncludeTags { get; }
             public bool IncludeUser { get; }
@@ -31,19 +30,23 @@ namespace SampleExam.Features.Exam
         public class QueryHandler : IRequestHandler<Query, ExamDTOEnvelope>
         {
             private IMapper mapper;
+            private ICurrentUserAccessor currentUserAccessor;
             private SampleExamContext context;
 
-            public QueryHandler(IMapper mapper, SampleExamContext context)
+            public QueryHandler(IMapper mapper, ICurrentUserAccessor currentUserAccessor, SampleExamContext context)
             {
                 this.mapper = mapper;
+                this.currentUserAccessor = currentUserAccessor;
                 this.context = context;
             }
             public async Task<ExamDTOEnvelope> Handle(Query request, CancellationToken cancellationToken)
             {
+                int userId = currentUserAccessor.GetCurrentUserId();
 
                 var queryable = context.Exams.AsNoTracking();
 
-                queryable = queryable.PublishedAndNotPrivate();
+                queryable = queryable.Where(e => e.UserId == userId);
+
 
                 if (request.IncludeTags)
                 {
@@ -63,7 +66,6 @@ namespace SampleExam.Features.Exam
                 {
                     throw new Exceptions.ExamNotFoundException();
                 }
-
 
                 var examDTO = mapper.Map<Domain.Exam, ExamDTO>(exam);
 
