@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -22,6 +24,8 @@ namespace SampleExam.Features.Exam
             public int PassPercentage { get; set; }
 
             public bool IsPrivate { get; set; }
+
+            public IEnumerable<string> Tags { get; set; }
 
         }
 
@@ -69,15 +73,47 @@ namespace SampleExam.Features.Exam
 
             public async Task<ExamDTOEnvelope> Handle(Request request, CancellationToken cancellationToken)
             {
+                var tags = await SaveTagsAsync(request.Exam.Tags ?? Enumerable.Empty<string>(), cancellationToken);
+
                 var exam = mapper.Map<ExamData, Domain.Exam>(request.Exam);
                 exam.UserId = this.currentUserAccessor.GetCurrentUserId();
                 var utcNow = DateTime.UtcNow;
                 exam.CreatedAt = utcNow;
                 exam.UpdatedAt = utcNow;
+
                 await this.context.Exams.AddAsync(exam, cancellationToken);
+
+                await context.ExamTags.AddRangeAsync(tags.Select(tag => new Domain.ExamTag()
+                {
+                    Exam = exam,
+                    Tag = tag
+                }), cancellationToken);
+
                 await context.SaveChangesAsync(cancellationToken);
                 var examDto = mapper.Map<Domain.Exam, ExamDTO>(exam);
                 return new ExamDTOEnvelope(examDto);
+            }
+
+
+            public async Task<IEnumerable<Domain.Tag>> SaveTagsAsync(IEnumerable<string> tagList, CancellationToken cancellationToken)
+            {
+                var tags = new List<Domain.Tag>();
+                foreach (var tag in tagList)
+                {
+                    var t = await context.Tags.FindAsync(tag);
+                    if (t == null)
+                    {
+                        t = new Domain.Tag()
+                        {
+                            TagId = tag
+                        };
+                        await context.Tags.AddAsync(t, cancellationToken);
+                        await context.SaveChangesAsync(cancellationToken);
+                    }
+                    tags.Add(t);
+                }
+
+                return tags;
             }
         }
     }

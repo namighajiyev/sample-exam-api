@@ -24,14 +24,12 @@ namespace SampleExam.Migrations
                 name: "Tags",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Text = table.Column<string>(maxLength: 50, nullable: false),
+                    TagId = table.Column<string>(maxLength: 50, nullable: false),
                     CreatedAt = table.Column<DateTime>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Tags", x => x.Id);
+                    table.PrimaryKey("PK_Tags", x => x.TagId);
                 });
 
             migrationBuilder.CreateTable(
@@ -134,7 +132,7 @@ namespace SampleExam.Migrations
                 columns: table => new
                 {
                     ExamId = table.Column<int>(nullable: false),
-                    TagId = table.Column<int>(nullable: false),
+                    TagId = table.Column<string>(nullable: false),
                     CreatedAt = table.Column<DateTime>(nullable: false)
                 },
                 constraints: table =>
@@ -150,7 +148,7 @@ namespace SampleExam.Migrations
                         name: "FK_ExamTags_Tags_TagId",
                         column: x => x.TagId,
                         principalTable: "Tags",
-                        principalColumn: "Id",
+                        principalColumn: "TagId",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -317,12 +315,6 @@ namespace SampleExam.Migrations
                 name: "IX_RefreshTokens_UserId",
                 table: "RefreshTokens",
                 column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Tags_Text",
-                table: "Tags",
-                column: "Text",
-                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserExamQuestionAnswers_AnswerOptionId",

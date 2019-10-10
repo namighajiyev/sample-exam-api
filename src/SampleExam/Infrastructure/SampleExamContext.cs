@@ -74,9 +74,9 @@ namespace SampleExam.Infrastructure
             modelBuilder.Entity<AnswerOption>().Property(e => e.CreatedAt).IsRequired();
             modelBuilder.Entity<AnswerOption>().HasIndex(e => new { e.QuestionId, e.Key }).IsUnique();
 
-            modelBuilder.Entity<Tag>().Property(e => e.Text).IsRequired().HasMaxLength(Constants.TAG_TEXT_LEN);
+            modelBuilder.Entity<Tag>().Property(e => e.TagId).IsRequired().HasMaxLength(Constants.TAG_TEXT_LEN);
             modelBuilder.Entity<Tag>().Property(e => e.CreatedAt).IsRequired();
-            modelBuilder.Entity<Tag>().HasIndex(e => e.Text).IsUnique();
+            modelBuilder.Entity<Tag>().HasKey(e => e.TagId);
 
 
             modelBuilder.Entity<ExamTag>().HasKey(e => new { e.ExamId, e.TagId });

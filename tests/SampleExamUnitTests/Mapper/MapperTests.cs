@@ -27,10 +27,9 @@ namespace Tests.Mapper
         [Test]
         public void ShouldMapTagToTagDTO()
         {
-            var tag = new Tag() { Id = 3, Text = "Java" };
+            var tag = new Tag() { TagId = "Java" };
             var dto = mapper.Map<TagDTO>(tag);
-            Assert.AreEqual(dto.Id, tag.Id);
-            Assert.AreEqual(dto.Text, tag.Text);
+            Assert.AreEqual(dto.Tag, tag.TagId);
         }
 
         [Test]
@@ -75,7 +74,7 @@ namespace Tests.Mapper
             foreach (var examTag in exam.ExamTags)
             {
                 var tag = examTag.Tag;
-                var count = dto.Tags.Where(t => t.Id == tag.Id && t.Text == tag.Text).Count();
+                var count = dto.Tags.Where(t => t.Tag == tag.TagId).Count();
                 Assert.IsTrue(count == 1);
             }
         }
@@ -123,8 +122,8 @@ namespace Tests.Mapper
             };
 
             var tags = new List<ExamTag>(){
-                    new ExamTag() { ExamId = 1, TagId = 1, Tag = new Tag() { Id = 1, Text = "Java"}},
-                    new ExamTag() { ExamId = 1, TagId = 2, Tag = new Tag() { Id = 2, Text = "C#"}},
+                    new ExamTag() { ExamId = 1, TagId = "Java", Tag = new Tag() {  TagId = "Java"}},
+                    new ExamTag() { ExamId = 1, TagId = "C#", Tag = new Tag() {  TagId = "C#"}},
                     };
             var exam = new Exam()
             {

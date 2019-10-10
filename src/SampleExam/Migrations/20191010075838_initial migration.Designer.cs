@@ -11,7 +11,7 @@ using SampleExam.Infrastructure;
 namespace SampleExam.Migrations
 {
     [DbContext(typeof(SampleExamContext))]
-    [Migration("20191010064022_initial migration")]
+    [Migration("20191010075838_initial migration")]
     partial class initialmigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -97,7 +97,7 @@ namespace SampleExam.Migrations
                 {
                     b.Property<int>("ExamId");
 
-                    b.Property<int>("TagId");
+                    b.Property<string>("TagId");
 
                     b.Property<DateTime>("CreatedAt");
 
@@ -176,19 +176,13 @@ namespace SampleExam.Migrations
 
             modelBuilder.Entity("SampleExam.Domain.Tag", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
+                    b.Property<string>("TagId")
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(50);
 
                     b.Property<DateTime>("CreatedAt");
 
-                    b.Property<string>("Text")
-                        .IsRequired()
-                        .HasMaxLength(50);
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Text")
-                        .IsUnique();
+                    b.HasKey("TagId");
 
                     b.ToTable("Tags");
                 });

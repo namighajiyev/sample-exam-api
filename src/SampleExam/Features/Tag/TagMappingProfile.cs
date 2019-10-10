@@ -6,7 +6,8 @@ namespace SampleExam.Features.Tag
     {
         public TagMappingProfile()
         {
-            CreateMap<Domain.Tag, TagDTO>(MemberList.Destination);
+            CreateMap<Domain.Tag, TagDTO>(MemberList.Destination)
+            .ForMember(dto => dto.Tag, (config) => config.MapFrom(t => t.TagId));
         }
     }
 }
