@@ -7,8 +7,6 @@ namespace SampleExam.Features.Tag
         public TagMappingProfile()
         {
             CreateMap<Domain.Tag, TagDTO>(MemberList.Destination);
-            //CreateMap<Create.UserData, Domain.User>(MemberList.None);
-
         }
     }
 }

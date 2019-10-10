@@ -17,7 +17,7 @@ namespace SampleExam.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
-                .HasAnnotation("ProductVersion", "2.2.4-servicing-10062")
+                .HasAnnotation("ProductVersion", "2.2.6-servicing-10079")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             modelBuilder.Entity("SampleExam.Domain.AnswerOption", b =>
@@ -44,7 +44,7 @@ namespace SampleExam.Migrations
                     b.HasIndex("QuestionId", "Key")
                         .IsUnique();
 
-                    b.ToTable("AnswerOption");
+                    b.ToTable("AnswerOptions");
                 });
 
             modelBuilder.Entity("SampleExam.Domain.Exam", b =>
@@ -103,7 +103,7 @@ namespace SampleExam.Migrations
 
                     b.HasIndex("TagId");
 
-                    b.ToTable("ExamTag");
+                    b.ToTable("ExamTags");
                 });
 
             modelBuilder.Entity("SampleExam.Domain.Gender", b =>
@@ -149,7 +149,7 @@ namespace SampleExam.Migrations
 
                     b.HasIndex("ExamId");
 
-                    b.ToTable("Question");
+                    b.ToTable("Questions");
                 });
 
             modelBuilder.Entity("SampleExam.Domain.RefreshToken", b =>
@@ -169,7 +169,7 @@ namespace SampleExam.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("RefreshToken");
+                    b.ToTable("RefreshTokens");
                 });
 
             modelBuilder.Entity("SampleExam.Domain.Tag", b =>
@@ -188,7 +188,7 @@ namespace SampleExam.Migrations
                     b.HasIndex("Text")
                         .IsUnique();
 
-                    b.ToTable("Tag");
+                    b.ToTable("Tags");
                 });
 
             modelBuilder.Entity("SampleExam.Domain.User", b =>
@@ -266,7 +266,7 @@ namespace SampleExam.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserExam");
+                    b.ToTable("UserExams");
                 });
 
             modelBuilder.Entity("SampleExam.Domain.UserExamQuestionAnswer", b =>
@@ -289,7 +289,7 @@ namespace SampleExam.Migrations
                     b.HasIndex("UserExamId", "AnswerOptionId")
                         .IsUnique();
 
-                    b.ToTable("UserExamQuestionAnswer");
+                    b.ToTable("UserExamQuestionAnswers");
                 });
 
             modelBuilder.Entity("SampleExam.Domain.UserExamResult", b =>
@@ -319,7 +319,7 @@ namespace SampleExam.Migrations
 
                     b.HasIndex("UserExamId");
 
-                    b.ToTable("UserExamResult");
+                    b.ToTable("UserExamResults");
                 });
 
             modelBuilder.Entity("SampleExam.Domain.Value", b =>

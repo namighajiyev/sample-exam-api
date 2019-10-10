@@ -21,7 +21,7 @@ namespace SampleExam.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Tag",
+                name: "Tags",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -31,7 +31,7 @@ namespace SampleExam.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Tag", x => x.Id);
+                    table.PrimaryKey("PK_Tags", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -109,7 +109,7 @@ namespace SampleExam.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "RefreshToken",
+                name: "RefreshTokens",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -120,9 +120,9 @@ namespace SampleExam.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_RefreshToken", x => x.Id);
+                    table.PrimaryKey("PK_RefreshTokens", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_RefreshToken_Users_UserId",
+                        name: "FK_RefreshTokens_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
@@ -130,7 +130,7 @@ namespace SampleExam.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ExamTag",
+                name: "ExamTags",
                 columns: table => new
                 {
                     ExamId = table.Column<int>(nullable: false),
@@ -139,23 +139,23 @@ namespace SampleExam.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ExamTag", x => new { x.ExamId, x.TagId });
+                    table.PrimaryKey("PK_ExamTags", x => new { x.ExamId, x.TagId });
                     table.ForeignKey(
-                        name: "FK_ExamTag_Exams_ExamId",
+                        name: "FK_ExamTags_Exams_ExamId",
                         column: x => x.ExamId,
                         principalTable: "Exams",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_ExamTag_Tag_TagId",
+                        name: "FK_ExamTags_Tags_TagId",
                         column: x => x.TagId,
-                        principalTable: "Tag",
+                        principalTable: "Tags",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Question",
+                name: "Questions",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -167,9 +167,9 @@ namespace SampleExam.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Question", x => x.Id);
+                    table.PrimaryKey("PK_Questions", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Question_Exams_ExamId",
+                        name: "FK_Questions_Exams_ExamId",
                         column: x => x.ExamId,
                         principalTable: "Exams",
                         principalColumn: "Id",
@@ -177,7 +177,7 @@ namespace SampleExam.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserExam",
+                name: "UserExams",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -191,15 +191,15 @@ namespace SampleExam.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserExam", x => x.Id);
+                    table.PrimaryKey("PK_UserExams", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_UserExam_Exams_ExamId",
+                        name: "FK_UserExams_Exams_ExamId",
                         column: x => x.ExamId,
                         principalTable: "Exams",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_UserExam_Users_UserId",
+                        name: "FK_UserExams_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
@@ -207,7 +207,7 @@ namespace SampleExam.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "AnswerOption",
+                name: "AnswerOptions",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -221,17 +221,17 @@ namespace SampleExam.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AnswerOption", x => x.Id);
+                    table.PrimaryKey("PK_AnswerOptions", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_AnswerOption_Question_QuestionId",
+                        name: "FK_AnswerOptions_Questions_QuestionId",
                         column: x => x.QuestionId,
-                        principalTable: "Question",
+                        principalTable: "Questions",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserExamResult",
+                name: "UserExamResults",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -247,17 +247,17 @@ namespace SampleExam.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserExamResult", x => x.Id);
+                    table.PrimaryKey("PK_UserExamResults", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_UserExamResult_UserExam_UserExamId",
+                        name: "FK_UserExamResults_UserExams_UserExamId",
                         column: x => x.UserExamId,
-                        principalTable: "UserExam",
+                        principalTable: "UserExams",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserExamQuestionAnswer",
+                name: "UserExamQuestionAnswers",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -269,11 +269,11 @@ namespace SampleExam.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserExamQuestionAnswer", x => x.Id);
+                    table.PrimaryKey("PK_UserExamQuestionAnswers", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_UserExamQuestionAnswer_AnswerOption_AnswerOptionId",
+                        name: "FK_UserExamQuestionAnswers_AnswerOptions_AnswerOptionId",
                         column: x => x.AnswerOptionId,
-                        principalTable: "AnswerOption",
+                        principalTable: "AnswerOptions",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -293,8 +293,8 @@ namespace SampleExam.Migrations
                 values: new object[] { 1, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Sample value 1", new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
 
             migrationBuilder.CreateIndex(
-                name: "IX_AnswerOption_QuestionId_Key",
-                table: "AnswerOption",
+                name: "IX_AnswerOptions_QuestionId_Key",
+                table: "AnswerOptions",
                 columns: new[] { "QuestionId", "Key" },
                 unique: true);
 
@@ -304,51 +304,51 @@ namespace SampleExam.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ExamTag_TagId",
-                table: "ExamTag",
+                name: "IX_ExamTags_TagId",
+                table: "ExamTags",
                 column: "TagId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Question_ExamId",
-                table: "Question",
+                name: "IX_Questions_ExamId",
+                table: "Questions",
                 column: "ExamId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_RefreshToken_UserId",
-                table: "RefreshToken",
+                name: "IX_RefreshTokens_UserId",
+                table: "RefreshTokens",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Tag_Text",
-                table: "Tag",
+                name: "IX_Tags_Text",
+                table: "Tags",
                 column: "Text",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserExam_ExamId",
-                table: "UserExam",
-                column: "ExamId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserExam_UserId",
-                table: "UserExam",
-                column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserExamQuestionAnswer_AnswerOptionId",
-                table: "UserExamQuestionAnswer",
+                name: "IX_UserExamQuestionAnswers_AnswerOptionId",
+                table: "UserExamQuestionAnswers",
                 column: "AnswerOptionId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserExamQuestionAnswer_UserExamId_AnswerOptionId",
-                table: "UserExamQuestionAnswer",
+                name: "IX_UserExamQuestionAnswers_UserExamId_AnswerOptionId",
+                table: "UserExamQuestionAnswers",
                 columns: new[] { "UserExamId", "AnswerOptionId" },
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserExamResult_UserExamId",
-                table: "UserExamResult",
+                name: "IX_UserExamResults_UserExamId",
+                table: "UserExamResults",
                 column: "UserExamId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserExams_ExamId",
+                table: "UserExams",
+                column: "ExamId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserExams_UserId",
+                table: "UserExams",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Users_Email",
@@ -366,31 +366,31 @@ namespace SampleExam.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "ExamTag");
+                name: "ExamTags");
 
             migrationBuilder.DropTable(
-                name: "RefreshToken");
+                name: "RefreshTokens");
 
             migrationBuilder.DropTable(
-                name: "UserExamQuestionAnswer");
+                name: "UserExamQuestionAnswers");
 
             migrationBuilder.DropTable(
-                name: "UserExamResult");
+                name: "UserExamResults");
 
             migrationBuilder.DropTable(
                 name: "Values");
 
             migrationBuilder.DropTable(
-                name: "Tag");
+                name: "Tags");
 
             migrationBuilder.DropTable(
-                name: "AnswerOption");
+                name: "AnswerOptions");
 
             migrationBuilder.DropTable(
-                name: "UserExam");
+                name: "UserExams");
 
             migrationBuilder.DropTable(
-                name: "Question");
+                name: "Questions");
 
             migrationBuilder.DropTable(
                 name: "Exams");
