@@ -1,5 +1,9 @@
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using SampleExam.Infrastructure;
 
 namespace SampleExam.Features.Exam
 {
@@ -28,7 +32,8 @@ namespace SampleExam.Features.Exam
 
         public static IQueryable<Domain.Exam> IncludeTags(this IQueryable<Domain.Exam> exams)
         {
-            return exams.Include(e => e.ExamTags).ThenInclude(e => e.Tag);
+            return exams.Include(e => e.ExamTags);//.ThenInclude(e => e.Tag);
         }
+
     }
 }

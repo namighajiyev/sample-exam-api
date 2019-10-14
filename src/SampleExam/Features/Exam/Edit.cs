@@ -1,12 +1,15 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using SampleExam.Common;
 using SampleExam.Infrastructure;
+using SampleExam.Common;
+using System.Linq;
+
 namespace SampleExam.Features.Exam
 {
     public class Edit
@@ -24,6 +27,7 @@ namespace SampleExam.Features.Exam
 
             public bool? IsPrivate { get; set; }
 
+            public IEnumerable<string> Tags { get; set; }
         }
 
 
@@ -70,9 +74,12 @@ namespace SampleExam.Features.Exam
 
             public async Task<ExamDTOEnvelope> Handle(Request request, CancellationToken cancellationToken)
             {
+
                 var userId = currentUserAccessor.GetCurrentUserId();
                 var examData = request.Exam;
-                var exam = await context.Exams.NotPublishedByIdAndUserId(examData.Id, userId).FirstOrDefaultAsync(cancellationToken);
+                var exam = await context.Exams.NotPublishedByIdAndUserId(examData.Id, userId)
+                .IncludeTags()
+                .FirstOrDefaultAsync(cancellationToken);
                 if (exam == null)
                 {
                     throw new Exceptions.ExamNotFoundException();
@@ -83,7 +90,24 @@ namespace SampleExam.Features.Exam
                 exam.TimeInMinutes = examData.TimeInMinutes ?? exam.TimeInMinutes;
                 exam.PassPercentage = examData.PassPercentage ?? exam.PassPercentage;
                 exam.IsPrivate = examData.IsPrivate ?? exam.IsPrivate;
-                exam.UpdatedAt = DateTime.UtcNow;
+                var examTagsToAdd = Array.Empty<Domain.ExamTag>();
+                var examTagsToDelete = Array.Empty<Domain.ExamTag>();
+                if (request.Exam.Tags != null)
+                {
+                    var tags = await context.SaveTagsAsync(request.Exam.Tags ?? Enumerable.Empty<string>(), cancellationToken);
+                    var examTags = exam.ExamTags;
+                    examTagsToDelete = examTags.Where(et => !tags.Any(t => t.TagId == et.TagId)).ToArray();
+                    examTagsToAdd = tags.Where(t => !examTags.Any(et => et.TagId == t.TagId))
+                   .Select(t => new Domain.ExamTag() { Tag = t, TagId = t.TagId, Exam = exam, ExamId = exam.Id }).ToArray();
+                }
+
+                if (context.IsModified(exam) || examTagsToAdd.Length > 0 || examTagsToDelete.Length > 0)
+                {
+                    exam.UpdatedAt = DateTime.UtcNow;
+                }
+
+                await context.ExamTags.AddRangeAsync(examTagsToAdd, cancellationToken);
+                context.ExamTags.RemoveRange(examTagsToDelete);
 
                 await context.SaveChangesAsync(cancellationToken);
                 var examDto = mapper.Map<Domain.Exam, ExamDTO>(exam);

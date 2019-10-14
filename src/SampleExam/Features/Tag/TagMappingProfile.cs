@@ -8,6 +8,8 @@ namespace SampleExam.Features.Tag
         {
             CreateMap<Domain.Tag, TagDTO>(MemberList.Destination)
             .ForMember(dto => dto.Tag, (config) => config.MapFrom(t => t.TagId));
+            CreateMap<Domain.ExamTag, TagDTO>(MemberList.Destination)
+           .ForMember(dto => dto.Tag, (config) => config.MapFrom(t => t.TagId));
         }
     }
 }
