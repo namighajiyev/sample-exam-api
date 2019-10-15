@@ -1,10 +1,13 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using FluentValidation;
 using MediatR;
 using SampleExam.Infrastructure;
+using SampleExam.Infrastructure.Errors;
 
 namespace SampleExam.Features.Question
 {
@@ -28,6 +31,7 @@ namespace SampleExam.Features.Question
         }
         public class Request : IRequest<QuestionDTOEnvelope>
         {
+            internal int ExamId { get; set; }
             public QuestionData Question { get; set; }
         }
 
@@ -37,7 +41,8 @@ namespace SampleExam.Features.Question
             {
                 var errorCodePrefix = nameof(Create);
                 RuleFor(x => x.Text).QuestionText<QuestionData, string>(errorCodePrefix);
-                RuleFor(x => x.Answers).QuestionAnswers<QuestionData, AnswerData>((e) => e.Key, errorCodePrefix);
+                RuleFor(x => x.Answers).QuestionAnswers<QuestionData, AnswerData>
+                                    (e => e.Key, e => e.IsRight, errorCodePrefix);
             }
         }
 
@@ -77,28 +82,30 @@ namespace SampleExam.Features.Question
 
             public async Task<QuestionDTOEnvelope> Handle(Request request, CancellationToken cancellationToken)
             {
-                // var tags = await context.SaveTagsAsync(request.Exam.Tags ?? Enumerable.Empty<string>(), cancellationToken);
+                var userId = currentUserAccessor.GetCurrentUserId();
+                var exam = context.Exams.NotPublishedByIdAndUserId(request.ExamId, userId).FirstOrDefault();
+                if (exam == null)
+                {
+                    throw new Exceptions.ExamNotFoundException();
+                }
 
-                // var exam = mapper.Map<ExamData, Domain.Exam>(request.Exam);
-                // exam.UserId = this.currentUserAccessor.GetCurrentUserId();
-                // var utcNow = DateTime.UtcNow;
-                // exam.CreatedAt = utcNow;
-                // exam.UpdatedAt = utcNow;
+                var question = mapper.Map<QuestionData, Domain.Question>(request.Question);
+                question.ExamId = exam.Id;
+                question.Exam = exam;
+                var utcNow = DateTime.UtcNow;
+                question.CreatedAt = utcNow;
+                question.UpdatedAt = utcNow;
 
-                // await this.context.Exams.AddAsync(exam, cancellationToken);
-
-                // await context.ExamTags.AddRangeAsync(tags.Select(tag => new Domain.ExamTag()
-                // {
-                //     Exam = exam,
-                //     Tag = tag
-                // }), cancellationToken);
-
-                // await context.SaveChangesAsync(cancellationToken);
-                // var examDto = mapper.Map<Domain.Exam, ExamDTO>(exam);
-                // return new QuestionDTOEnvelope(examDto);
-
-                await Task.CompletedTask;
-                return new QuestionDTOEnvelope(new QuestionDTO());
+                question.AnswerOptions.ToList().ForEach(ao =>
+                {
+                    ao.Question = question;
+                    ao.CreatedAt = utcNow;
+                    ao.UpdatedAt = utcNow;
+                });
+                await this.context.Questions.AddAsync(question);
+                await context.SaveChangesAsync();
+                var questionDto = mapper.Map<Domain.Question, QuestionDTO>(question);
+                return new QuestionDTOEnvelope(questionDto);
             }
 
         }

@@ -24,6 +24,7 @@ namespace SampleExam.Features.Question
         public static IRuleBuilderOptions<T, IEnumerable<TProperty>> QuestionAnswers<T, TProperty>(
                     this IRuleBuilder<T, IEnumerable<TProperty>> ruleBuilder,
                     Func<TProperty, char> keySelector,
+                    Func<TProperty, bool> isRightSelector,
                     string errorCodePrefix)
         {
             return ruleBuilder.NotNull()
@@ -32,8 +33,10 @@ namespace SampleExam.Features.Question
                         .WithErrorCode($"{errorCodePrefix}QuestionAnswersNotEmpty")
                         .Must(answers => (answers ?? Enumerable.Empty<TProperty>()).Count() >= Constants.QUESTION_ANSWER_MIN_COUNT)
                         .WithErrorCode($"{errorCodePrefix}QuestionAnswersMinLength")
+                        .WithMessage($"Question must have at least {Constants.QUESTION_ANSWER_MIN_COUNT} answer options")
                         .Must(answers => (answers ?? Enumerable.Empty<TProperty>()).Count() <= Constants.QUESTION_ANSWER_MAX_COUNT)
                         .WithErrorCode($"{errorCodePrefix}QuestionAnswersMaxLength")
+                        .WithMessage($"Question must have at most {Constants.QUESTION_ANSWER_MAX_COUNT} answer options")
                         .Must(answers =>
                         {
                             var answerKeys = (answers ?? Enumerable.Empty<TProperty>())
@@ -42,14 +45,32 @@ namespace SampleExam.Features.Question
                             return answerKeys.Length == answerKeysDistinct.Length;
                         })
                         .WithErrorCode($"{errorCodePrefix}QuestionAnswersUniqueKeys")
-                                                .Must(answers =>
+                        .WithMessage("Answer options keys must be unique")
+                        .Must(answers =>
                         {
                             var answerKeys = (answers ?? Enumerable.Empty<TProperty>())
                             .Select<TProperty, char>(keySelector).ToArray();
                             return answerKeys.All(k => k.ToString().Length == 1);
 
                         })
-                        .WithErrorCode($"{errorCodePrefix}QuestionAnswersKeysMustBeAChar");
+                        .WithErrorCode($"{errorCodePrefix}QuestionAnswersKeysMustBeAChar")
+                        .WithMessage("Answer option key must be a single character")
+                        .Must(answers =>
+                        {
+                            var isRights = (answers ?? Enumerable.Empty<TProperty>())
+                            .Select<TProperty, bool>(isRightSelector).ToArray();
+                            return isRights.Any(k => k);
+                        })
+                        .WithErrorCode($"{errorCodePrefix}QuestionAnswersAtLeastOneKeyMustBeRight")
+                        .WithMessage("At least one answer option  must be right")
+                        .Must(answers =>
+                        {
+                            var isRights = (answers ?? Enumerable.Empty<TProperty>())
+                            .Select<TProperty, bool>(isRightSelector).ToArray();
+                            return isRights.Any(k => !k);
+                        })
+                        .WithErrorCode($"{errorCodePrefix}QuestionAnswersAtLeastOneKeyMustBeWrong")
+                        .WithMessage("At least one answer option  must be wrong");
 
         }
 
@@ -63,7 +84,8 @@ namespace SampleExam.Features.Question
                         .NotEmpty()
                         .WithErrorCode($"{errorCodePrefix}AnswerKeyNotEmpty")
                         .Must(k => k.ToString().Length == 1)
-                        .WithErrorCode($"{errorCodePrefix}AnswerKeyIsChar");
+                        .WithErrorCode($"{errorCodePrefix}AnswerKeyIsChar")
+                        .WithMessage("Answer option key must be a single character");
         }
 
 

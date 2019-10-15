@@ -36,6 +36,7 @@ namespace SampleExam.Features.Question
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<QuestionDTOEnvelope> Create(int examId, [FromBody] Create.Request command)
         {
+            command.ExamId = examId;
             var result = await _mediator.Send(command);
             HttpContext.Response.StatusCode = (int)HttpStatusCode.Created;
             return result;
