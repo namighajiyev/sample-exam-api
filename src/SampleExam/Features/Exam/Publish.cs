@@ -6,6 +6,7 @@ using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using SampleExam.Infrastructure;
+using SampleExam.Infrastructure.Errors;
 
 namespace SampleExam.Features.Exam
 {

@@ -13,7 +13,9 @@ namespace SampleExam.Infrastructure.Errors
 {
     public class ApiValidatorInterceptor : IValidatorInterceptor
     {
+        private readonly IValidationFailuresSerializer serializer;
 
+        public ApiValidatorInterceptor(IValidationFailuresSerializer serializer) => this.serializer = serializer;
         public FluentValidation.ValidationContext BeforeMvcValidation(ControllerContext controllerContext, FluentValidation.ValidationContext validationContext)
         {
             return validationContext;
@@ -27,25 +29,8 @@ namespace SampleExam.Infrastructure.Errors
         {
 
             if (result.Errors.Count == 0) { return result; }
-
-            var problemDetails = new ApiProblemDetails();
-            foreach (var failure in result.Errors)
-            {
-                var propName = failure.PropertyName;
-
-                if (!problemDetails.Errors.ContainsKey(propName))
-                {
-                    problemDetails.Errors.Add(propName, new List<Error>());
-                }
-                problemDetails.Errors[propName].Add(new Error(failure.ErrorCode, failure.ErrorMessage));
-            }
+            var errors = this.serializer.Serialize(result.Errors);
             var context = controllerContext.HttpContext;
-            problemDetails.Title = "One or more validation errors occurred.";
-            problemDetails.Status = (int)HttpStatusCode.BadRequest;
-            problemDetails.Extensions.Add("traceId", context.TraceIdentifier);
-
-            var errors = JsonConvert.SerializeObject(problemDetails);
-
             context.Items[Constants.VALIDATION_ERRORS_KEY] = errors;
             return new ValidationResult();
         }

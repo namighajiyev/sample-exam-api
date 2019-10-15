@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
 
-namespace SampleExam.Domain
+namespace SampleExam.Features.Question
 {
-    public class Question
+    public class QuestionDTO
     {
+
         public int Id { get; set; }
 
         public int ExamId { get; set; }
@@ -15,9 +16,8 @@ namespace SampleExam.Domain
 
         public DateTime UpdatedAt { get; set; }
 
-        public Exam Exam { get; set; }
+        public ICollection<Answer.AnswerOptionDTO> AnswerOptions { get; set; }
 
-        public ICollection<AnswerOption> AnswerOptions { get; set; }
 
     }
 }

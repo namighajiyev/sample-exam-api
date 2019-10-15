@@ -43,6 +43,7 @@ namespace SampleExam
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMediatR(typeof(Startup).Assembly);
+            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationPipelineBehavior<,>));
 
             services.AddSwaggerGen(options =>
             {
@@ -103,6 +104,7 @@ namespace SampleExam
             services.AddTransient<IApiJwtTokenGenerator, ApiJwtTokenGenerator>();
             services.AddTransient<IApiTokenRefreshTokenGenrator, ApiTokenRefreshTokenGenrator>();
             services.AddTransient<ICurrentUserAccessor, CurrentUserAccessor>();
+            services.AddTransient<IValidationFailuresSerializer, ValidationFailuresSerializer>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

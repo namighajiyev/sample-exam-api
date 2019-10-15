@@ -1,8 +1,11 @@
+using System.Net;
 using System.Threading.Tasks;
+using FluentValidation;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using SampleExam.Common;
 
 namespace SampleExam.Infrastructure.Errors
 {
@@ -10,7 +13,6 @@ namespace SampleExam.Infrastructure.Errors
     {
         public static Task HandleException(HttpContext context)
         {
-
             var errorFeature = context.Features.Get<IExceptionHandlerFeature>();
             var exception = errorFeature.Error;
 
@@ -21,6 +23,8 @@ namespace SampleExam.Infrastructure.Errors
                 Detail = exception.Message
             };
 
+            string responceText = string.Empty;
+
             switch (exception)
             {
                 case RestException re:
@@ -29,13 +33,19 @@ namespace SampleExam.Infrastructure.Errors
                     problemDetails.Status = (int)re.Code;
                     problemDetails.Errors.Add(re.Caption, new Error[] { new Error(re.Caption, re.Error) });
                     context.Response.StatusCode = (int)re.Code;
+                    responceText = JsonConvert.SerializeObject(problemDetails);
+                    break;
+                case ValidationException ve:
+                    var serializer = (IValidationFailuresSerializer)context.RequestServices.GetService(typeof(IValidationFailuresSerializer));
+                    responceText = serializer.Serialize(ve.Errors);
+                    context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                    break;
+                default:
+                    responceText = JsonConvert.SerializeObject(problemDetails);
                     break;
             }
 
             context.Response.ContentType = "application/problem+json";
-
-            // log the exception etc..
-            var responceText = JsonConvert.SerializeObject(problemDetails);
             return context.Response.WriteAsync(responceText);
         }
     }

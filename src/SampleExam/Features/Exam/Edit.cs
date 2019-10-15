@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using SampleExam.Infrastructure;
 using SampleExam.Common;
 using System.Linq;
+using SampleExam.Infrastructure.Errors;
 
 namespace SampleExam.Features.Exam
 {

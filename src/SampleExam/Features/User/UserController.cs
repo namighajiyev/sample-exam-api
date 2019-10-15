@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace SampleExam.Features.User
 {
-    [Route("user")]
+    [Route("users")]
     [ApiController]
     public class UserController : ControllerBase
     {
