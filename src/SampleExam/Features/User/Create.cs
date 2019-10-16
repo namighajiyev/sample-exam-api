@@ -6,8 +6,9 @@ using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using SampleExam.Common;
-using SampleExam.Infrastructure;
-
+ 
+using SampleExam.Infrastructure.Data;
+using SampleExam.Infrastructure.Validation.User;
 
 namespace SampleExam.Features.User
 {

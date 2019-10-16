@@ -8,7 +8,8 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using SampleExam.Domain;
-using SampleExam.Infrastructure;
+ 
+using SampleExam.Infrastructure.Data;
 
 namespace SampleExam.Features.Values
 {

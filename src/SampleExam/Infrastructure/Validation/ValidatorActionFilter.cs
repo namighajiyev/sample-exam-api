@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;
 using SampleExam.Common;
 
-namespace SampleExam.Infrastructure.Filters
+namespace SampleExam.Infrastructure.Validation
 {
     public class ValidatorActionFilter : IActionFilter
     {

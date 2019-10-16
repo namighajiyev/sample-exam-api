@@ -1,7 +1,7 @@
 using FluentValidation;
 using SampleExam.Common;
 
-namespace SampleExam.Features.Exam
+namespace SampleExam.Infrastructure.Validation.Exam
 {
     public static class ExamValidatorExtensions
     {

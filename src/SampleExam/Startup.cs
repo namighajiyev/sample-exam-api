@@ -13,17 +13,19 @@ using Microsoft.Extensions.Options;
 using MediatR;
 using Swashbuckle.AspNetCore.Swagger;
 using AutoMapper;
-using SampleExam.Infrastructure;
+ 
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Diagnostics;
 using SampleExam.Infrastructure.Errors;
-using SampleExam.Infrastructure.Filters;
 using SampleExam.Infrastructure.Security;
 using Microsoft.AspNetCore.Identity;
 using SampleExam.Common;
+using SampleExam.Infrastructure.Conventions;
+using SampleExam.Infrastructure.Validation;
+using SampleExam.Infrastructure.Data;
 
 //[assembly: ApiConventionType(typeof(DefaultApiConventions))]
 [assembly: ApiConventionType(typeof(AppApiConventions))]

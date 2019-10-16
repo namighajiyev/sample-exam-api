@@ -3,7 +3,7 @@ using System.Linq;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
 
-namespace SampleExam.Infrastructure
+namespace SampleExam.Infrastructure.Security
 {
     public class CurrentUser : ICurrentUser
     {

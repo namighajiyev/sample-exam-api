@@ -2,8 +2,9 @@ using System.Collections.Generic;
 using FluentValidation.Results;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
+using SampleExam.Infrastructure.Errors;
 
-namespace SampleExam.Infrastructure.Errors
+namespace SampleExam.Infrastructure.Validation
 {
     public class ValidationFailuresSerializer : IValidationFailuresSerializer
     {

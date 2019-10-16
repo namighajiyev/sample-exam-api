@@ -1,9 +1,11 @@
 using System;
 using FluentValidation;
 using SampleExam.Common;
-using SampleExam.Infrastructure;
+ 
+using SampleExam.Infrastructure.Data;
+using SampleExam.Infrastructure.Validation;
 
-namespace SampleExam.Features.User
+namespace SampleExam.Infrastructure.Validation.User
 {
     public static class UserValidatorExtensions
     {

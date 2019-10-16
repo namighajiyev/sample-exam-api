@@ -3,8 +3,9 @@ using System.Linq;
 using FluentValidation;
 using FluentValidation.Resources;
 using FluentValidation.Validators;
+using SampleExam.Infrastructure.Data;
 
-namespace SampleExam.Infrastructure
+namespace SampleExam.Infrastructure.Validation
 {
     public static class Validators
     {

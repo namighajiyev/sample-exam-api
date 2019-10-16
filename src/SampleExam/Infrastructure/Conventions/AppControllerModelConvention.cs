@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.Routing;
 
-namespace SampleExam.Infrastructure
+namespace SampleExam.Infrastructure.Conventions
 {
     public class AppControllerModelConvention : IControllerModelConvention
     {

@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using SampleExam.Common;
 
-namespace SampleExam.Infrastructure.Errors
+namespace SampleExam.Infrastructure.Validation
 {
     public class ApiValidatorInterceptor : IValidatorInterceptor
     {

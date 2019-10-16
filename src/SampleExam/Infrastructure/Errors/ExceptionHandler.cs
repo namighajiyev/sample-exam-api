@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using SampleExam.Common;
+using SampleExam.Infrastructure.Validation;
 
 namespace SampleExam.Infrastructure.Errors
 {

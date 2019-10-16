@@ -6,7 +6,8 @@ using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using SampleExam.Common;
-using SampleExam.Infrastructure;
+ 
+using SampleExam.Infrastructure.Data;
 
 namespace SampleExam.Features.Tag
 {

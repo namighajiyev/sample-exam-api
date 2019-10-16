@@ -5,12 +5,13 @@ using AutoMapper;
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
-using SampleExam.Infrastructure;
+ 
 using System.Net;
 using SampleExam.Infrastructure.Errors;
 using SampleExam.Infrastructure.Security;
 using System;
 using Microsoft.EntityFrameworkCore;
+using SampleExam.Infrastructure.Data;
 
 namespace SampleExam.Features.Auth
 {

@@ -1,4 +1,4 @@
-namespace SampleExam.Infrastructure
+namespace SampleExam.Infrastructure.Security
 {
     public interface ICurrentUser
     {

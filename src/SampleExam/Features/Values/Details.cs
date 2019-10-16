@@ -5,7 +5,8 @@ using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using SampleExam.Domain;
-using SampleExam.Infrastructure;
+ 
+using SampleExam.Infrastructure.Data;
 
 namespace SampleExam.Features.Values
 {

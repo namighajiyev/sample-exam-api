@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using SampleExam.Domain;
 using SampleExam.Common;
 
-namespace SampleExam.Infrastructure
+namespace SampleExam.Infrastructure.Data
 {
     public class SampleExamContext : DbContext
     {

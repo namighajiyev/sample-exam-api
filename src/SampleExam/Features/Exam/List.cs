@@ -5,10 +5,9 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using AutoMapper;
 using MediatR;
-using SampleExam.Infrastructure;
+ 
 using SampleExam.Common;
-
-
+using SampleExam.Infrastructure.Data;
 
 namespace SampleExam.Features.Exam
 {

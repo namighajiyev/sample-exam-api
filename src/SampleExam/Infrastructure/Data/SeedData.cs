@@ -1,6 +1,6 @@
 using SampleExam.Domain;
 
-namespace SampleExam.Infrastructure
+namespace SampleExam.Infrastructure.Data
 {
     public class SeedData
     {

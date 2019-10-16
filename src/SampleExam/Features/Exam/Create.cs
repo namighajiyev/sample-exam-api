@@ -7,7 +7,10 @@ using AutoMapper;
 using FluentValidation;
 using MediatR;
 using SampleExam.Common;
-using SampleExam.Infrastructure;
+ 
+using SampleExam.Infrastructure.Data;
+using SampleExam.Infrastructure.Security;
+using SampleExam.Infrastructure.Validation.Exam;
 
 namespace SampleExam.Features.Exam
 {

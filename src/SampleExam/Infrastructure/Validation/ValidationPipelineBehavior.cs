@@ -7,7 +7,7 @@ using MediatR;
 using Microsoft.AspNetCore.Http;
 using SampleExam.Common;
 
-namespace SampleExam.Infrastructure
+namespace SampleExam.Infrastructure.Validation
 {
     public class ValidationPipelineBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
     {

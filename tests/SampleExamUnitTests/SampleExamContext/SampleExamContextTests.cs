@@ -4,14 +4,14 @@ using NUnit.Framework;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using SampleExam.Common;
-using SampleExam.Infrastructure;
+ 
 
 
 namespace SampleExamUnitTests.SampleExamContext
 {
     public class SampleExamContextTests
     {
-        private SampleExam.Infrastructure.SampleExamContext context;
+        private SampleExam.Infrastructure.Data.SampleExamContext context;
 
         [SetUp]
         public void Setup()
@@ -19,9 +19,9 @@ namespace SampleExamUnitTests.SampleExamContext
             var config = new ConfigurationBuilder().AddEnvironmentVariables().Build();
             var services = new Microsoft.Extensions.DependencyInjection.ServiceCollection();
             var connectionString = config.GetValue<string>(Constants.CONN_STRING_KEY);
-            services.AddDbContext<SampleExam.Infrastructure.SampleExamContext>(opt => opt.UseNpgsql(connectionString));
+            services.AddDbContext<SampleExam.Infrastructure.Data.SampleExamContext>(opt => opt.UseNpgsql(connectionString));
             var sp = services.BuildServiceProvider();
-            this.context = sp.GetRequiredService<SampleExam.Infrastructure.SampleExamContext>();
+            this.context = sp.GetRequiredService<SampleExam.Infrastructure.Data.SampleExamContext>();
         }
 
         [TearDown]

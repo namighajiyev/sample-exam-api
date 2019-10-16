@@ -10,6 +10,9 @@ namespace SampleExam.Features.Question
             CreateMap<Create.QuestionData, Domain.Question>(MemberList.Destination)
             .ForMember(e => e.AnswerOptions, options => options.MapFrom(e => e.Answers));
             CreateMap<Create.AnswerData, Domain.AnswerOption>(MemberList.Destination);
+            CreateMap<Edit.QuestionData, Domain.Question>(MemberList.Destination)
+            .ForMember(e => e.AnswerOptions, options => options.MapFrom(e => e.Answers));
+            CreateMap<Edit.AnswerData, Domain.AnswerOption>(MemberList.Destination);
         }
 
     }

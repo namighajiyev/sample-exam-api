@@ -42,5 +42,12 @@ namespace SampleExam.Features.Question
             return result;
         }
 
+        [HttpPut("{examId}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<QuestionDTOEnvelope> Edit(int examId, [FromBody]Edit.Request request)
+        {
+            request.ExamId = examId;
+            return await _mediator.Send(request);
+        }
     }
 }

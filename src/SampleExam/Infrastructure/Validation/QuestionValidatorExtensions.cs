@@ -4,7 +4,7 @@ using System.Linq;
 using FluentValidation;
 using SampleExam.Common;
 
-namespace SampleExam.Features.Question
+namespace SampleExam.Infrastructure.Validation.Question
 {
     public static class QuestionValidatorExtensions
     {

@@ -6,10 +6,13 @@ using AutoMapper;
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using SampleExam.Infrastructure;
+ 
 using SampleExam.Common;
 using System.Linq;
 using SampleExam.Infrastructure.Errors;
+using SampleExam.Infrastructure.Data;
+using SampleExam.Infrastructure.Security;
+using SampleExam.Infrastructure.Validation.Exam;
 
 namespace SampleExam.Features.Exam
 {

@@ -4,7 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 
-namespace SampleExam.Infrastructure
+namespace SampleExam.Infrastructure.Data
 {
     public static class SampleExamContextExtentions
     {
@@ -62,6 +62,12 @@ namespace SampleExam.Infrastructure
         public static IQueryable<Domain.Exam> IncludeTags(this IQueryable<Domain.Exam> exams)
         {
             return exams.Include(e => e.ExamTags);//.ThenInclude(e => e.Tag);
+        }
+
+        public static IQueryable<Domain.Question> ByIdAndExamId(
+            this IQueryable<Domain.Question> questions, int questionId, int examId)
+        {
+            return questions.Where(e => e.Id == questionId && e.ExamId == examId);
         }
 
     }

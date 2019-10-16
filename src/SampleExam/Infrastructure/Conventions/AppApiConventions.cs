@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using SampleExam.Infrastructure.Errors;
 
-namespace SampleExam.Infrastructure
+namespace SampleExam.Infrastructure.Conventions
 {
     public static class AppApiConventions
     {

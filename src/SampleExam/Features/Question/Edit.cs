@@ -6,19 +6,20 @@ using System.Threading.Tasks;
 using AutoMapper;
 using FluentValidation;
 using MediatR;
- 
+using Microsoft.EntityFrameworkCore;
 using SampleExam.Infrastructure.Data;
 using SampleExam.Infrastructure.Errors;
 using SampleExam.Infrastructure.Security;
+using SampleExam.Infrastructure.Validation.Common;
 using SampleExam.Infrastructure.Validation.Question;
 
 namespace SampleExam.Features.Question
 {
-    public class Create
+    public class Edit
     {
-
         public class AnswerData
         {
+            public int? Id { get; set; }
             public char Key { get; set; }
 
             public string Text { get; set; }
@@ -28,10 +29,12 @@ namespace SampleExam.Features.Question
 
         public class QuestionData
         {
+            public int Id { get; set; }
             public string Text { get; set; }
 
             public IEnumerable<AnswerData> Answers { get; set; }
         }
+
         public class Request : IRequest<QuestionDTOEnvelope>
         {
             internal int ExamId { get; set; }
@@ -42,8 +45,9 @@ namespace SampleExam.Features.Question
         {
             public QuestionDataValidator()
             {
-                var errorCodePrefix = nameof(Create);
-                RuleFor(x => x.Text).QuestionText<QuestionData, string>(errorCodePrefix);
+                var errorCodePrefix = nameof(Edit);
+                RuleFor(x => x.Id).Id<QuestionData, string>(errorCodePrefix + "Question");
+                RuleFor(x => x.Text).QuestionText<QuestionData, string>(errorCodePrefix).When(x => x.Text != null);
                 RuleFor(x => x.Answers).QuestionAnswers<QuestionData, AnswerData>
                                     (e => e.Key, e => e.IsRight, errorCodePrefix);
             }
@@ -55,7 +59,7 @@ namespace SampleExam.Features.Question
             {
                 var errorCodePrefix = nameof(Create);
                 RuleFor(x => x.Key).AnswerKey<AnswerData, char>(errorCodePrefix);
-                RuleFor(x => x.Text).AnswerText<AnswerData, string>(errorCodePrefix);
+                RuleFor(x => x.Text).AnswerText<AnswerData, string>(errorCodePrefix).When(x => x.Text != null);
                 RuleFor(x => x.IsRight).AnswerIsRight<AnswerData, bool>(errorCodePrefix);
             }
         }
@@ -69,6 +73,7 @@ namespace SampleExam.Features.Question
                 RuleForEach(x => x.Question.Answers).SetValidator(new AnswerDataValidator());
             }
         }
+
 
         public class Handler : IRequestHandler<Request, QuestionDTOEnvelope>
         {
@@ -92,20 +97,56 @@ namespace SampleExam.Features.Question
                     throw new Exceptions.ExamNotFoundException();
                 }
 
-                var question = mapper.Map<QuestionData, Domain.Question>(request.Question);
-                question.ExamId = exam.Id;
-                question.Exam = exam;
-                var utcNow = DateTime.UtcNow;
-                question.CreatedAt = utcNow;
-                question.UpdatedAt = utcNow;
-
-                question.AnswerOptions.ToList().ForEach(ao =>
+                var question = context.Questions.ByIdAndExamId(request.Question.Id, exam.Id)
+                .Include(q => q.AnswerOptions).FirstOrDefault();
+                if (question == null)
                 {
-                    ao.Question = question;
-                    ao.CreatedAt = utcNow;
-                    ao.UpdatedAt = utcNow;
-                });
-                await this.context.Questions.AddAsync(question);
+                    throw new Exceptions.QuestionNotFoundException();
+                }
+
+                var answerOptions = question.AnswerOptions;
+                var answers = request.Question.Answers;
+                var answerOptionsToAdd = answers
+                .Where(e => !e.Id.HasValue).Select(e => mapper.Map<AnswerData, Domain.AnswerOption>(e)).ToArray();
+                var answerOptionsToDelete = answerOptions.Where(ao => !answers.Any(a => a.Id == ao.Id)).ToArray();
+                var answerOptionsToUpdate = //answerOptions.Where(ao => answers.Any(a => a.Id == ao.Id)).ToArray();
+                (from answerOption in answerOptions
+                 join answer in answers on answerOption.Id equals answer.Id
+                 where answer.Id != null
+                 select new { answerOption = answerOption, answer = answer }).ToArray();
+
+
+                var utcNow = DateTime.UtcNow;
+
+                question.Text = request.Question.Text ?? question.Text;
+
+                if (context.IsModified(question) || answerOptionsToAdd.Length > 0
+                || answerOptionsToDelete.Length > 0 || answerOptionsToUpdate.Length > 0)
+                {
+                    question.UpdatedAt = utcNow;
+                }
+
+                foreach (var answerOption in answerOptionsToAdd)
+                {
+                    answerOption.QuestionId = question.Id;
+                    answerOption.CreatedAt = utcNow;
+                    answerOption.UpdatedAt = utcNow;
+                }
+                foreach (var answerOptionItem in answerOptionsToUpdate)
+                {
+                    var answer = answerOptionItem.answer;
+                    var answerOption = answerOptionItem.answerOption;
+                    answerOption.Text = answer.Text ?? answerOption.Text;
+                    answerOption.Key = answer.Key;
+                    answerOption.IsRight = answer.IsRight;
+                    if (context.IsModified(answerOption))
+                    {
+                        answerOption.UpdatedAt = utcNow;
+                    }
+                }
+
+                await context.AnswerOptions.AddRangeAsync(answerOptionsToAdd, cancellationToken);
+                context.AnswerOptions.RemoveRange(answerOptionsToDelete);
                 await context.SaveChangesAsync();
                 var questionDto = mapper.Map<Domain.Question, QuestionDTO>(question);
                 return new QuestionDTOEnvelope(questionDto);
