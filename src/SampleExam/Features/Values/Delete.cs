@@ -3,12 +3,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
- 
+
 using SampleExam.Infrastructure.Errors;
 using System.Linq;
 using AutoMapper;
 using SampleExam.Domain;
 using SampleExam.Infrastructure.Data;
+using SampleExam.Common;
 
 namespace SampleExam.Features.Values
 {
@@ -39,7 +40,7 @@ namespace SampleExam.Features.Values
                 var value = await context.Values.Where(e => e.Id == request.Id).FirstOrDefaultAsync(cancellationToken);
                 if (value == null)
                 {
-                    throw new Exceptions.ValueNotFoundException();
+                    throw new RestException(HttpStatusCode.NotFound, nameof(Domain.Value), Constants.NOT_FOUND);
                 }
 
                 context.Values.Remove(value);

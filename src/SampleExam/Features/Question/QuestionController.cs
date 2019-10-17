@@ -20,17 +20,54 @@ namespace SampleExam.Features.Question
         }
 
         [HttpGet]
-        public async Task<QuestionsDTOEnvelope> GetPublishedExams(
+        public async Task<QuestionsDTOEnvelope> GetPublishedNotPrivateExamQuestions(
                   [FromQuery] int examId,
                   [FromQuery] int? limit,
                   [FromQuery] int? offset,
                   [FromQuery] bool? includeAnswerOptions
                   )
         {
-            var query = new List.Query(examId, limit, offset, includeAnswerOptions);
+            var query = new List.Query(false, examId, limit, offset, includeAnswerOptions);
             return await _mediator.Send(query);
         }
 
+        [HttpGet("/user_exam_questions")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<QuestionsDTOEnvelope> GetUserExamQuestions(
+                  [FromQuery] int examId,
+                  [FromQuery] int? limit,
+                  [FromQuery] int? offset,
+                  [FromQuery] bool? includeAnswerOptions
+                  )
+        {
+            var query = new List.Query(true, examId, limit, offset, includeAnswerOptions);
+            return await _mediator.Send(query);
+        }
+
+
+        [HttpGet("{id}")]
+        public async Task<QuestionDTOEnvelope> GetPublishedNotPrivateExamQuestion(
+                  int id,
+                  [FromQuery] int examId,
+                  [FromQuery] int? limit,
+                  [FromQuery] int? offset,
+                  [FromQuery] bool? includeAnswerOptions
+            )
+        {
+            return await _mediator.Send(new Details.Query(false, id, limit, offset, includeAnswerOptions));
+        }
+
+        [HttpGet("/user_exam_questions/{id}")]
+        public async Task<QuestionDTOEnvelope> GetUserExamQuestion(
+                  int id,
+                  [FromQuery] int examId,
+                  [FromQuery] int? limit,
+                  [FromQuery] int? offset,
+                  [FromQuery] bool? includeAnswerOptions
+            )
+        {
+            return await _mediator.Send(new Details.Query(true, id, limit, offset, includeAnswerOptions));
+        }
 
         [HttpPost("{examId}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
@@ -44,9 +81,18 @@ namespace SampleExam.Features.Question
 
         [HttpPut]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public async Task<QuestionDTOEnvelope> Edit(int examId, [FromBody]Edit.Request request)
+        public async Task<QuestionDTOEnvelope> Edit([FromBody]Edit.Request request)
         {
             return await _mediator.Send(request);
         }
+
+
+        [HttpDelete("{id}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<QuestionDTOEnvelope> Delete(int id)
+        {
+            return await _mediator.Send(new Delete.Request(id));
+        }
+
     }
 }

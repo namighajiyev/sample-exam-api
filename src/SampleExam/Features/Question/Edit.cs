@@ -45,7 +45,7 @@ namespace SampleExam.Features.Question
             public QuestionDataValidator()
             {
                 var errorCodePrefix = nameof(Edit);
-                RuleFor(x => x.Id).Id<QuestionData, string>(errorCodePrefix + "Question");
+                RuleFor(x => x.Id).Id<QuestionData, int>(errorCodePrefix + "Question");
                 RuleFor(x => x.Text).QuestionText<QuestionData, string>(errorCodePrefix).When(x => x.Text != null);
                 RuleFor(x => x.Answers).QuestionAnswers<QuestionData, AnswerData>
                                     (e => e.Key, e => e.IsRight, errorCodePrefix);

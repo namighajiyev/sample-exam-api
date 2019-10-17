@@ -1,42 +1,39 @@
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.EntityFrameworkCore;
 using AutoMapper;
-using MediatR;
-
-using SampleExam.Common;
-using SampleExam.Infrastructure.Errors;
 using FluentValidation;
+using MediatR;
+using Microsoft.EntityFrameworkCore;
+using SampleExam.Common;
 using SampleExam.Infrastructure.Data;
+using SampleExam.Infrastructure.Errors;
 using SampleExam.Infrastructure.Security;
 using SampleExam.Infrastructure.Validation.Common;
 
 namespace SampleExam.Features.Question
 {
-    public class List
+    public class Details
     {
-
-        public class Query : IRequest<QuestionsDTOEnvelope>
+        public class Query : IRequest<QuestionDTOEnvelope>
         {
             public Query(
                     bool isAutherized,
-                    int examId,
+                    int id,
                     int? limit,
                     int? offset,
                     bool? includeAnswerOptions
                  )
             {
                 this.IsAutherized = isAutherized;
-                this.ExamId = examId;
+                this.Id = id;
                 this.Limit = limit ?? Constants.FETCH_LIMIT;
                 this.Offset = offset ?? Constants.FETCH_OFFSET;
                 this.IncludeAnswerOptions = includeAnswerOptions ?? false;
             }
 
             public bool IsAutherized { get; private set; }
-            public int ExamId { get; }
+            public int Id { get; }
             public int Limit { get; }
             public int Offset { get; }
             public bool IncludeAnswerOptions { get; }
@@ -46,13 +43,13 @@ namespace SampleExam.Features.Question
         {
             public QueryValidator()
             {
-                var errorCodePrefix = nameof(List);
-                RuleFor(q => q.ExamId).Id<Query, int>(errorCodePrefix + "QuestionsExam");
+                var errorCodePrefix = nameof(Details);
+                RuleFor(q => q.Id).Id<Query, int>(errorCodePrefix + "ExamQuestion");
             }
 
         }
 
-        public class QueryHandler : IRequestHandler<Query, QuestionsDTOEnvelope>
+        public class QueryHandler : IRequestHandler<Query, QuestionDTOEnvelope>
         {
             private IMapper mapper;
             private SampleExamContext context;
@@ -65,17 +62,32 @@ namespace SampleExam.Features.Question
                 this.context = context;
                 this.currentUserAccessor = currentUserAccessor;
             }
-            public async Task<QuestionsDTOEnvelope> Handle(Query request, CancellationToken cancellationToken)
+            public async Task<QuestionDTOEnvelope> Handle(Query request, CancellationToken cancellationToken)
             {
+                var queryable = context.Questions.AsNoTracking();
+                queryable = queryable.Where(q => q.Id == request.Id);
+
+                if (request.IncludeAnswerOptions)
+                {
+                    queryable = queryable.Include(e => e.AnswerOptions);
+                }
+                var question = await queryable.FirstOrDefaultAsync();
+
+                if (question == null)
+                {
+                    throw new Exceptions.QuestionNotFoundException();
+                }
+                var examId = question.ExamId;
+
                 int examCount = 0;
                 if (request.IsAutherized)
                 {
                     var userId = currentUserAccessor.GetCurrentUserId();
-                    examCount = context.Exams.ByIdAndUserId(request.ExamId, userId).Count();
+                    examCount = context.Exams.ByIdAndUserId(examId, userId).Count();
                 }
                 else
                 {
-                    examCount = context.Exams.PublishedAndNotPrivate().Where(e => e.Id == request.ExamId).Count();
+                    examCount = context.Exams.PublishedAndNotPrivate().Where(e => e.Id == examId).Count();
                 }
 
                 if (examCount == 0)
@@ -83,27 +95,11 @@ namespace SampleExam.Features.Question
                     throw new Exceptions.ExamNotFoundException();
                 }
 
-                var queryable = context.Questions.AsNoTracking();
+                var questionDTO = mapper.Map<Domain.Question, QuestionDTO>(question);
 
-                queryable = queryable.Where(e => e.ExamId == request.ExamId);
-
-                if (request.IncludeAnswerOptions)
-                {
-                    queryable = queryable.Include(e => e.AnswerOptions);
-                }
-
-                var questions = await queryable
-                .OrderByDescending(e => e.CreatedAt)
-                .Skip(request.Offset)
-                .Take(request.Limit)
-                .ToListAsync(cancellationToken);
-
-                var questionsCount = await queryable.CountAsync();
-
-                var questionDTOs = mapper.Map<List<Domain.Question>, List<QuestionDTO>>(questions);
-
-                return new QuestionsDTOEnvelope(questionDTOs, questionsCount);
+                return new QuestionDTOEnvelope(questionDTO);
             }
+
         }
     }
 }

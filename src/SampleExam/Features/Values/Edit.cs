@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -7,9 +8,11 @@ using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using SampleExam.Common;
 using SampleExam.Domain;
- 
+
 using SampleExam.Infrastructure.Data;
+using SampleExam.Infrastructure.Errors;
 
 namespace SampleExam.Features.Values
 {
@@ -58,7 +61,7 @@ namespace SampleExam.Features.Values
                 var value = await context.Values.Where(e => e.Id == request.Value.Id).FirstOrDefaultAsync(cancellationToken);
                 if (value == null)
                 {
-                    throw new Exceptions.ValueNotFoundException();
+                    throw new RestException(HttpStatusCode.NotFound, nameof(Domain.Value), Constants.NOT_FOUND);
                 }
 
                 value.Text = request.Value.Text;

@@ -1,12 +1,15 @@
 using System.Linq;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using SampleExam.Common;
 using SampleExam.Domain;
- 
+
 using SampleExam.Infrastructure.Data;
+using SampleExam.Infrastructure.Errors;
 
 namespace SampleExam.Features.Values
 {
@@ -38,7 +41,7 @@ namespace SampleExam.Features.Values
                 var value = await context.Values.Where(e => e.Id == request.Id).FirstOrDefaultAsync(cancellationToken);
                 if (value == null)
                 {
-                    throw new Exceptions.ValueNotFoundException();
+                    throw new RestException(HttpStatusCode.NotFound, nameof(Domain.Value), Constants.NOT_FOUND);
                 }
 
                 var valueDto = mapper.Map<Value, ValueDTO>(value);
