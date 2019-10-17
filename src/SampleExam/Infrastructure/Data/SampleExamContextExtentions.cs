@@ -64,11 +64,6 @@ namespace SampleExam.Infrastructure.Data
             return exams.Include(e => e.ExamTags);//.ThenInclude(e => e.Tag);
         }
 
-        public static IQueryable<Domain.Question> ByIdAndExamId(
-            this IQueryable<Domain.Question> questions, int questionId, int examId)
-        {
-            return questions.Where(e => e.Id == questionId && e.ExamId == examId);
-        }
 
     }
 }

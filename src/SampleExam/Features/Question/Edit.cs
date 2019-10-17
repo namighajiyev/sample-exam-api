@@ -37,7 +37,6 @@ namespace SampleExam.Features.Question
 
         public class Request : IRequest<QuestionDTOEnvelope>
         {
-            internal int ExamId { get; set; }
             public QuestionData Question { get; set; }
         }
 
@@ -91,18 +90,20 @@ namespace SampleExam.Features.Question
             public async Task<QuestionDTOEnvelope> Handle(Request request, CancellationToken cancellationToken)
             {
                 var userId = currentUserAccessor.GetCurrentUserId();
-                var exam = context.Exams.NotPublishedByIdAndUserId(request.ExamId, userId).FirstOrDefault();
-                if (exam == null)
-                {
-                    throw new Exceptions.ExamNotFoundException();
-                }
 
-                var question = context.Questions.ByIdAndExamId(request.Question.Id, exam.Id)
+                var question = context.Questions.Where(q => q.Id == request.Question.Id)
                 .Include(q => q.AnswerOptions).FirstOrDefault();
                 if (question == null)
                 {
                     throw new Exceptions.QuestionNotFoundException();
                 }
+                var examId = question.ExamId;
+                var exam = context.Exams.NotPublishedByIdAndUserId(examId, userId).FirstOrDefault();
+                if (exam == null)
+                {
+                    throw new Exceptions.ExamNotFoundException();
+                }
+
 
                 var answerOptions = question.AnswerOptions;
                 var answers = request.Question.Answers;
