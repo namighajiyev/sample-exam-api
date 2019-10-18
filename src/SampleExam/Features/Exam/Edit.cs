@@ -6,13 +6,15 @@ using AutoMapper;
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
- 
+
 using SampleExam.Common;
 using System.Linq;
 using SampleExam.Infrastructure.Errors;
 using SampleExam.Infrastructure.Data;
 using SampleExam.Infrastructure.Security;
 using SampleExam.Infrastructure.Validation.Exam;
+using Newtonsoft.Json;
+using SampleExam.Infrastructure.Validation.Common;
 
 namespace SampleExam.Features.Exam
 {
@@ -20,6 +22,7 @@ namespace SampleExam.Features.Exam
     {
         public class ExamData
         {
+            [JsonIgnore]
             internal int Id { get; set; }
             public string Title { get; set; }
 
@@ -47,6 +50,7 @@ namespace SampleExam.Features.Exam
             public ExamDataValidator()
             {
                 var errorCodePrefix = nameof(Edit);
+                RuleFor(x => x.Id).Id<ExamData, int>(errorCodePrefix + "Exam");
                 RuleFor(x => x.Title).ExamTitle<ExamData, string>(errorCodePrefix).When(x => x.Title != null);
                 RuleFor(x => x.Description).ExamDescription<ExamData, string>(errorCodePrefix).When(x => x.Description != null);
                 RuleFor(x => x.TimeInMinutes.GetValueOrDefault()).ExamTimeInMinutes<ExamData, int>(errorCodePrefix).When(x => x.TimeInMinutes.HasValue);

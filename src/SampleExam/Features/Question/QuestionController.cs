@@ -79,10 +79,11 @@ namespace SampleExam.Features.Question
             return result;
         }
 
-        [HttpPut]
+        [HttpPut("{id}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public async Task<QuestionDTOEnvelope> Edit([FromBody]Edit.Request request)
+        public async Task<QuestionDTOEnvelope> Edit(int id, [FromBody]Edit.Request request)
         {
+            request.Question.Id = id;
             return await _mediator.Send(request);
         }
 

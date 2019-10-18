@@ -6,10 +6,11 @@ using System.Threading.Tasks;
 using AutoMapper;
 using FluentValidation;
 using MediatR;
- 
+using Newtonsoft.Json;
 using SampleExam.Infrastructure.Data;
 using SampleExam.Infrastructure.Errors;
 using SampleExam.Infrastructure.Security;
+using SampleExam.Infrastructure.Validation.Common;
 using SampleExam.Infrastructure.Validation.Question;
 
 namespace SampleExam.Features.Question
@@ -34,6 +35,7 @@ namespace SampleExam.Features.Question
         }
         public class Request : IRequest<QuestionDTOEnvelope>
         {
+            [JsonIgnore]
             internal int ExamId { get; set; }
             public QuestionData Question { get; set; }
         }
@@ -64,6 +66,8 @@ namespace SampleExam.Features.Question
         {
             public RequestValidator()
             {
+                var errorCodePrefix = nameof(Create);
+                RuleFor(x => x.ExamId).Id<Request, int>(errorCodePrefix + "QuestionExam");
                 RuleFor(x => x.Question).NotNull().SetValidator(new QuestionDataValidator());
                 RuleFor(x => x.Question.Answers).NotNull();
                 RuleForEach(x => x.Question.Answers).SetValidator(new AnswerDataValidator());

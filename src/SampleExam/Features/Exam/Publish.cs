@@ -3,12 +3,14 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
+using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
- 
+
 using SampleExam.Infrastructure.Data;
 using SampleExam.Infrastructure.Errors;
 using SampleExam.Infrastructure.Security;
+using SampleExam.Infrastructure.Validation.Common;
 
 namespace SampleExam.Features.Exam
 {
@@ -23,6 +25,16 @@ namespace SampleExam.Features.Exam
 
             public int Id { get; }
         }
+
+        public class RequestValidator : AbstractValidator<Request>
+        {
+            public RequestValidator()
+            {
+                var errorCodePrefix = nameof(Publish);
+                RuleFor(x => x.Id).Id<Request, int>(errorCodePrefix + "Exam");
+            }
+        }
+
 
         public class Handler : IRequestHandler<Request, ExamDTOEnvelope>
         {

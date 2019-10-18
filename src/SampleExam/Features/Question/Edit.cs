@@ -7,6 +7,7 @@ using AutoMapper;
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using SampleExam.Infrastructure.Data;
 using SampleExam.Infrastructure.Errors;
 using SampleExam.Infrastructure.Security;
@@ -29,7 +30,8 @@ namespace SampleExam.Features.Question
 
         public class QuestionData
         {
-            public int Id { get; set; }
+            [JsonIgnore]
+            internal int Id { get; set; }
             public string Text { get; set; }
 
             public IEnumerable<AnswerData> Answers { get; set; }
