@@ -90,8 +90,6 @@ namespace SampleExam.Infrastructure.Data
                 .HasForeignKey(e => e.UserId);
             modelBuilder.Entity<UserExam>().HasOne(e => e.Exam).WithMany(e => e.UserExams)
                 .HasForeignKey(e => e.ExamId);
-            modelBuilder.Entity<UserExam>().Property(e => e.CreatedAt).IsRequired();
-            modelBuilder.Entity<UserExam>().Property(e => e.UpdatedAt).IsRequired();
             modelBuilder.Entity<UserExam>().Property(e => e.StartedtedAt).IsRequired();
 
 

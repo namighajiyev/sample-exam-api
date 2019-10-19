@@ -21,5 +21,21 @@ namespace SampleExam.Infrastructure.Errors
             {
             }
         }
+
+        public class UserExamNotFoundException : RestException
+        {
+            public UserExamNotFoundException() : base(HttpStatusCode.NotFound, nameof(Domain.UserExam),
+            Constants.NOT_FOUND)
+            {
+            }
+        }
+
+        public class UserExamAlreadyEndedException : RestException
+        {
+            public UserExamAlreadyEndedException() : base(HttpStatusCode.BadRequest, nameof(Domain.UserExam),
+            "Already ended the user exam")
+            {
+            }
+        }
     }
 }
