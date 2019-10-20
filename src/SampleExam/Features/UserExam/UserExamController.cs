@@ -18,6 +18,18 @@ namespace SampleExam.Features.UserExam
             _mediator = mediator;
         }
 
+        [HttpGet]
+        public async Task<UserExamsDTOEnvelope> GetPublishedNotPrivateExamQuestions(
+          [FromQuery] int? limit,
+          [FromQuery] int? offset,
+          [FromQuery] bool? includeExams
+          )
+        {
+            var query = new List.Query(limit, offset, includeExams);
+            return await _mediator.Send(query);
+        }
+
+
         [HttpPost("{examId}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<UserExamDTOEnvelope> Create(int examId)
