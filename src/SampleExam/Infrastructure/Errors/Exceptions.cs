@@ -30,6 +30,14 @@ namespace SampleExam.Infrastructure.Errors
             }
         }
 
+        public class AnswerOptionNotFoundException : RestException
+        {
+            public AnswerOptionNotFoundException() : base(HttpStatusCode.NotFound, nameof(Domain.AnswerOption),
+            Constants.NOT_FOUND)
+            {
+            }
+        }
+
         public class UserExamAlreadyEndedException : RestException
         {
             public UserExamAlreadyEndedException() : base(HttpStatusCode.BadRequest, nameof(Domain.UserExam),
@@ -37,5 +45,14 @@ namespace SampleExam.Infrastructure.Errors
             {
             }
         }
+
+        public class InvalidAnswerOptionExamException : RestException
+        {
+            public InvalidAnswerOptionExamException() : base(HttpStatusCode.BadRequest, nameof(Domain.UserExam),
+            "Answer option is not for this exam")
+            {
+            }
+        }
+
     }
 }

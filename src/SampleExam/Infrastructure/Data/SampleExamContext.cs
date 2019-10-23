@@ -93,6 +93,7 @@ namespace SampleExam.Infrastructure.Data
             modelBuilder.Entity<UserExamQuestionAnswer>().Property(e => e.CreatedAt).IsRequired();
             modelBuilder.Entity<UserExamQuestionAnswer>().Property(e => e.UpdatedAt).IsRequired();
             modelBuilder.Entity<UserExamQuestionAnswer>().HasKey(e => new { e.UserExamId, e.QuestionId });
+            modelBuilder.Entity<UserExamQuestionAnswer>().HasIndex(e => new { e.UserExamId, e.AnswerOptionId }).IsUnique();
 
             modelBuilder.Entity<UserExamResult>().HasKey(e => e.UserExamId);
             modelBuilder.Entity<UserExamResult>().Property(e => e.IsPassed).IsRequired().HasDefaultValue(false);
