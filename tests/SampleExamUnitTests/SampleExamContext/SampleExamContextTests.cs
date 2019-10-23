@@ -4,7 +4,7 @@ using NUnit.Framework;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using SampleExam.Common;
- 
+
 
 
 namespace SampleExamUnitTests.SampleExamContext
@@ -13,15 +13,16 @@ namespace SampleExamUnitTests.SampleExamContext
     {
         private SampleExam.Infrastructure.Data.SampleExamContext context;
 
+        public SampleExamContextHelper contextHelper { get; private set; }
+
         [SetUp]
         public void Setup()
         {
-            var config = new ConfigurationBuilder().AddEnvironmentVariables().Build();
-            var services = new Microsoft.Extensions.DependencyInjection.ServiceCollection();
-            var connectionString = config.GetValue<string>(Constants.CONN_STRING_KEY);
-            services.AddDbContext<SampleExam.Infrastructure.Data.SampleExamContext>(opt => opt.UseNpgsql(connectionString));
-            var sp = services.BuildServiceProvider();
-            this.context = sp.GetRequiredService<SampleExam.Infrastructure.Data.SampleExamContext>();
+            var serviceProvider = UnitTestHelper.GetServiceProvider();
+            this.context = serviceProvider.GetRequiredService<SampleExam.Infrastructure.Data.SampleExamContext>();
+            context.Database.EnsureDeleted();
+            context.Database.EnsureCreated();
+            this.contextHelper = new SampleExamContextHelper(context, serviceProvider);
         }
 
         [TearDown]
@@ -40,6 +41,14 @@ namespace SampleExamUnitTests.SampleExamContext
         public void ShouldSelectExamCount()
         {
             var exams = this.context.Exams.CountAsync().Result;
+        }
+
+        [Test]
+        public void dddd()
+        {
+            var user = contextHelper.AddNewUser();
+            var exam = contextHelper.AddNewExam(user.Id);
+            var userExam = contextHelper.AddUserExam(user.Id, exam.Id);
         }
     }
 }

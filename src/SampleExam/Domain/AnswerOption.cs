@@ -1,14 +1,12 @@
 using System;
+using System.Collections.Generic;
 
 namespace SampleExam.Domain
 {
     public class AnswerOption
     {
         public int Id { get; set; }
-
         public int QuestionId { get; set; }
-
-        public char Key { get; set; }
 
         public string Text { get; set; }
 
@@ -20,6 +18,8 @@ namespace SampleExam.Domain
 
 
         public Question Question { get; set; }
+
+        public ICollection<UserExamQuestionAnswer> UserExamQuestionAnswers { get; set; }
 
     }
 }

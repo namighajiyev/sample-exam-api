@@ -24,17 +24,11 @@ namespace SampleExam.Infrastructure.Data
         public DbSet<UserExam> UserExams { get; set; }
         public DbSet<UserExamQuestionAnswer> UserExamQuestionAnswers { get; set; }
         public DbSet<UserExamResult> UserExamResults { get; set; }
-        public DbSet<Value> Values { get; set; }
-
-
-
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ForNpgsqlUseIdentityColumns();
-
-            modelBuilder.Entity<Value>().HasData(new Value() { Id = 1, Text = "Sample value 1" });
 
             modelBuilder.Entity<Gender>().Property(e => e.Id)
             .ValueGeneratedNever()
@@ -72,7 +66,6 @@ namespace SampleExam.Infrastructure.Data
             modelBuilder.Entity<AnswerOption>().Property(e => e.Text).IsRequired().HasMaxLength(Constants.ANSWEROPTION_TEXT_LEN);
             modelBuilder.Entity<AnswerOption>().Property(e => e.IsRight).IsRequired();
             modelBuilder.Entity<AnswerOption>().Property(e => e.CreatedAt).IsRequired();
-            modelBuilder.Entity<AnswerOption>().HasIndex(e => new { e.QuestionId, e.Key }).IsUnique();
 
             modelBuilder.Entity<Tag>().Property(e => e.TagId).IsRequired().HasMaxLength(Constants.TAG_TEXT_LEN);
             modelBuilder.Entity<Tag>().Property(e => e.CreatedAt).IsRequired();
@@ -99,11 +92,14 @@ namespace SampleExam.Infrastructure.Data
 
             modelBuilder.Entity<UserExamQuestionAnswer>().Property(e => e.CreatedAt).IsRequired();
             modelBuilder.Entity<UserExamQuestionAnswer>().Property(e => e.UpdatedAt).IsRequired();
-            modelBuilder.Entity<UserExamQuestionAnswer>().HasIndex(e => new { e.UserExamId, e.AnswerOptionId }).IsUnique();
+            modelBuilder.Entity<UserExamQuestionAnswer>().HasKey(e => new { e.UserExamId, e.QuestionId });
 
+            modelBuilder.Entity<UserExamResult>().HasKey(e => e.UserExamId);
             modelBuilder.Entity<UserExamResult>().Property(e => e.IsPassed).IsRequired().HasDefaultValue(false);
             modelBuilder.Entity<UserExamResult>().Property(e => e.CreatedAt).IsRequired();
             modelBuilder.Entity<UserExamResult>().Property(e => e.UpdatedAt).IsRequired();
+            modelBuilder.Entity<UserExamResult>().HasOne(e => e.UserExam)
+            .WithOne(e => e.UserExamResult).HasForeignKey<UserExamResult>(e => e.UserExamId);
 
 
             //disable cascade delete

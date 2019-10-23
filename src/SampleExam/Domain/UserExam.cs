@@ -11,5 +11,7 @@ namespace SampleExam.Domain
         public DateTime? EndedAt { get; set; }
         public Exam Exam { get; set; }
         public User User { get; set; }
+
+        public UserExamResult UserExamResult { get; set; }
     }
 }

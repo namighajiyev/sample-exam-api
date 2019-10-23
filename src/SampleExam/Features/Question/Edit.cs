@@ -140,7 +140,6 @@ namespace SampleExam.Features.Question
                     var answer = answerOptionItem.answer;
                     var answerOption = answerOptionItem.answerOption;
                     answerOption.Text = answer.Text ?? answerOption.Text;
-                    answerOption.Key = answer.Key;
                     answerOption.IsRight = answer.IsRight;
                     if (context.IsModified(answerOption))
                     {

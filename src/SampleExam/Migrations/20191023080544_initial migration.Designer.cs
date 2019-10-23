@@ -6,13 +6,12 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
- 
 using SampleExam.Infrastructure.Data;
 
 namespace SampleExam.Migrations
 {
     [DbContext(typeof(SampleExamContext))]
-    [Migration("20191010075838_initial migration")]
+    [Migration("20191023080544_initial migration")]
     partial class initialmigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -32,8 +31,6 @@ namespace SampleExam.Migrations
 
                     b.Property<bool>("IsRight");
 
-                    b.Property<char>("Key");
-
                     b.Property<int>("QuestionId");
 
                     b.Property<string>("Text")
@@ -44,8 +41,7 @@ namespace SampleExam.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("QuestionId", "Key")
-                        .IsUnique();
+                    b.HasIndex("QuestionId");
 
                     b.ToTable("AnswerOptions");
                 });
@@ -245,15 +241,11 @@ namespace SampleExam.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<DateTime>("CreatedAt");
-
                     b.Property<DateTime?>("EndedAt");
 
                     b.Property<int>("ExamId");
 
                     b.Property<DateTime>("StartedtedAt");
-
-                    b.Property<DateTime>("UpdatedAt");
 
                     b.Property<int>("UserId");
 
@@ -268,8 +260,9 @@ namespace SampleExam.Migrations
 
             modelBuilder.Entity("SampleExam.Domain.UserExamQuestionAnswer", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
+                    b.Property<int>("UserExamId");
+
+                    b.Property<int>("QuestionId");
 
                     b.Property<int>("AnswerOptionId");
 
@@ -277,22 +270,16 @@ namespace SampleExam.Migrations
 
                     b.Property<DateTime>("UpdatedAt");
 
-                    b.Property<int>("UserExamId");
-
-                    b.HasKey("Id");
+                    b.HasKey("UserExamId", "QuestionId");
 
                     b.HasIndex("AnswerOptionId");
-
-                    b.HasIndex("UserExamId", "AnswerOptionId")
-                        .IsUnique();
 
                     b.ToTable("UserExamQuestionAnswers");
                 });
 
             modelBuilder.Entity("SampleExam.Domain.UserExamResult", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
+                    b.Property<int>("UserExamId");
 
                     b.Property<DateTime>("CreatedAt");
 
@@ -308,46 +295,17 @@ namespace SampleExam.Migrations
 
                     b.Property<DateTime>("UpdatedAt");
 
-                    b.Property<int>("UserExamId");
-
                     b.Property<int>("WrongAnswerCount");
 
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserExamId");
+                    b.HasKey("UserExamId");
 
                     b.ToTable("UserExamResults");
-                });
-
-            modelBuilder.Entity("SampleExam.Domain.Value", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<DateTime>("CreatedAt");
-
-                    b.Property<string>("Text");
-
-                    b.Property<DateTime>("UpdatedAt");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Values");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Text = "Sample value 1",
-                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        });
                 });
 
             modelBuilder.Entity("SampleExam.Domain.AnswerOption", b =>
                 {
                     b.HasOne("SampleExam.Domain.Question", "Question")
-                        .WithMany()
+                        .WithMany("AnswerOptions")
                         .HasForeignKey("QuestionId")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
@@ -413,16 +371,21 @@ namespace SampleExam.Migrations
             modelBuilder.Entity("SampleExam.Domain.UserExamQuestionAnswer", b =>
                 {
                     b.HasOne("SampleExam.Domain.AnswerOption", "AnswerOption")
-                        .WithMany()
+                        .WithMany("UserExamQuestionAnswers")
                         .HasForeignKey("AnswerOptionId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("SampleExam.Domain.UserExam", "UserExam")
+                        .WithMany()
+                        .HasForeignKey("UserExamId")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("SampleExam.Domain.UserExamResult", b =>
                 {
                     b.HasOne("SampleExam.Domain.UserExam", "UserExam")
-                        .WithMany()
-                        .HasForeignKey("UserExamId")
+                        .WithOne("UserExamResult")
+                        .HasForeignKey("SampleExam.Domain.UserExamResult", "UserExamId")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 #pragma warning restore 612, 618

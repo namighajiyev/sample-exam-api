@@ -4,7 +4,6 @@ namespace SampleExam.Domain
 {
     public class UserExamResult
     {
-        public int Id { get; set; }
         public int UserExamId { get; set; }
         public int QuestionCount { get; set; }
         public int RightAnswerCount { get; set; }

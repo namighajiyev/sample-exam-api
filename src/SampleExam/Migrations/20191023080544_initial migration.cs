@@ -33,21 +33,6 @@ namespace SampleExam.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Values",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Text = table.Column<string>(nullable: true),
-                    CreatedAt = table.Column<DateTime>(nullable: false),
-                    UpdatedAt = table.Column<DateTime>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Values", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Users",
                 columns: table => new
                 {
@@ -183,9 +168,7 @@ namespace SampleExam.Migrations
                     ExamId = table.Column<int>(nullable: false),
                     UserId = table.Column<int>(nullable: false),
                     StartedtedAt = table.Column<DateTime>(nullable: false),
-                    EndedAt = table.Column<DateTime>(nullable: true),
-                    CreatedAt = table.Column<DateTime>(nullable: false),
-                    UpdatedAt = table.Column<DateTime>(nullable: false)
+                    EndedAt = table.Column<DateTime>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -211,7 +194,6 @@ namespace SampleExam.Migrations
                     Id = table.Column<int>(nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     QuestionId = table.Column<int>(nullable: false),
-                    Key = table.Column<char>(nullable: false),
                     Text = table.Column<string>(maxLength: 500, nullable: false),
                     IsRight = table.Column<bool>(nullable: false),
                     CreatedAt = table.Column<DateTime>(nullable: false),
@@ -232,8 +214,6 @@ namespace SampleExam.Migrations
                 name: "UserExamResults",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     UserExamId = table.Column<int>(nullable: false),
                     QuestionCount = table.Column<int>(nullable: false),
                     RightAnswerCount = table.Column<int>(nullable: false),
@@ -245,7 +225,7 @@ namespace SampleExam.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserExamResults", x => x.Id);
+                    table.PrimaryKey("PK_UserExamResults", x => x.UserExamId);
                     table.ForeignKey(
                         name: "FK_UserExamResults_UserExams_UserExamId",
                         column: x => x.UserExamId,
@@ -258,20 +238,25 @@ namespace SampleExam.Migrations
                 name: "UserExamQuestionAnswers",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     UserExamId = table.Column<int>(nullable: false),
+                    QuestionId = table.Column<int>(nullable: false),
                     AnswerOptionId = table.Column<int>(nullable: false),
                     CreatedAt = table.Column<DateTime>(nullable: false),
                     UpdatedAt = table.Column<DateTime>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserExamQuestionAnswers", x => x.Id);
+                    table.PrimaryKey("PK_UserExamQuestionAnswers", x => new { x.UserExamId, x.QuestionId });
                     table.ForeignKey(
                         name: "FK_UserExamQuestionAnswers_AnswerOptions_AnswerOptionId",
                         column: x => x.AnswerOptionId,
                         principalTable: "AnswerOptions",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_UserExamQuestionAnswers_UserExams_UserExamId",
+                        column: x => x.UserExamId,
+                        principalTable: "UserExams",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -285,16 +270,10 @@ namespace SampleExam.Migrations
                     { 2, "Female" }
                 });
 
-            migrationBuilder.InsertData(
-                table: "Values",
-                columns: new[] { "Id", "CreatedAt", "Text", "UpdatedAt" },
-                values: new object[] { 1, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Sample value 1", new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
-
             migrationBuilder.CreateIndex(
-                name: "IX_AnswerOptions_QuestionId_Key",
+                name: "IX_AnswerOptions_QuestionId",
                 table: "AnswerOptions",
-                columns: new[] { "QuestionId", "Key" },
-                unique: true);
+                column: "QuestionId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Exams_UserId",
@@ -320,17 +299,6 @@ namespace SampleExam.Migrations
                 name: "IX_UserExamQuestionAnswers_AnswerOptionId",
                 table: "UserExamQuestionAnswers",
                 column: "AnswerOptionId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserExamQuestionAnswers_UserExamId_AnswerOptionId",
-                table: "UserExamQuestionAnswers",
-                columns: new[] { "UserExamId", "AnswerOptionId" },
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserExamResults_UserExamId",
-                table: "UserExamResults",
-                column: "UserExamId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserExams_ExamId",
@@ -368,9 +336,6 @@ namespace SampleExam.Migrations
 
             migrationBuilder.DropTable(
                 name: "UserExamResults");
-
-            migrationBuilder.DropTable(
-                name: "Values");
 
             migrationBuilder.DropTable(
                 name: "Tags");
