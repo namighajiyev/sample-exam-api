@@ -11,6 +11,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{0A93F729
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleExamUnitTests", "tests\SampleExamUnitTests\SampleExamUnitTests.csproj", "{18DB7577-09DA-4AE7-9C54-D55231B0EF24}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleExamIntegrationTests", "tests\SampleExamIntegrationTests\SampleExamIntegrationTests.csproj", "{BE128139-8E49-47EC-A89A-95CC9653118D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -48,9 +50,22 @@ Global
 		{18DB7577-09DA-4AE7-9C54-D55231B0EF24}.Release|x64.Build.0 = Release|Any CPU
 		{18DB7577-09DA-4AE7-9C54-D55231B0EF24}.Release|x86.ActiveCfg = Release|Any CPU
 		{18DB7577-09DA-4AE7-9C54-D55231B0EF24}.Release|x86.Build.0 = Release|Any CPU
+		{BE128139-8E49-47EC-A89A-95CC9653118D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BE128139-8E49-47EC-A89A-95CC9653118D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BE128139-8E49-47EC-A89A-95CC9653118D}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{BE128139-8E49-47EC-A89A-95CC9653118D}.Debug|x64.Build.0 = Debug|Any CPU
+		{BE128139-8E49-47EC-A89A-95CC9653118D}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{BE128139-8E49-47EC-A89A-95CC9653118D}.Debug|x86.Build.0 = Debug|Any CPU
+		{BE128139-8E49-47EC-A89A-95CC9653118D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BE128139-8E49-47EC-A89A-95CC9653118D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BE128139-8E49-47EC-A89A-95CC9653118D}.Release|x64.ActiveCfg = Release|Any CPU
+		{BE128139-8E49-47EC-A89A-95CC9653118D}.Release|x64.Build.0 = Release|Any CPU
+		{BE128139-8E49-47EC-A89A-95CC9653118D}.Release|x86.ActiveCfg = Release|Any CPU
+		{BE128139-8E49-47EC-A89A-95CC9653118D}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{EC4892C1-4D71-406C-90FB-0E914B3FE9DF} = {7CC9C619-1AEA-40BA-8FA8-6F28F9E58095}
 		{18DB7577-09DA-4AE7-9C54-D55231B0EF24} = {0A93F729-100F-4DB3-BE65-B4348E6EB262}
+		{BE128139-8E49-47EC-A89A-95CC9653118D} = {0A93F729-100F-4DB3-BE65-B4348E6EB262}
 	EndGlobalSection
 EndGlobal

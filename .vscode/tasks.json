@@ -68,5 +68,20 @@
             "isBackground": false,
             "problemMatcher": "$msCompile",
         },
+        {
+            "label": "integration-test",
+            "command": "dotnet",
+            "type": "process",
+            "group": "build",
+            "args": [
+                "test",
+                "tests/SampleExamIntegrationTests"
+            ],
+            "dependsOn": [
+                "build"
+            ],
+            "isBackground": false,
+            "problemMatcher": "$msCompile",
+        }
     ]
 }

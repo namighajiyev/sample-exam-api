@@ -10,3 +10,10 @@
 - Attach dedugger to running app in Visual Studio Code  via `.NET Core Attach`  launch configuration.
 
 
+## Acknowledgments
+
+* Sample readme.md template https://gist.github.com/PurpleBooth/109311bb0361f32d87a2
+* Sample Integration testing https://github.com/aspnet/AspNetCore.Docs/tree/master/aspnetcore/test/integration-tests/samples/2.x/IntegrationTestsSample/tests/RazorPagesProject.Tests
+* etc
+
+
