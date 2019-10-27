@@ -1,5 +1,5 @@
 using Xunit;
-
+[assembly: CollectionBehavior(DisableTestParallelization = true)]
 namespace SampleExamIntegrationTests
 {
     public class IntegrationTestBase :

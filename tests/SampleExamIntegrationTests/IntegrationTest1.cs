@@ -1,20 +1,17 @@
 using System;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
+using SampleExam;
 using SampleExam.Infrastructure.Data;
 using Xunit;
 
 namespace SampleExamIntegrationTests
 {
-    public class IntegrationTest1 :
-    IClassFixture<CustomWebApplicationFactory<SampleExam.Startup>>
+    public class IntegrationTest1 : IntegrationTestBase
 
     {
-        private readonly CustomWebApplicationFactory<SampleExam.Startup> _factory;
-
-        public IntegrationTest1(CustomWebApplicationFactory<SampleExam.Startup> factory)
+        public IntegrationTest1(CustomWebApplicationFactory<Startup> factory) : base(factory)
         {
-            _factory = factory;
         }
 
         [Fact]

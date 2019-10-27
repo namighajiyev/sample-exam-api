@@ -82,6 +82,20 @@
             ],
             "isBackground": false,
             "problemMatcher": "$msCompile",
+        },
+        {
+            "label": "test",
+            "command": "dotnet",
+            "type": "process",
+            "group": "build",
+            "args": [
+                "test"
+            ],
+            "dependsOn": [
+                "build"
+            ],
+            "isBackground": false,
+            "problemMatcher": "$msCompile",
         }
     ]
 }
