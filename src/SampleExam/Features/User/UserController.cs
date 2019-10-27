@@ -17,8 +17,8 @@ namespace SampleExam.Features.User
             _mediator = mediator;
         }
 
-        [HttpPost("signup")]
-        public async Task<UserDTOEnvelope> Signup([FromBody] Create.Request command)
+        [HttpPost]
+        public async Task<UserDTOEnvelope> Post([FromBody] Create.Request command)
         {
             var result = await _mediator.Send(command);
             HttpContext.Response.StatusCode = (int)HttpStatusCode.Created;

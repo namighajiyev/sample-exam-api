@@ -15,7 +15,6 @@ namespace SampleExamIntegrationTests
         public IntegrationTest1(CustomWebApplicationFactory<SampleExam.Startup> factory)
         {
             _factory = factory;
-
         }
 
         [Fact]
