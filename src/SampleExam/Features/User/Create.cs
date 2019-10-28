@@ -6,7 +6,7 @@ using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using SampleExam.Common;
- 
+
 using SampleExam.Infrastructure.Data;
 using SampleExam.Infrastructure.Validation.User;
 
@@ -57,7 +57,9 @@ namespace SampleExam.Features.User
         {
             public RequestValidator()
             {
-                RuleFor(x => x.User).NotNull().SetValidator(new UserDataValidator());
+                RuleFor(x => x.User).NotNull()
+                .WithErrorCode(nameof(Create) + "UserNotNull")
+                .SetValidator(new UserDataValidator());
             }
         }
 

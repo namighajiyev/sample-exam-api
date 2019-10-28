@@ -7,7 +7,17 @@ namespace SampleExamIntegrationTests.Helpers
     {
         public static void EnsureBadRequestStatusCode(this HttpResponseMessage message)
         {
-            if (message.StatusCode != HttpStatusCode.BadRequest)
+            EnsureStatusCode(message, HttpStatusCode.BadRequest);
+        }
+
+        public static void EnsureUnauthorizedStatusCode(this HttpResponseMessage message)
+        {
+            EnsureStatusCode(message, HttpStatusCode.Unauthorized);
+        }
+
+        private static void EnsureStatusCode(HttpResponseMessage message, HttpStatusCode statusCode)
+        {
+            if (message.StatusCode != statusCode)
             {
                 throw new HttpRequestException();
             }

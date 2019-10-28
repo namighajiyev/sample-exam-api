@@ -21,23 +21,12 @@ namespace SampleExamIntegrationTests.Features.User
         }
 
         [Fact]
-        public async void ShouldCreateUser()
+        public async void ShouldCreateUserAndFailWithTheSameEmail()
         {
             var client = _factory.CreateClient();
             var dbContext = this.dbContextFixture.DbContext;
-            var uniqueEmail = $"{Guid.NewGuid().ToString().Replace("-", String.Empty)}@example.com";
-            var userData = new Create.UserData()
-            {
-                Firstname = "Namig",
-                Lastname = "Hajiyev",
-                Middlename = "Zakir",
-                GenderId = 1,
-                Dob = new DateTime(1986, 04, 07),
-                Email = uniqueEmail,
-                Password = "2aEvJPCF",
-                ConfirmPassword = "2aEvJPCF"
-            };
 
+            var userData = TestData.User.Create.NewUserData();
             var response = await client.PostAsJsonAsync<Create.Request>("/users", new Create.Request() { User = userData });
             response.EnsureSuccessStatusCode();
             var envelope = await response.Content.ReadAsAsync<UserDTOEnvelope>();
@@ -50,6 +39,13 @@ namespace SampleExamIntegrationTests.Features.User
             userData.GenderId.Should().Be(responseUser.GenderId).And.Be(user.GenderId);
             userData.Email.Should().Be(responseUser.Email).And.Be(user.Email);
             userData.Password.Should().NotBe(user.Password);
+
+            response = await client.PostAsJsonAsync<Create.Request>("/users", new Create.Request() { User = userData });
+            response.EnsureBadRequestStatusCode();
+            var problemDetails = await response.Content.ReadAsAsync<ApiProblemDetails>();
+
+            var hasUniqueEmailError = problemDetails.Errors.Any(kv => kv.Value.Any(e => e.Code == "CreateUserEmailUniqueEmail"));
+            Assert.True(hasUniqueEmailError);
         }
 
         [Fact]
@@ -73,6 +69,12 @@ namespace SampleExamIntegrationTests.Features.User
             response.EnsureBadRequestStatusCode();
             var problemDetails = await response.Content.ReadAsAsync<ApiProblemDetails>();
             problemDetails.Errors.Should().HaveCount(7);
+
+            response = await client.PostAsJsonAsync<Create.Request>("/users", new Create.Request());
+            problemDetails = await response.Content.ReadAsAsync<ApiProblemDetails>();
+
+            var hasNotNullError = problemDetails.Errors.Any(kv => kv.Value.Any(e => e.Code == "CreateUserNotNull"));
+            Assert.True(hasNotNullError);
         }
 
     }

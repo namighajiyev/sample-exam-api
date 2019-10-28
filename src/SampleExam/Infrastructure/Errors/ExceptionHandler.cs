@@ -46,7 +46,7 @@ namespace SampleExam.Infrastructure.Errors
                     break;
             }
 
-            context.Response.ContentType = "application/problem+json";
+            context.Response.ContentType = "application/json";
             return context.Response.WriteAsync(responceText);
         }
     }
