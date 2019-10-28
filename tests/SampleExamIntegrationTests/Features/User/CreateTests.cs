@@ -12,15 +12,20 @@ namespace SampleExamIntegrationTests.Features.User
 {
     public class CreateTests : IntegrationTestBase
     {
-        public CreateTests(CustomWebApplicationFactory<Startup> factory) : base(factory)
+        public CreateTests(
+            CustomWebApplicationFactory<Startup> factory,
+            DbContextFixture dbContextFixture
+        ) : base(factory, dbContextFixture)
         {
+
         }
 
         [Fact]
         public async void ShouldCreateUser()
         {
             var client = _factory.CreateClient();
-            var dbContext = _factory.GetSampleExamContext();
+            var dbContext = this.dbContextFixture.DbContext;
+            var uniqueEmail = $"{Guid.NewGuid().ToString().Replace("-", String.Empty)}@example.com";
             var userData = new Create.UserData()
             {
                 Firstname = "Namig",
@@ -28,13 +33,10 @@ namespace SampleExamIntegrationTests.Features.User
                 Middlename = "Zakir",
                 GenderId = 1,
                 Dob = new DateTime(1986, 04, 07),
-                Email = "namiq@example.com",
+                Email = uniqueEmail,
                 Password = "2aEvJPCF",
                 ConfirmPassword = "2aEvJPCF"
             };
-
-            var count = dbContext.Users.Count();
-            Assert.Equal(count, 0);
 
             var response = await client.PostAsJsonAsync<Create.Request>("/users", new Create.Request() { User = userData });
             response.EnsureSuccessStatusCode();
@@ -50,12 +52,11 @@ namespace SampleExamIntegrationTests.Features.User
             userData.Password.Should().NotBe(user.Password);
         }
 
-
         [Fact]
         public async void ShouldNotCreateUserWithInvalidUserData()
         {
             var client = _factory.CreateClient();
-            var dbContext = _factory.GetSampleExamContext();
+            var dbContext = this.dbContextFixture.DbContext;
             var userData = new Create.UserData()
             {
                 Firstname = "",
@@ -68,15 +69,10 @@ namespace SampleExamIntegrationTests.Features.User
                 ConfirmPassword = "bbbb"
             };
 
-            var count = dbContext.Users.Count();
-            Assert.Equal(count, 0);
-
             var response = await client.PostAsJsonAsync<Create.Request>("/users", new Create.Request() { User = userData });
             response.EnsureBadRequestStatusCode();
             var problemDetails = await response.Content.ReadAsAsync<ApiProblemDetails>();
             problemDetails.Errors.Should().HaveCount(7);
-            count = dbContext.Users.Count();
-            Assert.Equal(count, 0);
         }
 
     }
