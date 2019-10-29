@@ -1,4 +1,5 @@
 using System;
+using SampleExam.Infrastructure.Utils;
 
 namespace SampleExam.Infrastructure.Security
 {
@@ -6,7 +7,7 @@ namespace SampleExam.Infrastructure.Security
     {
         public string GenerateToken()
         {
-            return Guid.NewGuid().ToString("N");
+            return Guid.NewGuid().ToGuidString();
         }
     }
 }

@@ -20,7 +20,9 @@ namespace SampleExamIntegrationTests
             var connectionString = config.GetValue<string>(IntegrationTestConstants.CONN_STRING_KEY_TEST);
             services.AddDbContext<SampleExam.Infrastructure.Data.SampleExamContext>(opt => opt.UseNpgsql(connectionString));
             this.serviceProvider = services.BuildServiceProvider();
+            this.DbContext.Database.EnsureDeleted();
             DbContext.Database.EnsureCreated();
+            SampleExamContextHelper.SeedContext(DbContext);
         }
 
         public SampleExamContext DbContext

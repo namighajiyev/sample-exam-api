@@ -29,7 +29,6 @@ namespace SampleExamIntegrationTests.Features.Auth
             var loginUser = new Login.UserData() { Email = userData.Email, Password = userData.Password };
             response = await client.PostAsJsonAsync<Login.Request>("/auth/login", new Login.Request() { User = loginUser });
             response.EnsureSuccessStatusCode();
-            var ss = await response.Content.ReadAsStringAsync();
             var envelope = await response.Content.ReadAsAsync<LoginUserDTOEnvelope>();
             var user = envelope.User;
             Assert.NotNull(user);
