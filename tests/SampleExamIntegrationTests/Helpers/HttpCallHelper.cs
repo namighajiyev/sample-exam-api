@@ -40,16 +40,46 @@ namespace SampleExamIntegrationTests.Helpers
             return Tuple.Create(user.Item1, user.Item2, loginUser, loggedUser);
         }
 
-        public async Task<Tuple<LoginUserDTO, ExamCreate.ExamData, ExamDTO>> CreateExam(LoginUserDTO loggedUser = null)
+        public async Task<Tuple<LoginUserDTO, ExamCreate.ExamData, ExamDTO>> CreateExam(
+            bool includeTags = true, bool isPrivate = false, string[] extraTags = null,
+            LoginUserDTO loggedUser = null)
         {
             loggedUser = loggedUser ?? (await CreateUserAndLogin()).Item4;
-            var examData = TestData.Exam.Create.NewExamData();
+            var examData = TestData.Exam.Create.NewExamData(includeTags, isPrivate, extraTags);
             client.Authorize(loggedUser.Token);
             var response = await client.PostAsJsonAsync<ExamCreate.Request>("/exams", new ExamCreate.Request() { Exam = examData });
             response.EnsureSuccessStatusCode();
+            client.Unauthorize();
             var envelope = await response.Content.ReadAsAsync<ExamDTOEnvelope>();
             var responseExam = envelope.Exam;
             return Tuple.Create(loggedUser, examData, responseExam);
+
+        }
+
+        public async Task<Tuple<LoginUserDTO, ExamDTO>> CreatePublishedExam(
+            bool includeTags = true, bool isPrivate = false, string[] extraTags = null, LoginUserDTO loggedUser = null)
+        {
+            var tuple = await CreateExam(includeTags, isPrivate, extraTags, loggedUser);
+            var examDto = tuple.Item3;
+            var user = tuple.Item1;
+            var link = $"exams/publish/{examDto.Id}";
+            client.Authorize(user.Token);
+            var response = await client.PutAsync(link, null);
+            response.EnsureSuccessStatusCode();
+            client.Unauthorize();
+            var envelope = await response.Content.ReadAsAsync<ExamDTOEnvelope>();
+            var responseExam = envelope.Exam;
+            return Tuple.Create(user, responseExam);
+        }
+
+        public async Task<ExamDTO> PublishExam(int examId)
+        {
+            var link = $"exams/publish/{examId}";
+            var response = await client.PutAsync(link, null);
+            response.EnsureSuccessStatusCode();
+            var envelope = await response.Content.ReadAsAsync<ExamDTOEnvelope>();
+            var responseExam = envelope.Exam;
+            return responseExam;
         }
 
     }

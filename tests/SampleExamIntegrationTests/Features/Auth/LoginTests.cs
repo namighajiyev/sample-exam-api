@@ -12,8 +12,8 @@ namespace SampleExamIntegrationTests.Features.Auth
     {
         public LoginTests(
             CustomWebApplicationFactory<Startup> factory,
-            DbContextFixture dbContextFixture
-        ) : base(factory, dbContextFixture)
+            DbContextFactory dbContextFactory
+        ) : base(factory, dbContextFactory)
         {
 
         }
@@ -21,8 +21,8 @@ namespace SampleExamIntegrationTests.Features.Auth
         [Fact]
         public async void ShouldLogin()
         {
-            var client = _factory.CreateClient();
-            var dbContext = this.dbContextFixture.DbContext;
+            var client = httpClientFactory.CreateClient();
+            var dbContext = this.dbContextFactory.CreateDbContext();
             var userData = TestData.User.Create.NewUserData();
             var response = await client.PostAsJsonAsync<Create.Request>("/users", new Create.Request() { User = userData });
             response.EnsureSuccessStatusCode();
@@ -40,8 +40,8 @@ namespace SampleExamIntegrationTests.Features.Auth
         [Fact]
         public async void ShouldFailLogin()
         {
-            var client = _factory.CreateClient();
-            var dbContext = this.dbContextFixture.DbContext;
+            var client = httpClientFactory.CreateClient();
+            var dbContext = this.dbContextFactory.CreateDbContext();
             var userData = TestData.User.Create.NewUserData();
             var response = await client.PostAsJsonAsync<Create.Request>("/users", new Create.Request() { User = userData });
             response.EnsureSuccessStatusCode();

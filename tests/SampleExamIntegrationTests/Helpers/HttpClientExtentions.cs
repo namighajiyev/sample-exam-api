@@ -8,6 +8,10 @@ namespace SampleExamIntegrationTests.Helpers
         private const string AUTH_SCHEMA = "Bearer";
         public static void Authorize(this HttpClient client, string token)
         {
+            if (client.DefaultRequestHeaders.Contains(AUTH_HEADER_KEY))
+            {
+                Unauthorize(client);
+            }
             client.DefaultRequestHeaders.Add(AUTH_HEADER_KEY, $"{AUTH_SCHEMA} {token}");
         }
 

@@ -9,35 +9,37 @@ using Xunit;
 namespace SampleExamIntegrationTests
 {
 
-    public class DbContextFixture : IDisposable
+    public class TestsInitializer : IDisposable
     {
-        private readonly ServiceProvider serviceProvider;
+        private SampleExamContext dbContext;
 
-        public DbContextFixture()
+        public TestsInitializer()
+        {
+            BeforeAllTests();
+        }
+
+        private void BeforeAllTests()
         {
             var config = new ConfigurationBuilder().AddEnvironmentVariables().Build();
             var services = new Microsoft.Extensions.DependencyInjection.ServiceCollection();
             var connectionString = config.GetValue<string>(IntegrationTestConstants.CONN_STRING_KEY_TEST);
             services.AddDbContext<SampleExam.Infrastructure.Data.SampleExamContext>(opt => opt.UseNpgsql(connectionString));
-            this.serviceProvider = services.BuildServiceProvider();
-            this.DbContext.Database.EnsureDeleted();
-            DbContext.Database.EnsureCreated();
-            SampleExamContextHelper.SeedContext(DbContext);
-        }
-
-        public SampleExamContext DbContext
-        {
-            get
-            {
-                return serviceProvider.GetRequiredService<SampleExamContext>();
-            }
-
+            var serviceProvider = services.BuildServiceProvider();
+            this.dbContext = serviceProvider.GetRequiredService<SampleExamContext>();
+            dbContext.Database.EnsureDeleted();
+            dbContext.Database.EnsureCreated();
+            SampleExamContextHelper.SeedContext(dbContext);
         }
 
         public void Dispose()
         {
-            this.DbContext.Database.EnsureDeleted();
-            this.DbContext.Dispose();
+            AfterAllTests();
+        }
+
+        private void AfterAllTests()
+        {
+            this.dbContext.Database.EnsureDeleted();
+            this.dbContext.Dispose();
         }
     }
 }

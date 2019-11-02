@@ -54,7 +54,7 @@ namespace SampleExamIntegrationTests.Helpers
 
                     if (includeTags)
                     {
-                        var newTags = new List<string>() { $"{uniqueString}_tag1", $"{uniqueString}_tag2" };
+                        var newTags = new List<string>() { $"{uniqueString}_tag1", $"{uniqueString}_tag2", $"{uniqueString}_tag3" };
                         if (extraTags != null)
                         {
                             newTags.AddRange(extraTags);

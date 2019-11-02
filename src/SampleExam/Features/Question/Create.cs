@@ -36,7 +36,7 @@ namespace SampleExam.Features.Question
         public class Request : IRequest<QuestionDTOEnvelope>
         {
             [JsonIgnore]
-            internal int ExamId { get; set; }
+            public int ExamId { get; set; }
             public QuestionData Question { get; set; }
         }
 

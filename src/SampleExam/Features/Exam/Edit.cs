@@ -22,8 +22,6 @@ namespace SampleExam.Features.Exam
     {
         public class ExamData
         {
-            [JsonIgnore]
-            internal int Id { get; set; }
             public string Title { get; set; }
 
             public string Description { get; set; }
@@ -40,6 +38,11 @@ namespace SampleExam.Features.Exam
 
         public class Request : IRequest<ExamDTOEnvelope>
         {
+
+            public Request()
+            {
+            }
+            public int Id { get; set; }
             public ExamData Exam { get; set; }
         }
 
@@ -50,12 +53,11 @@ namespace SampleExam.Features.Exam
             public ExamDataValidator()
             {
                 var errorCodePrefix = nameof(Edit);
-                RuleFor(x => x.Id).Id<ExamData, int>(errorCodePrefix + "Exam");
                 RuleFor(x => x.Title).ExamTitle<ExamData, string>(errorCodePrefix).When(x => x.Title != null);
                 RuleFor(x => x.Description).ExamDescription<ExamData, string>(errorCodePrefix).When(x => x.Description != null);
-                RuleFor(x => x.TimeInMinutes.GetValueOrDefault()).ExamTimeInMinutes<ExamData, int>(errorCodePrefix).When(x => x.TimeInMinutes.HasValue);
-                RuleFor(x => x.PassPercentage.GetValueOrDefault()).ExamPassPercentage<ExamData, int>(errorCodePrefix).When(x => x.PassPercentage.HasValue);
-                RuleFor(x => x.IsPrivate.GetValueOrDefault()).ExamIsPrivate<ExamData, bool>(errorCodePrefix).When(x => x.IsPrivate.HasValue);
+                RuleFor(x => x.TimeInMinutes.GetValueOrDefault()).Configure(x => x.PropertyName = nameof(ExamData.TimeInMinutes)).ExamTimeInMinutes<ExamData, int>(errorCodePrefix).When(x => x.TimeInMinutes.HasValue);
+                RuleFor(x => x.PassPercentage.GetValueOrDefault()).Configure(x => x.PropertyName = nameof(ExamData.PassPercentage)).ExamPassPercentage<ExamData, int>(errorCodePrefix).When(x => x.PassPercentage.HasValue);
+                RuleFor(x => x.IsPrivate.GetValueOrDefault()).Configure(x => x.PropertyName = nameof(ExamData.IsPrivate)).ExamIsPrivate<ExamData, bool>(errorCodePrefix).When(x => x.IsPrivate.HasValue);
             }
         }
 
@@ -85,7 +87,7 @@ namespace SampleExam.Features.Exam
 
                 var userId = currentUserAccessor.GetCurrentUserId();
                 var examData = request.Exam;
-                var exam = await context.Exams.NotPublishedByIdAndUserId(examData.Id, userId)
+                var exam = await context.Exams.NotPublishedByIdAndUserId(request.Id, userId)
                 .IncludeTags()
                 .FirstOrDefaultAsync(cancellationToken);
                 if (exam == null)

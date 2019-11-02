@@ -31,7 +31,7 @@ namespace SampleExam.Features.Question
         public class QuestionData
         {
             [JsonIgnore]
-            internal int Id { get; set; }
+            public int Id { get; set; }
             public string Text { get; set; }
 
             public IEnumerable<AnswerData> Answers { get; set; }

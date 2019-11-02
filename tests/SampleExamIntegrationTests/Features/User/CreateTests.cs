@@ -14,8 +14,8 @@ namespace SampleExamIntegrationTests.Features.User
     {
         public CreateTests(
             CustomWebApplicationFactory<Startup> factory,
-            DbContextFixture dbContextFixture
-        ) : base(factory, dbContextFixture)
+            DbContextFactory dbContextFactory
+        ) : base(factory, dbContextFactory)
         {
 
         }
@@ -23,8 +23,8 @@ namespace SampleExamIntegrationTests.Features.User
         [Fact]
         public async void ShouldCreateUserAndFailWithTheSameEmail()
         {
-            var client = _factory.CreateClient();
-            var dbContext = this.dbContextFixture.DbContext;
+            var client = httpClientFactory.CreateClient();
+            var dbContext = this.dbContextFactory.CreateDbContext();
 
             var userData = TestData.User.Create.NewUserData();
             var response = await client.PostAsJsonAsync<Create.Request>("/users", new Create.Request() { User = userData });
@@ -51,8 +51,8 @@ namespace SampleExamIntegrationTests.Features.User
         [Fact]
         public async void ShouldNotCreateUserWithInvalidUserData()
         {
-            var client = _factory.CreateClient();
-            var dbContext = this.dbContextFixture.DbContext;
+            var client = httpClientFactory.CreateClient();
+            var dbContext = this.dbContextFactory.CreateDbContext();
             var userData = new Create.UserData()
             {
                 Firstname = "",

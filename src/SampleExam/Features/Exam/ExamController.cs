@@ -110,7 +110,7 @@ namespace SampleExam.Features.Exam
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ExamDTOEnvelope> Edit(int id, [FromBody]Edit.Request request)
         {
-            request.Exam.Id = id;
+            request.Id = id;
             return await _mediator.Send(request);
         }
     }

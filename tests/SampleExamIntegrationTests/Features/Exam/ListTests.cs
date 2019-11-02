@@ -8,7 +8,8 @@ namespace SampleExamIntegrationTests.Features.Exam
     {
         public ListTests(
             CustomWebApplicationFactory<Startup> factory,
-            DbContextFixture dbContextFixture) : base(factory, dbContextFixture)
+            DbContextFactory dbContextFactory
+        ) : base(factory, dbContextFactory)
         {
         }
 
@@ -17,7 +18,7 @@ namespace SampleExamIntegrationTests.Features.Exam
         {
 
             // Arrange
-            var client = _factory.CreateClient();
+            var client = httpClientFactory.CreateClient();
 
             // Act
             var response = await client.GetAsync("/exams");
