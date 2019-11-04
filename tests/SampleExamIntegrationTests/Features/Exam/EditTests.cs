@@ -120,5 +120,33 @@ namespace SampleExamIntegrationTests.Features.Exam
             var problemDetails = await response.Content.ReadAsAsync<ApiProblemDetails>();
             problemDetails.Errors.Should().HaveCount(4);
         }
+
+
+        [Fact]
+        public async void ShouldFailEditOtherUserExamAndPublishedExam()
+        {
+            var client = httpClientFactory.CreateClient();
+            var httpCallHelper = new HttpCallHelper(client);
+            var dbContext = this.dbContextFactory.CreateDbContext();
+            var tuple = await httpCallHelper.CreateExam();
+            var loggedUser1 = tuple.Item1;
+            var examDto1 = tuple.Item3;
+            tuple = await httpCallHelper.CreateExam();
+            var loggedUser2 = tuple.Item1;
+            var examDto2 = tuple.Item3;
+            var putLink1 = $"/exams/{examDto1.Id}";
+            var putLink2 = $"/exams/{examDto2.Id}";
+            client.Authorize(loggedUser1.Token);
+            var response = await client.PutAsJsonAsync<Edit.Request>(putLink2, new Edit.Request() { Exam = new Edit.ExamData() });
+            response.EnsureNotFoundStatusCode();
+            response = await client.PutAsJsonAsync<Edit.Request>(putLink1, new Edit.Request() { Exam = new Edit.ExamData() });
+            response.EnsureSuccessStatusCode();
+            var exam = await dbContext.Exams.FindAsync(examDto1.Id);
+            exam.IsPublished = true;
+            await dbContext.SaveChangesAsync();
+            response = await client.PutAsJsonAsync<Edit.Request>(putLink1, new Edit.Request() { Exam = new Edit.ExamData() });
+            response.EnsureNotFoundStatusCode();
+        }
+
     }
 }

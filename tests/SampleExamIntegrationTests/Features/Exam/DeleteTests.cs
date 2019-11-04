@@ -62,26 +62,14 @@ namespace SampleExamIntegrationTests.Features.Exam
             exam1 = dbContext.Exams.Where(e => e.Id == examDto1.Id).FirstOrDefault();
             Assert.Null(exam1);
 
+            //new db context to work around reload problem
+            dbContext = this.dbContextFactory.CreateDbContext();
             exam1 = dbContext.Exams.Where(e => e.Id == examDto1.Id)
             .IgnoreQueryFilters()
             .First();
-            //     AssertHelper.AssertExamDeleted(exam1);
+            AssertHelper.AssertExamDeleted(exam1);
 
 
-
-            // var exam1 = await dbContext.Exams.FindAsync(examDto1.Id);
-            // exam1.IsPublished = true;
-            // await dbContext.SaveChangesAsync();
-            // response = await client.PutAsync(link1, null);
-            // response.EnsureNotFoundStatusCode();
-            // client.Authorize(loggedUser2.Token);
-            // response = await client.PutAsync(link2, null);
-            // response.EnsureSuccessStatusCode();
-            // var envelope = await response.Content.ReadAsAsync<ExamDTOEnvelope>();
-            // var responseExam = envelope.Exam;
-            // var exam2 = await dbContext.Exams.FindAsync(examDto2.Id);
-            // Assert.True(exam2.IsPublished);
-            // Assert.True(responseExam.IsPublished);
         }
 
     }
