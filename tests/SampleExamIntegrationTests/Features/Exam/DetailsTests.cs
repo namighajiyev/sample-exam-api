@@ -30,6 +30,10 @@ namespace SampleExamIntegrationTests.Features.Exam
             var examPrivateDto = tuple.Item3;
 
             var getExamLink = $"exams/exam/{examPublicDto.Id}";
+            var getExamLinkIncludeUser = $"exams/exam/{examPublicDto.Id}?includeUser=true";
+            var getExamLinkIncludeTags = $"exams/exam/{examPublicDto.Id}?includeTags=true";
+            var getExamLinkIncludeUserAndTags = $"exams/exam/{examPublicDto.Id}?includeUser=true&includeTags=true";
+
             var getPrivateExamLink = $"exams/exam/{examPrivateDto.Id}";
 
             //not published
@@ -49,6 +53,33 @@ namespace SampleExamIntegrationTests.Features.Exam
             response.EnsureSuccessStatusCode();
             var envelope = await response.Content.ReadAsAsync<ExamDTOEnvelope>();
             var responseExam = envelope.Exam;
+            Assert.Null(responseExam.User);
+            Assert.True(responseExam.Tags.Count == 0);
+
+            //include user
+            response = await client.GetAsync(getExamLinkIncludeUser);
+            response.EnsureSuccessStatusCode();
+            envelope = await response.Content.ReadAsAsync<ExamDTOEnvelope>();
+            responseExam = envelope.Exam;
+            Assert.NotNull(responseExam.User);
+            Assert.True(responseExam.Tags.Count == 0);
+
+            //include tags
+            response = await client.GetAsync(getExamLinkIncludeTags);
+            response.EnsureSuccessStatusCode();
+            envelope = await response.Content.ReadAsAsync<ExamDTOEnvelope>();
+            responseExam = envelope.Exam;
+            Assert.Null(responseExam.User);
+            Assert.True(responseExam.Tags.Count > 0);
+
+            //include user and tags
+            response = await client.GetAsync(getExamLinkIncludeUserAndTags);
+            response.EnsureSuccessStatusCode();
+            envelope = await response.Content.ReadAsAsync<ExamDTOEnvelope>();
+            responseExam = envelope.Exam;
+            Assert.NotNull(responseExam.User);
+            Assert.True(responseExam.Tags.Count > 0);
+
 
             //private and  published
             response = await client.GetAsync(getPrivateExamLink);

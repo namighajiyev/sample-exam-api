@@ -31,19 +31,28 @@ namespace SampleExamIntegrationTests.Features.Exam
             var examDto2 = tuple.Item3;
             var link1 = $"exams/publish/{examDto1.Id}";
             var link2 = $"exams/publish/{examDto2.Id}";
+            //unauthorized
             var response = await client.PutAsync(link1, null);
             response.EnsureUnauthorizedStatusCode();
+
+            //other user's exam.
             client.Authorize(loggedUser1.Token);
             response = await client.PutAsync(link2, null);
             response.EnsureNotFoundStatusCode();
+
+            //already published
             var exam1 = await dbContext.Exams.FindAsync(examDto1.Id);
             exam1.IsPublished = true;
             await dbContext.SaveChangesAsync();
             response = await client.PutAsync(link1, null);
             response.EnsureNotFoundStatusCode();
+
+            //sucess
             client.Authorize(loggedUser2.Token);
             response = await client.PutAsync(link2, null);
             response.EnsureSuccessStatusCode();
+
+            //check success
             var envelope = await response.Content.ReadAsAsync<ExamDTOEnvelope>();
             var responseExam = envelope.Exam;
             var exam2 = await dbContext.Exams.FindAsync(examDto2.Id);
