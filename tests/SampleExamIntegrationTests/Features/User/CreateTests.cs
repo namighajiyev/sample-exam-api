@@ -21,13 +21,13 @@ namespace SampleExamIntegrationTests.Features.User
         }
 
         [Fact]
-        public void ShouldCreateUserAndFailWithTheSameEmail()
+        public async void ShouldCreateUserAndFailWithTheSameEmail()
         {
             var client = httpClientFactory.CreateClient();
             var dbContext = this.dbContextFactory.CreateDbContext();
 
             var userData = TestData.User.Create.NewUserData();
-            var responseUser = client.PostUserSuccesfully("/users", new Create.Request() { User = userData });
+            var responseUser = await client.PostUserSuccesfully("/users", new Create.Request() { User = userData });
 
 
             var user = dbContext.Users.Where(e => e.Email == userData.Email).First();
@@ -38,14 +38,14 @@ namespace SampleExamIntegrationTests.Features.User
             userData.GenderId.Should().Be(responseUser.GenderId).And.Be(user.GenderId);
             userData.Email.Should().Be(responseUser.Email).And.Be(user.Email);
             userData.Password.Should().NotBe(user.Password);
-            var problemDetails = client.PostBadRequest("/users", new Create.Request() { User = userData });
+            var problemDetails = await client.PostBadRequest("/users", new Create.Request() { User = userData });
 
             var hasUniqueEmailError = problemDetails.Errors.Any(kv => kv.Value.Any(e => e.Code == "CreateUserEmailUniqueEmail"));
             Assert.True(hasUniqueEmailError);
         }
 
         [Fact]
-        public void ShouldNotCreateUserWithInvalidUserData()
+        public async void ShouldNotCreateUserWithInvalidUserData()
         {
             var client = httpClientFactory.CreateClient();
             var dbContext = this.dbContextFactory.CreateDbContext();
@@ -60,10 +60,10 @@ namespace SampleExamIntegrationTests.Features.User
                 Password = "aaaa",
                 ConfirmPassword = "bbbb"
             };
-            var problemDetails = client.PostBadRequest("/users", new Create.Request() { User = userData });
+            var problemDetails = await client.PostBadRequest("/users", new Create.Request() { User = userData });
             problemDetails.Errors.Should().HaveCount(7);
 
-            problemDetails = client.PostBadRequest("/users", new Create.Request());
+            problemDetails = await client.PostBadRequest("/users", new Create.Request());
             var hasNotNullError = problemDetails.Errors.Any(kv => kv.Value.Any(e => e.Code == "CreateUserNotNull"));
             Assert.True(hasNotNullError);
         }

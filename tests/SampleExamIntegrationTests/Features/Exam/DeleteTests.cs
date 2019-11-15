@@ -40,17 +40,17 @@ namespace SampleExamIntegrationTests.Features.Exam
             AssertHelper.AssertExamNotDeleted(exam2);
 
             //unauthorized
-            client.DeleteUnauthorized(link1);
+            await client.DeleteUnauthorized(link1);
 
             //not this users exam
             client.Authorize(loggedUser1.Token);
-            client.DeleteNotFound(link2);
+            await client.DeleteNotFound(link2);
 
             //not existing
-            client.DeleteNotFound(linkNotExists);
+            await client.DeleteNotFound(linkNotExists);
 
             //success 
-            var responseExam = client.DeleteExamSucessfully(link1);
+            var responseExam = await client.DeleteExamSucessfully(link1);
             Assert.Equal(responseExam.Id, examDto1.Id);
             exam1 = dbContext.Exams.Where(e => e.Id == examDto1.Id).FirstOrDefault();
             Assert.Null(exam1);

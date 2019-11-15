@@ -50,45 +50,45 @@ namespace SampleExamIntegrationTests.Features.Exam
             var link2 = $"exams/user/exam/{examDto2.Id}";
 
             //request unauthorized
-            client.GetUnauthorized(link1);
+            await client.GetUnauthorized(link1);
 
             //authorize user 1
             client.Authorize(loggedUser1.Token);
 
             //for public
             // include none
-            var responseExam = client.GetExamSuccesfully(link1);
+            var responseExam = await client.GetExamSuccesfully(link1);
             AssertHelper.AssertNoUserAndNoTagsIncluded(responseExam);
             //include user
-            responseExam = client.GetExamSuccesfully(link1IncludeUser);
+            responseExam = await client.GetExamSuccesfully(link1IncludeUser);
             AssertHelper.AssertOnlyUserIncluded(responseExam);
             //include tags
-            responseExam = client.GetExamSuccesfully(link1IncludeTags);
+            responseExam = await client.GetExamSuccesfully(link1IncludeTags);
             AssertHelper.AssertOnlyTagsIncluded(responseExam);
             //include both
-            responseExam = client.GetExamSuccesfully(link1IncludeUserAndTags);
+            responseExam = await client.GetExamSuccesfully(link1IncludeUserAndTags);
             AssertHelper.AssertUserAndTagsIncluded(responseExam);
 
             //for private
             // include none
-            responseExam = client.GetExamSuccesfully(link1Private);
+            responseExam = await client.GetExamSuccesfully(link1Private);
             AssertHelper.AssertNoUserAndNoTagsIncluded(responseExam);
             //include user
-            responseExam = client.GetExamSuccesfully(link1PrivateIncludeUser);
+            responseExam = await client.GetExamSuccesfully(link1PrivateIncludeUser);
             AssertHelper.AssertOnlyUserIncluded(responseExam);
             //include tags
-            responseExam = client.GetExamSuccesfully(link1PrivateIncludeTags);
+            responseExam = await client.GetExamSuccesfully(link1PrivateIncludeTags);
             AssertHelper.AssertOnlyTagsIncluded(responseExam);
             //include both
-            responseExam = client.GetExamSuccesfully(link1PrivateIncludeUserAndTags);
+            responseExam = await client.GetExamSuccesfully(link1PrivateIncludeUserAndTags);
             AssertHelper.AssertUserAndTagsIncluded(responseExam);
             //request user 2 exam - should not found
-            client.GetNotFound(link2);
+            await client.GetNotFound(link2);
 
             //authorize user 2
             client.Authorize(loggedUser2.Token);
             //request user 1 exam - should not found
-            client.GetNotFound(link1);
+            await client.GetNotFound(link1);
         }
     }
 }

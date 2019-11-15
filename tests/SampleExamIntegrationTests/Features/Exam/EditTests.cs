@@ -54,10 +54,10 @@ namespace SampleExamIntegrationTests.Features.Exam
                 Tags = newTags
             };
 
-            client.PutUnauthorized(putLink, new Edit.Request() { Exam = examData });
+            await client.PutUnauthorized(putLink, new Edit.Request() { Exam = examData });
 
             client.Authorize(loggedUser.Token);
-            var responseExam = client.PutExamSuccesfully(putLink, new Edit.Request() { Exam = examData });
+            var responseExam = await client.PutExamSuccesfully(putLink, new Edit.Request() { Exam = examData });
 
 
             var exam = dbContext.Exams.Where(e => e.Id == examDto.Id).Include(e => e.ExamTags).First();
@@ -65,7 +65,7 @@ namespace SampleExamIntegrationTests.Features.Exam
             AssertHelper.AssertExam(examData, responseExam, exam);
             AssertHelper.AssertExamTags(examData.Tags.ToArray(), responseExam, exam);
 
-            responseExam = client.PutExamSuccesfully(putLink, new Edit.Request() { Exam = examData });
+            responseExam = await client.PutExamSuccesfully(putLink, new Edit.Request() { Exam = examData });
 
             exam = dbContext.Exams.Where(e => e.Id == examDto.Id).Include(e => e.ExamTags).First();
             var updatedAt2 = exam.UpdatedAt;
@@ -73,7 +73,7 @@ namespace SampleExamIntegrationTests.Features.Exam
             AssertHelper.AssertExamTags(examData.Tags.ToArray(), responseExam, exam);
             Assert.Equal(updatedAt1, updatedAt2);
 
-            responseExam = client.PutExamSuccesfully(putLink, new Edit.Request() { Exam = new Edit.ExamData() });
+            responseExam = await client.PutExamSuccesfully(putLink, new Edit.Request() { Exam = new Edit.ExamData() });
             exam = dbContext.Exams.Where(e => e.Id == examDto.Id).Include(e => e.ExamTags).First();
             var updatedAt3 = exam.UpdatedAt;
             AssertHelper.AssertExam(examData, responseExam, exam);
@@ -108,7 +108,7 @@ namespace SampleExamIntegrationTests.Features.Exam
                 Tags = new string[] { }
             };
             client.Authorize(loggedUser.Token);
-            var problemDetails = client.PutBadRequest(putLink, new Edit.Request() { Exam = examData });
+            var problemDetails = await client.PutBadRequest(putLink, new Edit.Request() { Exam = examData });
             problemDetails.Errors.Should().HaveCount(4);
         }
 
@@ -128,14 +128,14 @@ namespace SampleExamIntegrationTests.Features.Exam
             var putLink1 = $"/exams/{examDto1.Id}";
             var putLink2 = $"/exams/{examDto2.Id}";
             client.Authorize(loggedUser1.Token);
-            client.PutNotFound(putLink2, new Edit.Request() { Exam = new Edit.ExamData() });
-            client.PutExamSuccesfully(putLink1, new Edit.Request() { Exam = new Edit.ExamData() });
+            await client.PutNotFound(putLink2, new Edit.Request() { Exam = new Edit.ExamData() });
+            await client.PutExamSuccesfully(putLink1, new Edit.Request() { Exam = new Edit.ExamData() });
 
             var exam = await dbContext.Exams.FindAsync(examDto1.Id);
             exam.IsPublished = true;
             await dbContext.SaveChangesAsync();
 
-            client.PutNotFound(putLink1, new Edit.Request() { Exam = new Edit.ExamData() });
+            await client.PutNotFound(putLink1, new Edit.Request() { Exam = new Edit.ExamData() });
         }
 
     }

@@ -37,8 +37,8 @@ namespace SampleExamIntegrationTests.Features.Exam
             var getPrivateExamLink = $"exams/exam/{examPrivateDto.Id}";
 
             //not published
-            client.GetNotFound(getExamLink);
-            client.GetNotFound(getPrivateExamLink);
+            await client.GetNotFound(getExamLink);
+            await client.GetNotFound(getPrivateExamLink);
 
             var examPublic = await dbContext.Exams.FindAsync(examPublicDto.Id);
             var examPrivate = await dbContext.Exams.FindAsync(examPrivateDto.Id);
@@ -47,24 +47,24 @@ namespace SampleExamIntegrationTests.Features.Exam
             await dbContext.SaveChangesAsync();
 
             //public and  published
-            var responseExam =  client.GetExamSuccesfully(getExamLink);
+            var responseExam = await client.GetExamSuccesfully(getExamLink);
             AssertHelper.AssertNoUserAndNoTagsIncluded(responseExam);
 
             //include user
-            responseExam =  client.GetExamSuccesfully(getExamLinkIncludeUser);
+            responseExam = await client.GetExamSuccesfully(getExamLinkIncludeUser);
             AssertHelper.AssertOnlyUserIncluded(responseExam);
 
             //include tags
-            responseExam =  client.GetExamSuccesfully(getExamLinkIncludeTags);
+            responseExam = await client.GetExamSuccesfully(getExamLinkIncludeTags);
             AssertHelper.AssertOnlyTagsIncluded(responseExam);
 
             //include user and tags
-            responseExam =  client.GetExamSuccesfully(getExamLinkIncludeUserAndTags);
+            responseExam = await client.GetExamSuccesfully(getExamLinkIncludeUserAndTags);
             AssertHelper.AssertUserAndTagsIncluded(responseExam);
 
 
             //private and  published
-            client.GetNotFound(getPrivateExamLink);
+            await client.GetNotFound(getPrivateExamLink);
         }
 
     }

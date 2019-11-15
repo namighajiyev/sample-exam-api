@@ -54,7 +54,7 @@ namespace SampleExamIntegrationTests.Features.Exam
 
 
             //no user and tags
-            var responseExams = client.GetExamsSuccesfully(getLink);
+            var responseExams = await client.GetExamsSuccesfully(getLink);
 
             foreach (var exam in responseExams)
             {
@@ -65,7 +65,7 @@ namespace SampleExamIntegrationTests.Features.Exam
             }
 
             //with tags
-            responseExams = client.GetExamsSuccesfully(getLinkIncludeTags);
+            responseExams = await client.GetExamsSuccesfully(getLinkIncludeTags);
 
             foreach (var exam in responseExams)
             {
@@ -76,7 +76,7 @@ namespace SampleExamIntegrationTests.Features.Exam
             }
 
             //with user
-            responseExams = client.GetExamsSuccesfully(getLinkIncludeUser);
+            responseExams = await client.GetExamsSuccesfully(getLinkIncludeUser);
 
             foreach (var exam in responseExams)
             {
@@ -87,7 +87,7 @@ namespace SampleExamIntegrationTests.Features.Exam
             }
 
             //with tags and user
-            responseExams = client.GetExamsSuccesfully(getLinkIncludeTagsAndUser);
+            responseExams = await client.GetExamsSuccesfully(getLinkIncludeTagsAndUser);
 
             foreach (var exam in responseExams)
             {
@@ -119,7 +119,7 @@ namespace SampleExamIntegrationTests.Features.Exam
             do
             {
                 var link = $"{getLink}?limit={limit}&offset={offset}";
-                var envelope = client.GetExamsEnvelopeSuccesfully(link);
+                var envelope = await client.GetExamsEnvelopeSuccesfully(link);
                 responseExams = envelope.Exams;
                 var responseCount = responseExams.Count();
                 count = envelope.ExamCount;

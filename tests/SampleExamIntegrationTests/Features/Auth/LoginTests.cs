@@ -19,14 +19,14 @@ namespace SampleExamIntegrationTests.Features.Auth
         }
 
         [Fact]
-        public void ShouldLogin()
+        public async void ShouldLogin()
         {
             var client = httpClientFactory.CreateClient();
             var dbContext = this.dbContextFactory.CreateDbContext();
             var userData = TestData.User.Create.NewUserData();
-            client.PostSucessfully("/users", new Create.Request() { User = userData });
+            await client.PostSucessfully("/users", new Create.Request() { User = userData });
             var loginUser = new Login.UserData() { Email = userData.Email, Password = userData.Password };
-            var user = client.PostLoginSucessfully("/auth/login", new Login.Request() { User = loginUser });
+            var user = await client.PostLoginSucessfully("/auth/login", new Login.Request() { User = loginUser });
             Assert.NotNull(user);
             Assert.NotNull(user.Token);
             Assert.NotNull(user.RefresToken);
@@ -34,18 +34,18 @@ namespace SampleExamIntegrationTests.Features.Auth
 
 
         [Fact]
-        public void ShouldFailLogin()
+        public async void ShouldFailLogin()
         {
             var client = httpClientFactory.CreateClient();
             var dbContext = this.dbContextFactory.CreateDbContext();
             var userData = TestData.User.Create.NewUserData();
-            client.PostSucessfully("/users", new Create.Request() { User = userData });
+            await client.PostSucessfully("/users", new Create.Request() { User = userData });
 
             var loginUser = new Login.UserData() { Email = userData.Email, Password = userData.Password + "1" };
-            var problemDetails = client.PostUnauthorized("/auth/login", new Login.Request() { User = loginUser });
+            var problemDetails = await client.PostUnauthorized("/auth/login", new Login.Request() { User = loginUser });
 
             loginUser = new Login.UserData() { Email = "1" + userData.Email, Password = userData.Password };
-            problemDetails = client.PostUnauthorized("/auth/login", new Login.Request() { User = loginUser });
+            problemDetails = await client.PostUnauthorized("/auth/login", new Login.Request() { User = loginUser });
         }
     }
 }

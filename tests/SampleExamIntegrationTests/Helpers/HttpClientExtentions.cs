@@ -3,6 +3,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using SampleExam.Features.Exam;
 using SampleExam.Features.User;
+using SampleExam.Infrastructure.Errors;
 
 namespace SampleExamIntegrationTests.Helpers
 {
@@ -33,157 +34,154 @@ namespace SampleExamIntegrationTests.Helpers
             }
         }
 
-        //methods are not async/await beacuse MaxConcurrencySyncContext error
-        //todo use async/await after bug fix
-
-        public static SampleExam.Infrastructure.Errors.ApiProblemDetails GetUnauthorized(this HttpClient client, string link)
+        public static async Task<ApiProblemDetails> GetUnauthorized(this HttpClient client, string link)
         {
-            var response = client.GetAsync(link).Result;
+            var response = await client.GetAsync(link);
             response.EnsureUnauthorizedStatusCode();
-            var problemDetails = response.Content.ReadAsAsync<SampleExam.Infrastructure.Errors.ApiProblemDetails>().Result;
+            var problemDetails = await response.Content.ReadAsAsync<ApiProblemDetails>();
             return problemDetails;
         }
 
-        public static ExamDTO GetExamSuccesfully(this HttpClient client, string link)
+        public static async Task<ExamDTO> GetExamSuccesfully(this HttpClient client, string link)
         {
-            var response = client.GetAsync(link).Result;
+            var response = await client.GetAsync(link);
             response.EnsureSuccessStatusCode();
-            var envelope = response.Content.ReadAsAsync<ExamDTOEnvelope>().Result;
+            var envelope = await response.Content.ReadAsAsync<ExamDTOEnvelope>();
             var responseExam = envelope.Exam;
             return responseExam;
         }
 
-        public static IEnumerable<ExamDTO> GetExamsSuccesfully(this HttpClient client, string link)
+        public static async Task<IEnumerable<ExamDTO>> GetExamsSuccesfully(this HttpClient client, string link)
         {
-            var response = client.GetAsync(link).Result;
+            var response = await client.GetAsync(link);
             response.EnsureSuccessStatusCode();
-            var envelope = response.Content.ReadAsAsync<ExamsDTOEnvelope>().Result;
+            var envelope = await response.Content.ReadAsAsync<ExamsDTOEnvelope>();
             var responseExam = envelope.Exams;
             return responseExam;
         }
-        public static ExamsDTOEnvelope GetExamsEnvelopeSuccesfully(this HttpClient client, string link)
+        public static async Task<ExamsDTOEnvelope> GetExamsEnvelopeSuccesfully(this HttpClient client, string link)
         {
-            var response = client.GetAsync(link).Result;
+            var response = await client.GetAsync(link);
             response.EnsureSuccessStatusCode();
-            var envelope = response.Content.ReadAsAsync<ExamsDTOEnvelope>().Result;
+            var envelope = await response.Content.ReadAsAsync<ExamsDTOEnvelope>();
             return envelope;
         }
 
-        public static void PostSucessfully(this HttpClient client, string link, object data)
+        public static async Task PostSucessfully(this HttpClient client, string link, object data)
         {
-            var response = client.PostAsJsonAsync<object>(link, data).Result;
+            var response = await client.PostAsJsonAsync<object>(link, data);
             response.EnsureSuccessStatusCode();
         }
 
-        public static ExamDTO DeleteExamSucessfully(this HttpClient client, string link)
+        public static async Task<ExamDTO> DeleteExamSucessfully(this HttpClient client, string link)
         {
-            var response = client.DeleteAsync(link).Result;
+            var response = await client.DeleteAsync(link);
             response.EnsureSuccessStatusCode();
-            var envelope = response.Content.ReadAsAsync<ExamDTOEnvelope>().Result;
+            var envelope = await response.Content.ReadAsAsync<ExamDTOEnvelope>();
             var responseExam = envelope.Exam;
             return responseExam;
         }
 
-        public static void DeleteSucessfully(this HttpClient client, string link)
+        public static async Task DeleteSucessfully(this HttpClient client, string link)
         {
-            var response = client.DeleteAsync(link).Result;
+            var response = await client.DeleteAsync(link);
             response.EnsureSuccessStatusCode();
         }
 
-        public static SampleExam.Infrastructure.Errors.ApiProblemDetails PostUnauthorized(this HttpClient client, string link, object data)
+        public static async Task<ApiProblemDetails> PostUnauthorized(this HttpClient client, string link, object data)
         {
-            var response = client.PostAsJsonAsync<object>(link, data).Result;
+            var response = await client.PostAsJsonAsync<object>(link, data);
             response.EnsureUnauthorizedStatusCode();
-            var problemDetails = response.Content.ReadAsAsync<SampleExam.Infrastructure.Errors.ApiProblemDetails>().Result;
+            var problemDetails = await response.Content.ReadAsAsync<ApiProblemDetails>();
             return problemDetails;
         }
 
-        public static SampleExam.Infrastructure.Errors.ApiProblemDetails DeleteUnauthorized(this HttpClient client, string link)
+        public static async Task<ApiProblemDetails> DeleteUnauthorized(this HttpClient client, string link)
         {
-            var response = client.DeleteAsync(link).Result;
+            var response = await client.DeleteAsync(link);
             response.EnsureUnauthorizedStatusCode();
-            var problemDetails = response.Content.ReadAsAsync<SampleExam.Infrastructure.Errors.ApiProblemDetails>().Result;
+            var problemDetails = await response.Content.ReadAsAsync<ApiProblemDetails>();
             return problemDetails;
         }
 
 
-        public static SampleExam.Infrastructure.Errors.ApiProblemDetails PostBadRequest(this HttpClient client, string link, object data)
+        public static async Task<ApiProblemDetails> PostBadRequest(this HttpClient client, string link, object data)
         {
-            var response = client.PostAsJsonAsync<object>(link, data).Result;
+            var response = await client.PostAsJsonAsync<object>(link, data);
             response.EnsureBadRequestStatusCode();
-            var problemDetails = response.Content.ReadAsAsync<SampleExam.Infrastructure.Errors.ApiProblemDetails>().Result;
+            var problemDetails = await response.Content.ReadAsAsync<ApiProblemDetails>();
             return problemDetails;
         }
-        public static SampleExam.Features.Auth.LoginUserDTO PostLoginSucessfully(this HttpClient client, string link, object data)
+        public static async Task<SampleExam.Features.Auth.LoginUserDTO> PostLoginSucessfully(this HttpClient client, string link, object data)
         {
-            var response = client.PostAsJsonAsync<object>(link, data).Result;
+            var response = await client.PostAsJsonAsync<object>(link, data);
             response.EnsureSuccessStatusCode();
-            var envelope = response.Content.ReadAsAsync<SampleExam.Features.Auth.LoginUserDTOEnvelope>().Result;
+            var envelope = await response.Content.ReadAsAsync<SampleExam.Features.Auth.LoginUserDTOEnvelope>();
             var user = envelope.User;
             return user;
         }
 
-        public static ExamDTO PutExamSuccesfully(this HttpClient client, string link, object data)
+        public static async Task<ExamDTO> PutExamSuccesfully(this HttpClient client, string link, object data)
         {
-            var response = client.PutAsJsonAsync<object>(link, data).Result;
+            var response = await client.PutAsJsonAsync<object>(link, data);
             response.EnsureSuccessStatusCode();
-            var envelope = response.Content.ReadAsAsync<ExamDTOEnvelope>().Result;
+            var envelope = await response.Content.ReadAsAsync<ExamDTOEnvelope>();
             var responseExam = envelope.Exam;
             return responseExam;
         }
 
-        public static void PutSucessfully(this HttpClient client, string link, object data)
+        public static async Task PutSucessfully(this HttpClient client, string link, object data)
         {
-            var response = client.PutAsJsonAsync<object>(link, data).Result;
+            var response = await client.PutAsJsonAsync<object>(link, data);
             response.EnsureSuccessStatusCode();
         }
 
-        public static SampleExam.Infrastructure.Errors.ApiProblemDetails PutUnauthorized(this HttpClient client, string link, object data)
+        public static async Task<ApiProblemDetails> PutUnauthorized(this HttpClient client, string link, object data)
         {
-            var response = client.PutAsJsonAsync<object>(link, data).Result;
+            var response = await client.PutAsJsonAsync<object>(link, data);
             response.EnsureUnauthorizedStatusCode();
-            var problemDetails = response.Content.ReadAsAsync<SampleExam.Infrastructure.Errors.ApiProblemDetails>().Result;
+            var problemDetails = await response.Content.ReadAsAsync<ApiProblemDetails>();
             return problemDetails;
         }
 
-        public static SampleExam.Infrastructure.Errors.ApiProblemDetails PutBadRequest(this HttpClient client, string link, object data)
+        public static async Task<ApiProblemDetails> PutBadRequest(this HttpClient client, string link, object data)
         {
-            var response = client.PutAsJsonAsync<object>(link, data).Result;
+            var response = await client.PutAsJsonAsync<object>(link, data);
             response.EnsureBadRequestStatusCode();
-            var problemDetails = response.Content.ReadAsAsync<SampleExam.Infrastructure.Errors.ApiProblemDetails>().Result;
+            var problemDetails = await response.Content.ReadAsAsync<SampleExam.Infrastructure.Errors.ApiProblemDetails>();
             return problemDetails;
         }
-        public static ExamDTO PostExamSuccesfully(this HttpClient client, string link, object data)
+        public static async Task<ExamDTO> PostExamSuccesfully(this HttpClient client, string link, object data)
         {
-            var response = client.PostAsJsonAsync<object>(link, data).Result;
+            var response = await client.PostAsJsonAsync<object>(link, data);
             response.EnsureSuccessStatusCode();
-            var envelope = response.Content.ReadAsAsync<ExamDTOEnvelope>().Result;
+            var envelope = await response.Content.ReadAsAsync<ExamDTOEnvelope>();
             var responseExam = envelope.Exam;
             return responseExam;
         }
-        public static UserDTO PostUserSuccesfully(this HttpClient client, string link, object data)
+        public static async Task<UserDTO> PostUserSuccesfully(this HttpClient client, string link, object data)
         {
-            var response = client.PostAsJsonAsync<object>(link, data).Result;
+            var response = await client.PostAsJsonAsync<object>(link, data);
             response.EnsureSuccessStatusCode();
-            var envelope = response.Content.ReadAsAsync<UserDTOEnvelope>().Result;
+            var envelope = await response.Content.ReadAsAsync<UserDTOEnvelope>();
             var responseUser = envelope.User;
             return responseUser;
         }
 
-        public static void GetNotFound(this HttpClient client, string link)
+        public static async Task GetNotFound(this HttpClient client, string link)
         {
-            var response = client.GetAsync(link).Result;
+            var response = await client.GetAsync(link);
             response.EnsureNotFoundStatusCode();
         }
 
-        public static void DeleteNotFound(this HttpClient client, string link)
+        public static async Task DeleteNotFound(this HttpClient client, string link)
         {
-            var response = client.DeleteAsync(link).Result;
+            var response = await client.DeleteAsync(link);
             response.EnsureNotFoundStatusCode();
         }
-        public static void PutNotFound(this HttpClient client, string link, object data)
+        public static async Task PutNotFound(this HttpClient client, string link, object data)
         {
-            var response = client.PutAsJsonAsync<object>(link, data).Result;
+            var response = await client.PutAsJsonAsync<object>(link, data);
             response.EnsureNotFoundStatusCode();
         }
     }
