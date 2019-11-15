@@ -17,14 +17,11 @@ namespace SampleExamIntegrationTests.Helpers
         {
             this.client = client;
         }
-        public async Task<Tuple<UserCreate.UserData, UserDTO>> CreateUser()
+        public Task<Tuple<UserCreate.UserData, UserDTO>> CreateUser()
         {
             var userData = TestData.User.Create.NewUserData();
-            var response = await client.PostAsJsonAsync<UserCreate.Request>("/users", new UserCreate.Request() { User = userData });
-            response.EnsureSuccessStatusCode();
-            var envelope = await response.Content.ReadAsAsync<UserDTOEnvelope>();
-            var responseUser = envelope.User;
-            return Tuple.Create(userData, responseUser);
+            var responseUser = client.PostUserSuccesfully("/users", new UserCreate.Request() { User = userData });
+            return Task.FromResult(Tuple.Create(userData, responseUser));
         }
 
 
@@ -33,10 +30,7 @@ namespace SampleExamIntegrationTests.Helpers
             var user = await this.CreateUser();
             var userData = user.Item1;
             var loginUser = new Login.UserData() { Email = userData.Email, Password = userData.Password };
-            var response = await client.PostAsJsonAsync<Login.Request>("/auth/login", new Login.Request() { User = loginUser });
-            response.EnsureSuccessStatusCode();
-            var envelope = await response.Content.ReadAsAsync<LoginUserDTOEnvelope>();
-            var loggedUser = envelope.User;
+            var loggedUser = client.PostLoginSucessfully("/auth/login", new Login.Request() { User = loginUser });
             return Tuple.Create(user.Item1, user.Item2, loginUser, loggedUser);
         }
 
@@ -47,11 +41,8 @@ namespace SampleExamIntegrationTests.Helpers
             loggedUser = loggedUser ?? (await CreateUserAndLogin()).Item4;
             var examData = TestData.Exam.Create.NewExamData(includeTags, isPrivate, extraTags);
             client.Authorize(loggedUser.Token);
-            var response = await client.PostAsJsonAsync<ExamCreate.Request>("/exams", new ExamCreate.Request() { Exam = examData });
-            response.EnsureSuccessStatusCode();
+            var responseExam = client.PostExamSuccesfully("/exams", new ExamCreate.Request() { Exam = examData });
             client.Unauthorize();
-            var envelope = await response.Content.ReadAsAsync<ExamDTOEnvelope>();
-            var responseExam = envelope.Exam;
             return Tuple.Create(loggedUser, examData, responseExam);
 
         }
@@ -64,22 +55,16 @@ namespace SampleExamIntegrationTests.Helpers
             var user = tuple.Item1;
             var link = $"exams/publish/{examDto.Id}";
             client.Authorize(user.Token);
-            var response = await client.PutAsync(link, null);
-            response.EnsureSuccessStatusCode();
+            var responseExam = client.PutExamSuccesfully(link, null);
             client.Unauthorize();
-            var envelope = await response.Content.ReadAsAsync<ExamDTOEnvelope>();
-            var responseExam = envelope.Exam;
             return Tuple.Create(user, responseExam);
         }
 
-        public async Task<ExamDTO> PublishExam(int examId)
+        public Task<ExamDTO> PublishExam(int examId)
         {
             var link = $"exams/publish/{examId}";
-            var response = await client.PutAsync(link, null);
-            response.EnsureSuccessStatusCode();
-            var envelope = await response.Content.ReadAsAsync<ExamDTOEnvelope>();
-            var responseExam = envelope.Exam;
-            return responseExam;
+            var responseExam = client.PutExamSuccesfully(link, null);
+            return Task.FromResult(responseExam);
         }
 
     }

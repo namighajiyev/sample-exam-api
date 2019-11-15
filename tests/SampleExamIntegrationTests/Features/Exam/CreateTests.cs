@@ -31,24 +31,18 @@ namespace SampleExamIntegrationTests.Features.Exam
             var loggedUser = (await httpCallHelper.CreateUserAndLogin()).Item4;
             var examData = TestData.Exam.Create.NewExamData(true, false, tags);
             client.Authorize(loggedUser.Token);
-            var response = await client.PostAsJsonAsync<Create.Request>("/exams", new Create.Request() { Exam = examData });
-            response.EnsureSuccessStatusCode();
-            var envelope = await response.Content.ReadAsAsync<ExamDTOEnvelope>();
-            var responseExam = envelope.Exam;
+            var responseExam = client.PostExamSuccesfully("/exams", new Create.Request() { Exam = examData });
             var exam = dbContext.Exams.Where(e => e.Id == responseExam.Id).Include(e => e.ExamTags).First();
             AssertHelper.AssertExam(examData, responseExam, exam);
             AssertHelper.AssertExamTags(examData.Tags.ToArray(), responseExam, exam);
             client.Unauthorize();
-            response = await client.PostAsJsonAsync<Create.Request>("/exams", new Create.Request() { Exam = examData });
-            response.EnsureUnauthorizedStatusCode();
+            client.PostUnauthorized("/exams", new Create.Request() { Exam = examData });
 
             //should save without tags
             examData.Tags = null;
             client.Authorize(loggedUser.Token);
-            response = await client.PostAsJsonAsync<Create.Request>("/exams", new Create.Request() { Exam = examData });
-            response.EnsureSuccessStatusCode();
-            envelope = await response.Content.ReadAsAsync<ExamDTOEnvelope>();
-            responseExam = envelope.Exam;
+            responseExam = client.PostExamSuccesfully("/exams", new Create.Request() { Exam = examData });
+
             exam = dbContext.Exams.Where(e => e.Id == responseExam.Id).Include(e => e.ExamTags).First();
             AssertHelper.AssertExam(examData, responseExam, exam);
             Assert.True(responseExam.Tags.Count == 0);
@@ -63,9 +57,7 @@ namespace SampleExamIntegrationTests.Features.Exam
             var dbContext = this.dbContextFactory.CreateDbContext();
             var loggedUser = (await httpCallHelper.CreateUserAndLogin()).Item4;
             client.Authorize(loggedUser.Token);
-            var response = await client.PostAsJsonAsync<Create.Request>("/exams", new Create.Request() { Exam = new Create.ExamData() });
-            response.EnsureBadRequestStatusCode();
-            var problemDetails = await response.Content.ReadAsAsync<ApiProblemDetails>();
+            var problemDetails = client.PostBadRequest("/exams", new Create.Request() { Exam = new Create.ExamData() });
             problemDetails.Errors.Should().HaveCount(4);
         }
 

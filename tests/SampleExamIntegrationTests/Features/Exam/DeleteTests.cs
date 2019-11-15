@@ -40,24 +40,17 @@ namespace SampleExamIntegrationTests.Features.Exam
             AssertHelper.AssertExamNotDeleted(exam2);
 
             //unauthorized
-            var response = await client.DeleteAsync(link1);
-            response.EnsureUnauthorizedStatusCode();
+            client.DeleteUnauthorized(link1);
 
             //not this users exam
             client.Authorize(loggedUser1.Token);
-            response = await client.DeleteAsync(link2);
-            response.EnsureNotFoundStatusCode();
+            client.DeleteNotFound(link2);
 
             //not existing
-            response = await client.DeleteAsync(linkNotExists);
-            response.EnsureNotFoundStatusCode();
-
+            client.DeleteNotFound(linkNotExists);
 
             //success 
-            response = await client.DeleteAsync(link1);
-            response.EnsureSuccessStatusCode();
-            var envelope = await response.Content.ReadAsAsync<ExamDTOEnvelope>();
-            var responseExam = envelope.Exam;
+            var responseExam = client.DeleteExamSucessfully(link1);
             Assert.Equal(responseExam.Id, examDto1.Id);
             exam1 = dbContext.Exams.Where(e => e.Id == examDto1.Id).FirstOrDefault();
             Assert.Null(exam1);
@@ -68,8 +61,6 @@ namespace SampleExamIntegrationTests.Features.Exam
             .IgnoreQueryFilters()
             .First();
             AssertHelper.AssertExamDeleted(exam1);
-
-
         }
 
     }

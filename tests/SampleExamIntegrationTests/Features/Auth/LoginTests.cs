@@ -19,18 +19,14 @@ namespace SampleExamIntegrationTests.Features.Auth
         }
 
         [Fact]
-        public async void ShouldLogin()
+        public void ShouldLogin()
         {
             var client = httpClientFactory.CreateClient();
             var dbContext = this.dbContextFactory.CreateDbContext();
             var userData = TestData.User.Create.NewUserData();
-            var response = await client.PostAsJsonAsync<Create.Request>("/users", new Create.Request() { User = userData });
-            response.EnsureSuccessStatusCode();
+            client.PostSucessfully("/users", new Create.Request() { User = userData });
             var loginUser = new Login.UserData() { Email = userData.Email, Password = userData.Password };
-            response = await client.PostAsJsonAsync<Login.Request>("/auth/login", new Login.Request() { User = loginUser });
-            response.EnsureSuccessStatusCode();
-            var envelope = await response.Content.ReadAsAsync<LoginUserDTOEnvelope>();
-            var user = envelope.User;
+            var user = client.PostLoginSucessfully("/auth/login", new Login.Request() { User = loginUser });
             Assert.NotNull(user);
             Assert.NotNull(user.Token);
             Assert.NotNull(user.RefresToken);
@@ -38,23 +34,18 @@ namespace SampleExamIntegrationTests.Features.Auth
 
 
         [Fact]
-        public async void ShouldFailLogin()
+        public void ShouldFailLogin()
         {
             var client = httpClientFactory.CreateClient();
             var dbContext = this.dbContextFactory.CreateDbContext();
             var userData = TestData.User.Create.NewUserData();
-            var response = await client.PostAsJsonAsync<Create.Request>("/users", new Create.Request() { User = userData });
-            response.EnsureSuccessStatusCode();
+            client.PostSucessfully("/users", new Create.Request() { User = userData });
 
             var loginUser = new Login.UserData() { Email = userData.Email, Password = userData.Password + "1" };
-            response = await client.PostAsJsonAsync<Login.Request>("/auth/login", new Login.Request() { User = loginUser });
-            response.EnsureUnauthorizedStatusCode();
-            var problemDetails = await response.Content.ReadAsAsync<ApiProblemDetails>();
+            var problemDetails = client.PostUnauthorized("/auth/login", new Login.Request() { User = loginUser });
 
             loginUser = new Login.UserData() { Email = "1" + userData.Email, Password = userData.Password };
-            response = await client.PostAsJsonAsync<Login.Request>("/auth/login", new Login.Request() { User = loginUser });
-            response.EnsureUnauthorizedStatusCode();
-            problemDetails = await response.Content.ReadAsAsync<ApiProblemDetails>();
+            problemDetails = client.PostUnauthorized("/auth/login", new Login.Request() { User = loginUser });
         }
     }
 }

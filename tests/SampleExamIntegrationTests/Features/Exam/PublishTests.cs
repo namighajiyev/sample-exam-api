@@ -32,29 +32,23 @@ namespace SampleExamIntegrationTests.Features.Exam
             var link1 = $"exams/publish/{examDto1.Id}";
             var link2 = $"exams/publish/{examDto2.Id}";
             //unauthorized
-            var response = await client.PutAsync(link1, null);
-            response.EnsureUnauthorizedStatusCode();
+            client.PutUnauthorized(link1, null);
 
             //other user's exam.
             client.Authorize(loggedUser1.Token);
-            response = await client.PutAsync(link2, null);
-            response.EnsureNotFoundStatusCode();
+            client.PutNotFound(link2, null);
 
             //already published
             var exam1 = await dbContext.Exams.FindAsync(examDto1.Id);
             exam1.IsPublished = true;
             await dbContext.SaveChangesAsync();
-            response = await client.PutAsync(link1, null);
-            response.EnsureNotFoundStatusCode();
+            client.PutNotFound(link1, null);
 
             //sucess
             client.Authorize(loggedUser2.Token);
-            response = await client.PutAsync(link2, null);
-            response.EnsureSuccessStatusCode();
+            var responseExam = client.PutExamSuccesfully(link2, null);
 
             //check success
-            var envelope = await response.Content.ReadAsAsync<ExamDTOEnvelope>();
-            var responseExam = envelope.Exam;
             var exam2 = await dbContext.Exams.FindAsync(examDto2.Id);
             Assert.True(exam2.IsPublished);
             Assert.True(responseExam.IsPublished);

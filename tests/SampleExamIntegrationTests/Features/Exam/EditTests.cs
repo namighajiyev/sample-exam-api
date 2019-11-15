@@ -54,33 +54,26 @@ namespace SampleExamIntegrationTests.Features.Exam
                 Tags = newTags
             };
 
-            var response = await client.PutAsJsonAsync<Edit.Request>(putLink, new Edit.Request() { Exam = examData });
-            response.EnsureUnauthorizedStatusCode();
+            client.PutUnauthorized(putLink, new Edit.Request() { Exam = examData });
+
             client.Authorize(loggedUser.Token);
-            response = await client.PutAsJsonAsync<Edit.Request>(putLink, new Edit.Request() { Exam = examData });
-            response.EnsureSuccessStatusCode();
-            var envelope = await response.Content.ReadAsAsync<ExamDTOEnvelope>();
-            var responseExam = envelope.Exam;
+            var responseExam = client.PutExamSuccesfully(putLink, new Edit.Request() { Exam = examData });
+
+
             var exam = dbContext.Exams.Where(e => e.Id == examDto.Id).Include(e => e.ExamTags).First();
             var updatedAt1 = exam.UpdatedAt;
             AssertHelper.AssertExam(examData, responseExam, exam);
             AssertHelper.AssertExamTags(examData.Tags.ToArray(), responseExam, exam);
 
-            response = await client.PutAsJsonAsync<Edit.Request>(putLink, new Edit.Request() { Exam = examData });
-            response.EnsureSuccessStatusCode();
-            envelope = await response.Content.ReadAsAsync<ExamDTOEnvelope>();
-            responseExam = envelope.Exam;
+            responseExam = client.PutExamSuccesfully(putLink, new Edit.Request() { Exam = examData });
+
             exam = dbContext.Exams.Where(e => e.Id == examDto.Id).Include(e => e.ExamTags).First();
             var updatedAt2 = exam.UpdatedAt;
             AssertHelper.AssertExam(examData, responseExam, exam);
             AssertHelper.AssertExamTags(examData.Tags.ToArray(), responseExam, exam);
             Assert.Equal(updatedAt1, updatedAt2);
 
-
-            response = await client.PutAsJsonAsync<Edit.Request>(putLink, new Edit.Request() { Exam = new Edit.ExamData() });
-            response.EnsureSuccessStatusCode();
-            envelope = await response.Content.ReadAsAsync<ExamDTOEnvelope>();
-            responseExam = envelope.Exam;
+            responseExam = client.PutExamSuccesfully(putLink, new Edit.Request() { Exam = new Edit.ExamData() });
             exam = dbContext.Exams.Where(e => e.Id == examDto.Id).Include(e => e.ExamTags).First();
             var updatedAt3 = exam.UpdatedAt;
             AssertHelper.AssertExam(examData, responseExam, exam);
@@ -115,9 +108,7 @@ namespace SampleExamIntegrationTests.Features.Exam
                 Tags = new string[] { }
             };
             client.Authorize(loggedUser.Token);
-            var response = await client.PutAsJsonAsync<Edit.Request>(putLink, new Edit.Request() { Exam = examData });
-            response.EnsureBadRequestStatusCode();
-            var problemDetails = await response.Content.ReadAsAsync<ApiProblemDetails>();
+            var problemDetails = client.PutBadRequest(putLink, new Edit.Request() { Exam = examData });
             problemDetails.Errors.Should().HaveCount(4);
         }
 
@@ -137,15 +128,14 @@ namespace SampleExamIntegrationTests.Features.Exam
             var putLink1 = $"/exams/{examDto1.Id}";
             var putLink2 = $"/exams/{examDto2.Id}";
             client.Authorize(loggedUser1.Token);
-            var response = await client.PutAsJsonAsync<Edit.Request>(putLink2, new Edit.Request() { Exam = new Edit.ExamData() });
-            response.EnsureNotFoundStatusCode();
-            response = await client.PutAsJsonAsync<Edit.Request>(putLink1, new Edit.Request() { Exam = new Edit.ExamData() });
-            response.EnsureSuccessStatusCode();
+            client.PutNotFound(putLink2, new Edit.Request() { Exam = new Edit.ExamData() });
+            client.PutExamSuccesfully(putLink1, new Edit.Request() { Exam = new Edit.ExamData() });
+
             var exam = await dbContext.Exams.FindAsync(examDto1.Id);
             exam.IsPublished = true;
             await dbContext.SaveChangesAsync();
-            response = await client.PutAsJsonAsync<Edit.Request>(putLink1, new Edit.Request() { Exam = new Edit.ExamData() });
-            response.EnsureNotFoundStatusCode();
+
+            client.PutNotFound(putLink1, new Edit.Request() { Exam = new Edit.ExamData() });
         }
 
     }

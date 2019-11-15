@@ -54,10 +54,7 @@ namespace SampleExamIntegrationTests.Features.Exam
 
 
             //no user and tags
-            var response = await client.GetAsync(getLink);
-            response.EnsureSuccessStatusCode();
-            var envelope = await response.Content.ReadAsAsync<ExamsDTOEnvelope>();
-            var responseExams = envelope.Exams;
+            var responseExams = client.GetExamsSuccesfully(getLink);
 
             foreach (var exam in responseExams)
             {
@@ -68,10 +65,7 @@ namespace SampleExamIntegrationTests.Features.Exam
             }
 
             //with tags
-            response = await client.GetAsync(getLinkIncludeTags);
-            response.EnsureSuccessStatusCode();
-            envelope = await response.Content.ReadAsAsync<ExamsDTOEnvelope>();
-            responseExams = envelope.Exams;
+            responseExams = client.GetExamsSuccesfully(getLinkIncludeTags);
 
             foreach (var exam in responseExams)
             {
@@ -82,10 +76,7 @@ namespace SampleExamIntegrationTests.Features.Exam
             }
 
             //with user
-            response = await client.GetAsync(getLinkIncludeUser);
-            response.EnsureSuccessStatusCode();
-            envelope = await response.Content.ReadAsAsync<ExamsDTOEnvelope>();
-            responseExams = envelope.Exams;
+            responseExams = client.GetExamsSuccesfully(getLinkIncludeUser);
 
             foreach (var exam in responseExams)
             {
@@ -96,10 +87,7 @@ namespace SampleExamIntegrationTests.Features.Exam
             }
 
             //with tags and user
-            response = await client.GetAsync(getLinkIncludeTagsAndUser);
-            response.EnsureSuccessStatusCode();
-            envelope = await response.Content.ReadAsAsync<ExamsDTOEnvelope>();
-            responseExams = envelope.Exams;
+            responseExams = client.GetExamsSuccesfully(getLinkIncludeTagsAndUser);
 
             foreach (var exam in responseExams)
             {
@@ -131,9 +119,7 @@ namespace SampleExamIntegrationTests.Features.Exam
             do
             {
                 var link = $"{getLink}?limit={limit}&offset={offset}";
-                response = await client.GetAsync(link);
-                response.EnsureSuccessStatusCode();
-                envelope = await response.Content.ReadAsAsync<ExamsDTOEnvelope>();
+                var envelope = client.GetExamsEnvelopeSuccesfully(link);
                 responseExams = envelope.Exams;
                 var responseCount = responseExams.Count();
                 count = envelope.ExamCount;

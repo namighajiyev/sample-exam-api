@@ -37,10 +37,8 @@ namespace SampleExamIntegrationTests.Features.Exam
             var getPrivateExamLink = $"exams/exam/{examPrivateDto.Id}";
 
             //not published
-            var response = await client.GetAsync(getExamLink);
-            response.EnsureNotFoundStatusCode();
-            response = await client.GetAsync(getPrivateExamLink);
-            response.EnsureNotFoundStatusCode();
+            client.GetNotFound(getExamLink);
+            client.GetNotFound(getPrivateExamLink);
 
             var examPublic = await dbContext.Exams.FindAsync(examPublicDto.Id);
             var examPrivate = await dbContext.Exams.FindAsync(examPrivateDto.Id);
@@ -49,42 +47,24 @@ namespace SampleExamIntegrationTests.Features.Exam
             await dbContext.SaveChangesAsync();
 
             //public and  published
-            response = await client.GetAsync(getExamLink);
-            response.EnsureSuccessStatusCode();
-            var envelope = await response.Content.ReadAsAsync<ExamDTOEnvelope>();
-            var responseExam = envelope.Exam;
-            Assert.Null(responseExam.User);
-            Assert.True(responseExam.Tags.Count == 0);
+            var responseExam =  client.GetExamSuccesfully(getExamLink);
+            AssertHelper.AssertNoUserAndNoTagsIncluded(responseExam);
 
             //include user
-            response = await client.GetAsync(getExamLinkIncludeUser);
-            response.EnsureSuccessStatusCode();
-            envelope = await response.Content.ReadAsAsync<ExamDTOEnvelope>();
-            responseExam = envelope.Exam;
-            Assert.NotNull(responseExam.User);
-            Assert.True(responseExam.Tags.Count == 0);
+            responseExam =  client.GetExamSuccesfully(getExamLinkIncludeUser);
+            AssertHelper.AssertOnlyUserIncluded(responseExam);
 
             //include tags
-            response = await client.GetAsync(getExamLinkIncludeTags);
-            response.EnsureSuccessStatusCode();
-            envelope = await response.Content.ReadAsAsync<ExamDTOEnvelope>();
-            responseExam = envelope.Exam;
-            Assert.Null(responseExam.User);
-            Assert.True(responseExam.Tags.Count > 0);
+            responseExam =  client.GetExamSuccesfully(getExamLinkIncludeTags);
+            AssertHelper.AssertOnlyTagsIncluded(responseExam);
 
             //include user and tags
-            response = await client.GetAsync(getExamLinkIncludeUserAndTags);
-            response.EnsureSuccessStatusCode();
-            envelope = await response.Content.ReadAsAsync<ExamDTOEnvelope>();
-            responseExam = envelope.Exam;
-            Assert.NotNull(responseExam.User);
-            Assert.True(responseExam.Tags.Count > 0);
+            responseExam =  client.GetExamSuccesfully(getExamLinkIncludeUserAndTags);
+            AssertHelper.AssertUserAndTagsIncluded(responseExam);
 
 
             //private and  published
-            response = await client.GetAsync(getPrivateExamLink);
-            response.EnsureNotFoundStatusCode();
-
+            client.GetNotFound(getPrivateExamLink);
         }
 
     }

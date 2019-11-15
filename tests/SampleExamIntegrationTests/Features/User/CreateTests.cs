@@ -21,16 +21,15 @@ namespace SampleExamIntegrationTests.Features.User
         }
 
         [Fact]
-        public async void ShouldCreateUserAndFailWithTheSameEmail()
+        public void ShouldCreateUserAndFailWithTheSameEmail()
         {
             var client = httpClientFactory.CreateClient();
             var dbContext = this.dbContextFactory.CreateDbContext();
 
             var userData = TestData.User.Create.NewUserData();
-            var response = await client.PostAsJsonAsync<Create.Request>("/users", new Create.Request() { User = userData });
-            response.EnsureSuccessStatusCode();
-            var envelope = await response.Content.ReadAsAsync<UserDTOEnvelope>();
-            var responseUser = envelope.User;
+            var responseUser = client.PostUserSuccesfully("/users", new Create.Request() { User = userData });
+
+
             var user = dbContext.Users.Where(e => e.Email == userData.Email).First();
 
             userData.Firstname.Should().Be(responseUser.Firstname).And.Be(user.Firstname);
@@ -39,17 +38,14 @@ namespace SampleExamIntegrationTests.Features.User
             userData.GenderId.Should().Be(responseUser.GenderId).And.Be(user.GenderId);
             userData.Email.Should().Be(responseUser.Email).And.Be(user.Email);
             userData.Password.Should().NotBe(user.Password);
-
-            response = await client.PostAsJsonAsync<Create.Request>("/users", new Create.Request() { User = userData });
-            response.EnsureBadRequestStatusCode();
-            var problemDetails = await response.Content.ReadAsAsync<ApiProblemDetails>();
+            var problemDetails = client.PostBadRequest("/users", new Create.Request() { User = userData });
 
             var hasUniqueEmailError = problemDetails.Errors.Any(kv => kv.Value.Any(e => e.Code == "CreateUserEmailUniqueEmail"));
             Assert.True(hasUniqueEmailError);
         }
 
         [Fact]
-        public async void ShouldNotCreateUserWithInvalidUserData()
+        public void ShouldNotCreateUserWithInvalidUserData()
         {
             var client = httpClientFactory.CreateClient();
             var dbContext = this.dbContextFactory.CreateDbContext();
@@ -64,15 +60,10 @@ namespace SampleExamIntegrationTests.Features.User
                 Password = "aaaa",
                 ConfirmPassword = "bbbb"
             };
-
-            var response = await client.PostAsJsonAsync<Create.Request>("/users", new Create.Request() { User = userData });
-            response.EnsureBadRequestStatusCode();
-            var problemDetails = await response.Content.ReadAsAsync<ApiProblemDetails>();
+            var problemDetails = client.PostBadRequest("/users", new Create.Request() { User = userData });
             problemDetails.Errors.Should().HaveCount(7);
 
-            response = await client.PostAsJsonAsync<Create.Request>("/users", new Create.Request());
-            problemDetails = await response.Content.ReadAsAsync<ApiProblemDetails>();
-
+            problemDetails = client.PostBadRequest("/users", new Create.Request());
             var hasNotNullError = problemDetails.Errors.Any(kv => kv.Value.Any(e => e.Code == "CreateUserNotNull"));
             Assert.True(hasNotNullError);
         }

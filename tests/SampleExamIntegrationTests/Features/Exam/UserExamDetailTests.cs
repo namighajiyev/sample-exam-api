@@ -1,4 +1,6 @@
+using System.Net.Http;
 using SampleExam;
+using SampleExam.Features.Exam;
 using SampleExamIntegrationTests.Helpers;
 using Xunit;
 
@@ -14,57 +16,79 @@ namespace SampleExamIntegrationTests.Features.Exam
 
         }
 
-
         [Fact]
         public async void ShouldGetUserExamDetails()
         {
+
             var client = httpClientFactory.CreateClient();
             var httpCallHelper = new HttpCallHelper(client);
             var dbContext = this.dbContextFactory.CreateDbContext();
 
+            //create private & public -user1
             var tuple = await httpCallHelper.CreateExam();
-            var examPublicDto1 = tuple.Item3;
-            var loginUserDto1 = tuple.Item1;
-
-            tuple = await httpCallHelper.CreateExam(true, true, null, loginUserDto1);
-            var examPrivateDto1 = tuple.Item3;
+            var loggedUser1 = tuple.Item1;
+            var examDto1 = tuple.Item3;
+            tuple = await httpCallHelper.CreateExam(true, true, null, loggedUser1);
+            var examDtoPrivate1 = tuple.Item3;
 
             tuple = await httpCallHelper.CreateExam();
-            var examPublicDto2 = tuple.Item3;
-            var loginUserDto2 = tuple.Item1;
+            var loggedUser2 = tuple.Item1;
+            var examDto2 = tuple.Item3;
+            tuple = await httpCallHelper.CreateExam(true, true, null, loggedUser2);
+            var examDtoPrivate2 = tuple.Item3;
 
-            var getExamLink1 = $"exams/user/exam/{examPublicDto1.Id}";
-            var getExamLink1Private = $"exams/user/exam/{examPrivateDto1.Id}";
-            var getExamLink2 = $"exams/user/exam/{examPublicDto2.Id}";
+            //create private & public -user2
+            var link1 = $"exams/user/exam/{examDto1.Id}";
+            var link1IncludeUser = $"exams/user/exam/{examDto1.Id}?includeUser=true";
+            var link1IncludeTags = $"exams/user/exam/{examDto1.Id}?includeTags=true";
+            var link1IncludeUserAndTags = $"exams/user/exam/{examDto1.Id}?includeUser=true&includeTags=true";
+            var link1Private = $"exams/user/exam/{examDtoPrivate1.Id}";
+            var link1PrivateIncludeUser = $"exams/user/exam/{examDtoPrivate1.Id}?includeUser=true";
+            var link1PrivateIncludeTags = $"exams/user/exam/{examDtoPrivate1.Id}?includeTags=true";
+            var link1PrivateIncludeUserAndTags = $"exams/user/exam/{examDtoPrivate1.Id}?includeUser=true&includeTags=true";
 
-            //unauthorized
+            var link2 = $"exams/user/exam/{examDto2.Id}";
 
-            var response = await client.GetAsync(getExamLink1);
-            response.EnsureUnauthorizedStatusCode();
+            //request unauthorized
+            client.GetUnauthorized(link1);
 
-            client.Authorize(loginUserDto1.Token);
+            //authorize user 1
+            client.Authorize(loggedUser1.Token);
 
-            //other users and not published
-            response = await client.GetAsync(getExamLink2);
-            response.EnsureNotFoundStatusCode();
+            //for public
+            // include none
+            var responseExam = client.GetExamSuccesfully(link1);
+            AssertHelper.AssertNoUserAndNoTagsIncluded(responseExam);
+            //include user
+            responseExam = client.GetExamSuccesfully(link1IncludeUser);
+            AssertHelper.AssertOnlyUserIncluded(responseExam);
+            //include tags
+            responseExam = client.GetExamSuccesfully(link1IncludeTags);
+            AssertHelper.AssertOnlyTagsIncluded(responseExam);
+            //include both
+            responseExam = client.GetExamSuccesfully(link1IncludeUserAndTags);
+            AssertHelper.AssertUserAndTagsIncluded(responseExam);
 
-            //not published
-            response = await client.GetAsync(getExamLink1);
-            response.EnsureNotFoundStatusCode();
-            response = await client.GetAsync(getExamLink1Private);
-            response.EnsureNotFoundStatusCode();
+            //for private
+            // include none
+            responseExam = client.GetExamSuccesfully(link1Private);
+            AssertHelper.AssertNoUserAndNoTagsIncluded(responseExam);
+            //include user
+            responseExam = client.GetExamSuccesfully(link1PrivateIncludeUser);
+            AssertHelper.AssertOnlyUserIncluded(responseExam);
+            //include tags
+            responseExam = client.GetExamSuccesfully(link1PrivateIncludeTags);
+            AssertHelper.AssertOnlyTagsIncluded(responseExam);
+            //include both
+            responseExam = client.GetExamSuccesfully(link1PrivateIncludeUserAndTags);
+            AssertHelper.AssertUserAndTagsIncluded(responseExam);
+            //request user 2 exam - should not found
+            client.GetNotFound(link2);
 
-
-            //publish exams
-            await httpCallHelper.PublishExam(examPublicDto1.Id);
-            await httpCallHelper.PublishExam(examPrivateDto1.Id);
-
-            client.Authorize(loginUserDto2.Token);
-            await httpCallHelper.PublishExam(examPublicDto2.Id);
-            client.Authorize(loginUserDto1.Token);
-
+            //authorize user 2
+            client.Authorize(loggedUser2.Token);
+            //request user 1 exam - should not found
+            client.GetNotFound(link1);
         }
-
-
     }
 }

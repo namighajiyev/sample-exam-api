@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using FluentAssertions;
 using SampleExam.Domain;
+using SampleExam.Features.Exam;
 using Xunit;
 
 namespace SampleExamIntegrationTests.Helpers
@@ -70,5 +71,29 @@ namespace SampleExamIntegrationTests.Helpers
             Assert.True(examDataTags.SequenceEqual(examTags));
         }
 
+        public static void AssertUserAndTagsIncluded(ExamDTO responseExam)
+        {
+            Assert.NotNull(responseExam.User);
+            Assert.True(responseExam.Tags.Count > 0);
+        }
+
+        public static void AssertOnlyTagsIncluded(ExamDTO responseExam)
+        {
+            Assert.Null(responseExam.User);
+            Assert.True(responseExam.Tags.Count > 0);
+        }
+
+        public static void AssertOnlyUserIncluded(ExamDTO responseExam)
+        {
+            Assert.NotNull(responseExam.User);
+            Assert.True(responseExam.Tags.Count == 0);
+        }
+
+        public static void AssertNoUserAndNoTagsIncluded(ExamDTO responseExam)
+        {
+            Assert.Null(responseExam.User);
+            Assert.True(responseExam.Tags.Count == 0);
+        }
     }
+
 }
