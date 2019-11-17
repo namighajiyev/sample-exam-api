@@ -5,7 +5,7 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using AutoMapper;
 using MediatR;
- 
+
 using SampleExam.Common;
 using static SampleExam.Features.Exam.Enums;
 using SampleExam.Infrastructure.Security;
@@ -71,10 +71,8 @@ namespace SampleExam.Features.Exam
                     case PublishType.NotPublished:
                         queryable = queryable.Where(e => !e.IsPublished);
                         break;
-                    case PublishType.Both:
-                        break;
+                    case PublishType.All:
                     default:
-                        queryable = queryable.Where(e => e.IsPublished);
                         break;
                 }
 
@@ -83,13 +81,11 @@ namespace SampleExam.Features.Exam
                     case PrivateType.Private:
                         queryable = queryable.Where(e => e.IsPrivate);
                         break;
-                    case PrivateType.NotPrivate:
+                    case PrivateType.Public:
                         queryable = queryable.Where(e => !e.IsPrivate);
                         break;
-                    case PrivateType.Both:
-                        break;
+                    case PrivateType.All:
                     default:
-                        queryable = queryable.Where(e => !e.IsPrivate);
                         break;
                 }
 

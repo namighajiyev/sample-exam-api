@@ -1,5 +1,8 @@
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Threading.Tasks;
 using SampleExam;
 using SampleExam.Features.Exam;
 using SampleExamIntegrationTests.Helpers;
@@ -60,8 +63,7 @@ namespace SampleExamIntegrationTests.Features.Exam
             {
                 Assert.True(exam.IsPublished);
                 Assert.False(exam.IsPrivate);
-                Assert.Null(exam.User);
-                Assert.True(exam.Tags.Count == 0);
+                AssertHelper.AssertNoUserAndNoTagsIncluded(exam);
             }
 
             //with tags
@@ -71,8 +73,7 @@ namespace SampleExamIntegrationTests.Features.Exam
             {
                 Assert.True(exam.IsPublished);
                 Assert.False(exam.IsPrivate);
-                Assert.Null(exam.User);
-                Assert.True(exam.Tags.Count > 0);
+                AssertHelper.AssertOnlyTagsIncluded(exam);
             }
 
             //with user
@@ -82,8 +83,7 @@ namespace SampleExamIntegrationTests.Features.Exam
             {
                 Assert.True(exam.IsPublished);
                 Assert.False(exam.IsPrivate);
-                Assert.NotNull(exam.User);
-                Assert.True(exam.Tags.Count == 0);
+                AssertHelper.AssertOnlyUserIncluded(exam);
             }
 
             //with tags and user
@@ -112,24 +112,14 @@ namespace SampleExamIntegrationTests.Features.Exam
                 await httpCallHelper.PublishExam(examId);
             }
 
-            var limit = 2;
-            var offset = 0;
-            var count = 0;
-            var haveExams = false;
-            do
-            {
-                var link = $"{getLink}?limit={limit}&offset={offset}";
-                var envelope = await client.GetExamsEnvelopeSuccesfully(link);
-                responseExams = envelope.Exams;
-                var responseCount = responseExams.Count();
-                count = envelope.ExamCount;
-                offset += limit;
-                haveExams = offset < count;
-                Assert.True(responseCount == limit || (responseCount < limit && !haveExams));
-            }
-            while (haveExams);
+            var limitOffsetTester = new LimitOffsetTester(client, getLink);
+            await limitOffsetTester.DoTest(GetExams);
 
-
+        }
+        private async Task<Tuple<IEnumerable<ExamDTO>, int>> GetExams(HttpClient client, string link)
+        {
+            var envelope = await client.GetExamsEnvelopeSuccesfully(link);
+            return Tuple.Create(envelope.Exams, envelope.ExamCount);
         }
     }
 }

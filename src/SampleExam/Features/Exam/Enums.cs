@@ -6,15 +6,15 @@ namespace SampleExam.Features.Exam
         {
             Published = 1,
             NotPublished = 2,
-            Both = 3
+            All = 3
 
         }
 
         public enum PrivateType
         {
             Private = 1,
-            NotPrivate = 2,
-            Both = 3
+            Public = 2,
+            All = 3
         }
     }
 }
