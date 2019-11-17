@@ -46,6 +46,14 @@ namespace SampleExam.Infrastructure.Errors
             }
         }
 
+        public class PrivateUserExamEditException : RestException
+        {
+            public PrivateUserExamEditException() : base(HttpStatusCode.BadRequest, nameof(Domain.UserExam),
+            "Private user exam can only be edited by creator of exam")
+            {
+            }
+        }
+
         public class InvalidAnswerOptionExamException : RestException
         {
             public InvalidAnswerOptionExamException() : base(HttpStatusCode.BadRequest, nameof(Domain.UserExam),

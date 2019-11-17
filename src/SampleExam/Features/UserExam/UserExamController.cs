@@ -19,7 +19,7 @@ namespace SampleExam.Features.UserExam
         }
 
         [HttpGet]
-        public async Task<UserExamsDTOEnvelope> GetPublishedNotPrivateExamQuestions(
+        public async Task<UserExamsDTOEnvelope> Get(
           [FromQuery] int? limit,
           [FromQuery] int? offset,
           [FromQuery] bool? includeExams

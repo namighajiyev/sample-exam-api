@@ -49,10 +49,13 @@ namespace SampleExam.Features.UserExam
             public async Task<UserExamDTOEnvelope> Handle(Request request, CancellationToken cancellationToken)
             {
                 var userId = this.currentUserAccessor.GetCurrentUserId();
-                var examCount = context.Exams
-                .Where(e => e.UserId == userId && e.Id == request.ExamId && e.IsPublished).Count();
+                var exam = context.Exams.Where(e => e.Id == request.ExamId && e.IsPublished == true).First();
 
-                if (examCount == 0)
+                if (exam == null)
+                {
+                    throw new Exceptions.ExamNotFoundException();
+                }
+                if (exam.IsPrivate && exam.UserId != userId)
                 {
                     throw new Exceptions.ExamNotFoundException();
                 }

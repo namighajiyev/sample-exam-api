@@ -52,15 +52,16 @@ namespace SampleExam.Features.UserExam
                 var userId = this.currentUserAccessor.GetCurrentUserId();
 
                 var userExam = await this.context.UserExams
-                .Include(e => e.Exam).Where(e => e.Id == request.Id).FirstOrDefaultAsync();
+                .Include(e => e.Exam).Where(e => e.Id == request.Id && e.UserId == userId && e.Exam.IsPublished == true).FirstOrDefaultAsync();
 
                 if (userExam == null)
                 {
                     throw new Exceptions.UserExamNotFoundException();
                 }
-                if (!userExam.Exam.IsPublished)
+
+                if (userExam.Exam.IsPrivate && userExam.Exam.UserId != userId)
                 {
-                    throw new Exceptions.ExamNotFoundException();
+                    throw new Exceptions.PrivateUserExamEditException();
                 }
 
                 if (userExam.EndedAt.HasValue)
