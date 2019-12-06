@@ -48,7 +48,6 @@ namespace SampleExam.Features.Question
         [HttpGet("{id}")]
         public async Task<QuestionDTOEnvelope> GetPublishedNotPrivateExamQuestion(
                   int id,
-                  [FromQuery] int examId,
                   [FromQuery] int? limit,
                   [FromQuery] int? offset,
                   [FromQuery] bool? includeAnswerOptions
@@ -60,7 +59,6 @@ namespace SampleExam.Features.Question
         [HttpGet("/user/exam/question/{id}")]
         public async Task<QuestionDTOEnvelope> GetUserExamQuestion(
                   int id,
-                  [FromQuery] int examId,
                   [FromQuery] int? limit,
                   [FromQuery] int? offset,
                   [FromQuery] bool? includeAnswerOptions

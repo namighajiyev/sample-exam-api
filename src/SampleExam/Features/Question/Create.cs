@@ -20,8 +20,6 @@ namespace SampleExam.Features.Question
 
         public class AnswerData
         {
-            public char Key { get; set; }
-
             public string Text { get; set; }
 
             public bool IsRight { get; set; }
@@ -47,7 +45,7 @@ namespace SampleExam.Features.Question
                 var errorCodePrefix = nameof(Create);
                 RuleFor(x => x.Text).QuestionText<QuestionData, string>(errorCodePrefix);
                 RuleFor(x => x.Answers).QuestionAnswers<QuestionData, AnswerData>
-                                    (e => e.Key, e => e.IsRight, errorCodePrefix);
+                                    (e => e.IsRight, errorCodePrefix);
             }
         }
 
@@ -56,7 +54,6 @@ namespace SampleExam.Features.Question
             public AnswerDataValidator()
             {
                 var errorCodePrefix = nameof(Create);
-                RuleFor(x => x.Key).AnswerKey<AnswerData, char>(errorCodePrefix);
                 RuleFor(x => x.Text).AnswerText<AnswerData, string>(errorCodePrefix);
                 RuleFor(x => x.IsRight).AnswerIsRight<AnswerData, bool>(errorCodePrefix);
             }

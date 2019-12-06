@@ -1,6 +1,6 @@
 namespace SampleExamIntegrationTests.Features.Question
 {
-    public class CreateTests
+    public class EditTests
     {
         //unauthorized
         //bad request question text 1) empty, 2) null 3) length more than Constants.QUESTION_TEXT_LEN
@@ -9,9 +9,10 @@ namespace SampleExamIntegrationTests.Features.Question
         //6) with all answers right
         //bad request 1) answer option text empty 2) ao text null 3) ao text > Constants.ANSWEROPTION_TEXT_LEN 
         //4) ao isright null
-        //add to other users exam
-        //add to published exam
+        //edit  other users exam
+        //edit published exam
         //normal case
-
+        // test with question text null - e.g remains the same
+        // test answeroptions is null - e.g remains the same
     }
 }

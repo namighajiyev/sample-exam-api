@@ -29,10 +29,10 @@ namespace SampleExam.Infrastructure.Errors
             switch (exception)
             {
                 case RestException re:
-                    problemDetails.Title = re.Caption;
-                    problemDetails.Detail = re.Error;
+                    problemDetails.Title = re.Title;
+                    problemDetails.Detail = re.Detail;
                     problemDetails.Status = (int)re.Code;
-                    problemDetails.Errors.Add(re.Caption, new Error[] { new Error(re.Caption, re.Error) });
+                    problemDetails.Errors.Add("Error", new Error[] { re.Error });
                     context.Response.StatusCode = (int)re.Code;
                     responceText = JsonConvert.SerializeObject(problemDetails);
                     break;

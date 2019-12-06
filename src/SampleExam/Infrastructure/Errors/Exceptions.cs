@@ -9,7 +9,7 @@ namespace SampleExam.Infrastructure.Errors
         {
             public QuestionNotFoundException() : base(HttpStatusCode.NotFound,
             nameof(Domain.Question),
-            Constants.NOT_FOUND)
+            Constants.NOT_FOUND, new Error(nameof(QuestionNotFoundException), Constants.NOT_FOUND))
             {
             }
         }
@@ -17,7 +17,7 @@ namespace SampleExam.Infrastructure.Errors
         public class ExamNotFoundException : RestException
         {
             public ExamNotFoundException() : base(HttpStatusCode.NotFound, nameof(Domain.Exam),
-            Constants.NOT_FOUND)
+            Constants.NOT_FOUND, new Error(nameof(ExamNotFoundException), Constants.NOT_FOUND))
             {
             }
         }
@@ -25,7 +25,7 @@ namespace SampleExam.Infrastructure.Errors
         public class UserExamNotFoundException : RestException
         {
             public UserExamNotFoundException() : base(HttpStatusCode.NotFound, nameof(Domain.UserExam),
-            Constants.NOT_FOUND)
+            Constants.NOT_FOUND, new Error(nameof(UserExamNotFoundException), Constants.NOT_FOUND))
             {
             }
         }
@@ -33,7 +33,7 @@ namespace SampleExam.Infrastructure.Errors
         public class AnswerOptionNotFoundException : RestException
         {
             public AnswerOptionNotFoundException() : base(HttpStatusCode.NotFound, nameof(Domain.AnswerOption),
-            Constants.NOT_FOUND)
+            Constants.NOT_FOUND, new Error(nameof(AnswerOptionNotFoundException), Constants.NOT_FOUND))
             {
             }
         }
@@ -41,7 +41,7 @@ namespace SampleExam.Infrastructure.Errors
         public class UserExamAlreadyEndedException : RestException
         {
             public UserExamAlreadyEndedException() : base(HttpStatusCode.BadRequest, nameof(Domain.UserExam),
-            "Already ended the user exam")
+            "Already ended the user exam", new Error(nameof(UserExamAlreadyEndedException), "Already ended the user exam"))
             {
             }
         }
@@ -49,7 +49,8 @@ namespace SampleExam.Infrastructure.Errors
         public class PrivateUserExamEditException : RestException
         {
             public PrivateUserExamEditException() : base(HttpStatusCode.BadRequest, nameof(Domain.UserExam),
-            "Private user exam can only be edited by creator of exam")
+            "Private user exam can only be edited by creator of exam", new Error(nameof(PrivateUserExamEditException),
+           "Private user exam can only be edited by creator of exam"))
             {
             }
         }
@@ -57,7 +58,8 @@ namespace SampleExam.Infrastructure.Errors
         public class InvalidAnswerOptionExamException : RestException
         {
             public InvalidAnswerOptionExamException() : base(HttpStatusCode.BadRequest, nameof(Domain.UserExam),
-            "Answer option is not for this exam")
+            "Answer option is not for this exam", new Error(nameof(InvalidAnswerOptionExamException),
+            "Answer option is not for this exam"))
             {
             }
         }

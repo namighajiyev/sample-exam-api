@@ -7,19 +7,19 @@ namespace SampleExam.Infrastructure.Errors
     //https://www.strathweb.com/2018/02/exploring-the-apicontrollerattribute-and-its-features-for-asp-net-core-mvc-2-1/
     public class RestException : Exception
     {
-        public RestException(HttpStatusCode code, string caption, string error)
+        public RestException(HttpStatusCode code, string title, string detail, Error error)
         {
             Code = code;
-            Caption = caption;
+            Title = title;
+            Detail = detail;
             Error = error;
         }
 
         public HttpStatusCode Code { get; }
 
-        public string Caption { get; set; }
+        public string Title { get; set; }
 
-        public string Error { get; set; }
-
-
+        public string Detail { get; set; }
+        public Error Error { get; private set; }
     }
 }

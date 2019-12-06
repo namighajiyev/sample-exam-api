@@ -18,21 +18,21 @@ namespace SampleExam.Features.Question
         public class Query : IRequest<QuestionDTOEnvelope>
         {
             public Query(
-                    bool isAutherized,
+                    bool isAuthorized,
                     int id,
                     int? limit,
                     int? offset,
                     bool? includeAnswerOptions
                  )
             {
-                this.IsAutherized = isAutherized;
+                this.IsAuthorized = isAuthorized;
                 this.Id = id;
                 this.Limit = limit ?? Constants.FETCH_LIMIT;
                 this.Offset = offset ?? Constants.FETCH_OFFSET;
                 this.IncludeAnswerOptions = includeAnswerOptions ?? false;
             }
 
-            public bool IsAutherized { get; private set; }
+            public bool IsAuthorized { get; private set; }
             public int Id { get; }
             public int Limit { get; }
             public int Offset { get; }
@@ -80,7 +80,7 @@ namespace SampleExam.Features.Question
                 var examId = question.ExamId;
 
                 int examCount = 0;
-                if (request.IsAutherized)
+                if (request.IsAuthorized)
                 {
                     var userId = currentUserAccessor.GetCurrentUserId();
                     examCount = context.Exams.ByIdAndUserId(examId, userId).Count();

@@ -5,7 +5,7 @@ using AutoMapper;
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
- 
+
 using System.Net;
 using SampleExam.Infrastructure.Errors;
 using SampleExam.Infrastructure.Security;
@@ -86,7 +86,8 @@ namespace SampleExam.Features.Auth
                 var user = context.Users.Include(e => e.RefreshTokens).Where(u => u.Email == userData.Email).FirstOrDefault();
                 var failException = new RestException(HttpStatusCode.Unauthorized,
                     "Invalid email / password.",
-                    "Email or password is invalid");
+                    "Email or password is invalid",
+                    new Error(nameof(Login), "Email or password is invalid"));
 
                 if (user == null)
                 {

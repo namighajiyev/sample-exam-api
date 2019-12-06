@@ -77,6 +77,18 @@ namespace SampleExam.Features.QuestionAnswer
                 var questionAnswer = await this.context.UserExamQuestionAnswers.Where(e => e.QuestionId == answerOption.QuestionId
                 && e.UserExamId == requestQA.UserExamId).FirstOrDefaultAsync(cancellationToken);
 
+                if (userExam.EndedAt.HasValue)
+                {
+                    throw new UserExamAlreadyEndedException();
+                }
+
+                if (userExam.StartedtedAt.AddMinutes(userExam.Exam.TimeInMinutes) <= DateTime.UtcNow)
+                {
+                    userExam.EndedAt = userExam.StartedtedAt.AddMinutes(userExam.Exam.TimeInMinutes);
+                    await context.SaveChangesAsync(cancellationToken);
+                    throw new UserExamAlreadyEndedException();
+                }
+
 
                 UserExamQuestionAnswer newQuestionAnswer = null;
                 var utcNow = DateTime.UtcNow;

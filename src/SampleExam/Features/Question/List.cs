@@ -21,21 +21,21 @@ namespace SampleExam.Features.Question
         public class Query : IRequest<QuestionsDTOEnvelope>
         {
             public Query(
-                    bool isAutherized,
+                    bool isAuthorized,
                     int examId,
                     int? limit,
                     int? offset,
                     bool? includeAnswerOptions
                  )
             {
-                this.IsAutherized = isAutherized;
+                this.IsAuthorized = isAuthorized;
                 this.ExamId = examId;
                 this.Limit = limit ?? Constants.FETCH_LIMIT;
                 this.Offset = offset ?? Constants.FETCH_OFFSET;
                 this.IncludeAnswerOptions = includeAnswerOptions ?? false;
             }
 
-            public bool IsAutherized { get; private set; }
+            public bool IsAuthorized { get; private set; }
             public int ExamId { get; }
             public int Limit { get; }
             public int Offset { get; }
@@ -68,7 +68,7 @@ namespace SampleExam.Features.Question
             public async Task<QuestionsDTOEnvelope> Handle(Query request, CancellationToken cancellationToken)
             {
                 int examCount = 0;
-                if (request.IsAutherized)
+                if (request.IsAuthorized)
                 {
                     var userId = currentUserAccessor.GetCurrentUserId();
                     examCount = context.Exams.ByIdAndUserId(request.ExamId, userId).Count();
