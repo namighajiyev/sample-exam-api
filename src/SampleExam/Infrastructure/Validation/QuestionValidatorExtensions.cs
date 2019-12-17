@@ -55,6 +55,38 @@ namespace SampleExam.Infrastructure.Validation.Question
 
         }
 
+
+        public static IRuleBuilderOptions<T, IEnumerable<TProperty>> QuestionTypeRadio<T, TProperty>(
+                    this IRuleBuilder<T, IEnumerable<TProperty>> ruleBuilder,
+                    Func<TProperty, bool> isRightSelector,
+                    string errorCodePrefix)
+        {
+            return ruleBuilder.NotNull()
+                        .Must(answers =>
+                        {
+                            return (answers ?? Enumerable.Empty<TProperty>())
+                            .Where(isRightSelector).Count() == 1;
+                        })
+                        .WithErrorCode($"{errorCodePrefix}QuestionTypeRadioRightAnswerCountMustBeOne")
+                        .WithMessage("Radio type question must be exactly one right answer");
+        }
+
+        public static IRuleBuilderOptions<T, IEnumerable<TProperty>> QuestionTypeCheckbox<T, TProperty>(
+            this IRuleBuilder<T, IEnumerable<TProperty>> ruleBuilder,
+            Func<TProperty, bool> isRightSelector,
+            string errorCodePrefix)
+        {
+            return ruleBuilder.NotNull()
+                        .Must(answers =>
+                        {
+                            return (answers ?? Enumerable.Empty<TProperty>())
+                           .Where(isRightSelector).Count() > 1;
+                        })
+                        .WithErrorCode($"{errorCodePrefix}QuestionTypeRadioRightAnswerCountMustBeOne")
+                        .WithMessage("Checkbox type question must have more than one right answers");
+        }
+
+
         public static IRuleBuilderOptions<T, string> AnswerText<T, TProperty>(
             this IRuleBuilder<T, string> ruleBuilder,
             string errorCodePrefix)

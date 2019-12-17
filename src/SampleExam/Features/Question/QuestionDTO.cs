@@ -9,6 +9,7 @@ namespace SampleExam.Features.Question
         public int Id { get; set; }
 
         public int ExamId { get; set; }
+        public int QuestionTypeId { get; set; }
 
         public string Text { get; set; }
 

@@ -37,6 +37,7 @@ namespace SampleExam.Common
         public static int QUESTION_TEXT_LEN = 3000;
         public static int QUESTION_ANSWER_MIN_COUNT = 4;
         public static int QUESTION_ANSWER_MAX_COUNT = 10;
+        public static int QUESTION_TYPE = 50;
         public static int FETCH_OFFSET = 0;
         internal static int FETCH_LIMIT = 20;
 

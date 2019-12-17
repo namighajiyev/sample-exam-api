@@ -27,6 +27,7 @@ namespace SampleExam.Features.Question
 
         public class QuestionData
         {
+            public int QuestionTypeId { get; set; }
             public string Text { get; set; }
 
             public IEnumerable<AnswerData> Answers { get; set; }
@@ -44,8 +45,9 @@ namespace SampleExam.Features.Question
             {
                 var errorCodePrefix = nameof(Create);
                 RuleFor(x => x.Text).QuestionText<QuestionData, string>(errorCodePrefix);
-                RuleFor(x => x.Answers).QuestionAnswers<QuestionData, AnswerData>
-                                    (e => e.IsRight, errorCodePrefix);
+                RuleFor(x => x.Answers).QuestionAnswers<QuestionData, AnswerData>(e => e.IsRight, errorCodePrefix);
+                RuleFor(x => x.Answers).QuestionTypeRadio(e => e.IsRight, errorCodePrefix).When(x => x.QuestionTypeId == SeedData.QuestionTypes.Radio.Id);
+                RuleFor(x => x.Answers).QuestionTypeCheckbox(e => e.IsRight, errorCodePrefix).When(x => x.QuestionTypeId == SeedData.QuestionTypes.Checkbox.Id);
             }
         }
 
@@ -63,8 +65,6 @@ namespace SampleExam.Features.Question
         {
             public RequestValidator()
             {
-                var errorCodePrefix = nameof(Create);
-                RuleFor(x => x.ExamId).Id<Request, int>(errorCodePrefix + "QuestionExam");
                 RuleFor(x => x.Question).NotNull().SetValidator(new QuestionDataValidator());
                 RuleFor(x => x.Question.Answers).NotNull();
                 RuleForEach(x => x.Question.Answers).SetValidator(new AnswerDataValidator());

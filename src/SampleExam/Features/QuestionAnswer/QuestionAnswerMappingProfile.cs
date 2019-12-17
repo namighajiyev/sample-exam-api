@@ -6,7 +6,7 @@ namespace SampleExam.Features.QuestionAnswer
     {
         public QuestionAnswerMappingProfile()
         {
-            CreateMap<Domain.UserExamQuestionAnswer, QuestionAnswerDTO>(MemberList.Destination);
+            CreateMap<Domain.UserExamQuestion, QuestionAnswerDTO>(MemberList.Destination);
         }
 
     }

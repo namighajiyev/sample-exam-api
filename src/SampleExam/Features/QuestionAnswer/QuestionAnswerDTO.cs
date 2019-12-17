@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace SampleExam.Features.QuestionAnswer
 {
@@ -6,7 +7,7 @@ namespace SampleExam.Features.QuestionAnswer
     {
         public int UserExamId { get; set; }
         public int QuestionId { get; set; }
-        public int AnswerOptionId { get; set; }
+        public IEnumerable<int> AnswerOptionIds { get; set; }
 
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }

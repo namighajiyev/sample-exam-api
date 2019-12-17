@@ -46,6 +46,14 @@ namespace SampleExam.Infrastructure.Errors
             }
         }
 
+        public class RadioQuestionWithMultipleAnswerException : RestException
+        {
+            public RadioQuestionWithMultipleAnswerException() : base(HttpStatusCode.BadRequest, nameof(Domain.UserExam),
+            "Radio type question must only have single user answer", new Error(nameof(UserExamAlreadyEndedException), "Radio type question must only have single user answer"))
+            {
+            }
+        }
+
         public class PrivateUserExamEditException : RestException
         {
             public PrivateUserExamEditException() : base(HttpStatusCode.BadRequest, nameof(Domain.UserExam),

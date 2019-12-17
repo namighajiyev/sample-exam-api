@@ -19,7 +19,7 @@ namespace SampleExam.Domain
 
         public Question Question { get; set; }
 
-        public ICollection<UserExamQuestionAnswer> UserExamQuestionAnswers { get; set; }
+        public ICollection<UserExamQuestion> UserExamQuestionAnswers { get; set; }
 
     }
 }

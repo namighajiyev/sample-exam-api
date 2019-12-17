@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using SampleExam.Infrastructure.Data;
 using SampleExam.Infrastructure.Utils;
 
 namespace SampleExamIntegrationTests.Helpers
@@ -62,6 +64,152 @@ namespace SampleExamIntegrationTests.Helpers
                         examData.Tags = newTags;
                     }
                     return examData;
+                }
+            }
+        }
+
+        public static class Question
+        {
+            public static class Create
+            {
+                public static SampleExam.Features.Question.Create.QuestionData NewQuestionData(bool isRadio = true)
+                {
+                    int questionTypeId = isRadio ? SeedData.QuestionTypes.Radio.Id : SeedData.QuestionTypes.Checkbox.Id;
+                    var questionData = new SampleExam.Features.Question.Create.QuestionData() { QuestionTypeId = questionTypeId, Text = "Some  question text ?" };
+                    var answers = new List<SampleExam.Features.Question.Create.AnswerData>();
+                    for (int i = 0; i < 5; i++)
+                    {
+                        answers.Add(GenerateAnswerOption(i));
+                    }
+                    answers[0].IsRight = true;
+                    answers[1].IsRight = isRadio ? false : true;
+                    questionData.Answers = answers;
+                    return questionData;
+
+                }
+
+                public static SampleExam.Features.Question.Create.AnswerData GenerateAnswerOption(int i)
+                {
+                    return new SampleExam.Features.Question.Create.AnswerData()
+                    {
+                        Text = $"Answer option {i}"
+                    };
+                }
+
+                public static SampleExam.Features.Question.Create.QuestionData NewQuestionDataWithEmptyText(bool isRadio = true)
+                {
+                    var questionData = NewQuestionData();
+                    questionData.Text = "";
+                    return questionData;
+                }
+
+                public static SampleExam.Features.Question.Create.QuestionData NewQuestionDataWithNullText(bool isRadio = true)
+                {
+                    var questionData = NewQuestionData();
+                    questionData.Text = null;
+                    return questionData;
+                }
+                public static SampleExam.Features.Question.Create.QuestionData NewQuestionDataWithTooLongText(bool isRadio = true)
+                {
+                    var questionData = NewQuestionData();
+                    questionData.Text = new string('a', SampleExam.Common.Constants.QUESTION_TEXT_LEN + 1);
+                    return questionData;
+                }
+                public static SampleExam.Features.Question.Create.QuestionData NewQuestionDataWithEmptyAnswerOption(bool isRadio = true)
+                {
+                    var questionData = NewQuestionData();
+                    questionData.Answers = new List<SampleExam.Features.Question.Create.AnswerData>();
+                    return questionData;
+                }
+                public static SampleExam.Features.Question.Create.QuestionData NewQuestionDataWithNullAnswerOption(bool isRadio = true)
+                {
+                    var questionData = NewQuestionData();
+                    questionData.Answers = null;
+                    return questionData;
+                }
+                public static SampleExam.Features.Question.Create.QuestionData NewQuestionDataWithFewerAnswerOption(bool isRadio = true)
+                {
+                    var questionData = NewQuestionData();
+                    questionData.Answers = questionData.Answers.Take(SampleExam.Common.Constants.QUESTION_ANSWER_MIN_COUNT - 1);
+                    return questionData;
+                }
+                public static SampleExam.Features.Question.Create.QuestionData NewQuestionDataWithMoreAnswerOption(bool isRadio = true)
+                {
+                    var questionData = NewQuestionData();
+                    var answers = new List<SampleExam.Features.Question.Create.AnswerData>();
+                    var count = SampleExam.Common.Constants.QUESTION_ANSWER_MAX_COUNT + 1;
+                    for (int i = 0; i < count; i++)
+                    {
+                        var answerOption = GenerateAnswerOption(i);
+                        answers.Add(answerOption);
+                    }
+                    questionData.Answers = answers;
+                    return questionData;
+                }
+
+                public static SampleExam.Features.Question.Create.QuestionData NewQuestionDataRadioWithTwoRight()
+                {
+                    var questionData = NewQuestionData();
+                    var answers = questionData.Answers.ToArray();
+                    answers[0].IsRight = true;
+                    answers[1].IsRight = true;
+                    return questionData;
+                }
+
+                public static SampleExam.Features.Question.Create.QuestionData NewQuestionDataCheckboxWithSingleRight()
+                {
+                    var questionData = NewQuestionData(false);
+                    var answers = questionData.Answers.ToArray();
+                    foreach (var answer in answers)
+                    {
+                        answer.IsRight = false;
+                    }
+                    answers[0].IsRight = true;
+                    return questionData;
+                }
+
+                public static SampleExam.Features.Question.Create.QuestionData NewQuestionDataWithAllRight(bool isRadio = true)
+                {
+                    var questionData = NewQuestionData(isRadio);
+                    var answers = questionData.Answers.ToArray();
+                    foreach (var answer in answers)
+                    {
+                        answer.IsRight = true;
+                    }
+                    return questionData;
+                }
+
+                public static SampleExam.Features.Question.Create.QuestionData NewQuestionDataWithAllWrong(bool isRadio = true)
+                {
+                    var questionData = NewQuestionData(isRadio);
+                    var answers = questionData.Answers.ToArray();
+                    foreach (var answer in answers)
+                    {
+                        answer.IsRight = false;
+                    }
+                    return questionData;
+                }
+
+                public static SampleExam.Features.Question.Create.QuestionData NewQuestionDataWithEmptyAnswerText(bool isRadio = true)
+                {
+                    var questionData = NewQuestionData(isRadio);
+                    var answers = questionData.Answers.ToArray();
+                    answers[0].Text = "";
+                    return questionData;
+                }
+                public static SampleExam.Features.Question.Create.QuestionData NewQuestionDataWithNullAnswerText(bool isRadio = true)
+                {
+                    var questionData = NewQuestionData(isRadio);
+                    var answers = questionData.Answers.ToArray();
+                    answers[0].Text = null;
+                    return questionData;
+                }
+                public static SampleExam.Features.Question.Create.QuestionData NewQuestionDataWithTooLongAnswerText(bool isRadio = true)
+                {
+                    var questionData = NewQuestionData(isRadio);
+                    var answers = questionData.Answers.ToArray();
+                    answers[0].Text = new string('a', SampleExam.Common.Constants.ANSWEROPTION_TEXT_LEN + 1);
+                    return questionData;
                 }
             }
         }

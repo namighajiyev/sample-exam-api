@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Net;
 
 namespace SampleExam.Infrastructure.Errors
@@ -21,5 +22,7 @@ namespace SampleExam.Infrastructure.Errors
 
         public string Detail { get; set; }
         public Error Error { get; private set; }
+
+        public IDictionary<string, object> Extensions { get; set; }
     }
 }

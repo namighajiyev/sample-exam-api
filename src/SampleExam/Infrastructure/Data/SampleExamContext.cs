@@ -18,11 +18,13 @@ namespace SampleExam.Infrastructure.Data
         public DbSet<ExamTag> ExamTags { get; set; }
         public DbSet<Gender> Genders { get; set; }
         public DbSet<Question> Questions { get; set; }
+        public DbSet<QuestionType> QuestionTypes { get; set; }
         public DbSet<RefreshToken> RefreshTokens { get; set; }
         public DbSet<Tag> Tags { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<UserExam> UserExams { get; set; }
-        public DbSet<UserExamQuestionAnswer> UserExamQuestionAnswers { get; set; }
+        public DbSet<UserExamQuestion> UserExamQuestions { get; set; }
+        public DbSet<UserExamQuestionAnswr> UserExamQuestionAnswers { get; set; }
         public DbSet<UserExamResult> UserExamResults { get; set; }
 
 
@@ -35,6 +37,7 @@ namespace SampleExam.Infrastructure.Data
             .HasAnnotation("DatabaseGenerated",
              System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
             modelBuilder.Entity<Gender>().HasData(SeedData.Genders.Male, SeedData.Genders.Female);
+            modelBuilder.Entity<QuestionType>().HasData(SeedData.QuestionTypes.Radio, SeedData.QuestionTypes.Checkbox);
 
             modelBuilder.Entity<User>().HasIndex(e => e.Email).IsUnique().HasFilter("\"IsDeleted\" = false");
             modelBuilder.Entity<User>().Property(e => e.Firstname).IsRequired().HasMaxLength(Constants.USER_FIRSTNAME_LEN);
@@ -90,10 +93,19 @@ namespace SampleExam.Infrastructure.Data
             modelBuilder.Entity<Question>().Property(e => e.CreatedAt).IsRequired();
             modelBuilder.Entity<Question>().Property(e => e.UpdatedAt).IsRequired();
 
-            modelBuilder.Entity<UserExamQuestionAnswer>().Property(e => e.CreatedAt).IsRequired();
-            modelBuilder.Entity<UserExamQuestionAnswer>().Property(e => e.UpdatedAt).IsRequired();
-            modelBuilder.Entity<UserExamQuestionAnswer>().HasKey(e => new { e.UserExamId, e.QuestionId });
-            modelBuilder.Entity<UserExamQuestionAnswer>().HasIndex(e => new { e.UserExamId, e.AnswerOptionId }).IsUnique();
+            modelBuilder.Entity<QuestionType>().Property(e => e.Name).IsRequired().HasMaxLength(Constants.QUESTION_TYPE);
+
+            modelBuilder.Entity<UserExamQuestion>().Property(e => e.CreatedAt).IsRequired();
+            modelBuilder.Entity<UserExamQuestion>().Property(e => e.UpdatedAt).IsRequired();
+            modelBuilder.Entity<UserExamQuestion>().HasKey(e => new { e.UserExamId, e.QuestionId });
+            //modelBuilder.Entity<UserExamQuestionAnswer>().HasIndex(e => new { e.UserExamId, e.AnswerOptionId }).IsUnique();
+            //todo within a answer to a question answer option must be unique
+            //modelBuilder.Entity<UserExamQuestion>().HasIndex(e => new { e.AnswerOptions.First().Id }).IsUnique();
+
+            //UserExamQuestionAnswr
+            modelBuilder.Entity<UserExamQuestionAnswr>().Property(e => e.CreatedAt).IsRequired();
+            modelBuilder.Entity<UserExamQuestionAnswr>().Property(e => e.UpdatedAt).IsRequired();
+            modelBuilder.Entity<UserExamQuestionAnswr>().HasKey(e => new { e.UserExamId, e.QuestionId, e.AnswerOptionId });
 
             modelBuilder.Entity<UserExamResult>().HasKey(e => e.UserExamId);
             modelBuilder.Entity<UserExamResult>().Property(e => e.IsPassed).IsRequired().HasDefaultValue(false);

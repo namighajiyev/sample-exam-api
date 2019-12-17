@@ -72,7 +72,11 @@ namespace SampleExamIntegrationTests.Helpers
             var response = await client.PostAsJsonAsync<object>(link, data);
             response.EnsureSuccessStatusCode();
         }
-
+        public static async Task PostNotFound(this HttpClient client, string link, object data)
+        {
+            var response = await client.PostAsJsonAsync<object>(link, data);
+            response.EnsureNotFoundStatusCode();
+        }
         public static async Task<ExamDTO> DeleteExamSucessfully(this HttpClient client, string link)
         {
             var response = await client.DeleteAsync(link);

@@ -1,19 +1,18 @@
 using System;
+using System.Collections.Generic;
 
 namespace SampleExam.Domain
 {
-    public class UserExamQuestionAnswer
+    public class UserExamQuestion
     {
         public int UserExamId { get; set; }
         public int QuestionId { get; set; }
-        public int AnswerOptionId { get; set; }
-
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
 
         public UserExam UserExam { get; set; }
-
-        public AnswerOption AnswerOption { get; set; }
+        public Question Question { get; set; }
+        public ICollection<UserExamQuestionAnswr> UserExamQuestionAnswers { get; set; }
 
     }
 }

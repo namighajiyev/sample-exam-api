@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using FluentValidation;
@@ -33,6 +34,11 @@ namespace SampleExam.Infrastructure.Errors
                     problemDetails.Detail = re.Detail;
                     problemDetails.Status = (int)re.Code;
                     problemDetails.Errors.Add("Error", new Error[] { re.Error });
+                    foreach (var item in re.Extensions ?? new Dictionary<string, object>())
+                    {
+                        problemDetails.Extensions.Add(item);
+                    }
+
                     context.Response.StatusCode = (int)re.Code;
                     responceText = JsonConvert.SerializeObject(problemDetails);
                     break;

@@ -31,6 +31,7 @@ namespace SampleExam.Features.Question
         {
             [JsonIgnore]
             public int Id { get; set; }
+            public int QuestionTypeId { get; set; }
             public string Text { get; set; }
 
             public IEnumerable<AnswerData> Answers { get; set; }
@@ -48,8 +49,10 @@ namespace SampleExam.Features.Question
                 var errorCodePrefix = nameof(Edit);
                 RuleFor(x => x.Id).Id<QuestionData, int>(errorCodePrefix + "Question");
                 RuleFor(x => x.Text).QuestionText<QuestionData, string>(errorCodePrefix).When(x => x.Text != null);
-                RuleFor(x => x.Answers).QuestionAnswers<QuestionData, AnswerData>
-                                    (e => e.IsRight, errorCodePrefix);
+                RuleFor(x => x.Answers).QuestionAnswers<QuestionData, AnswerData>(e => e.IsRight, errorCodePrefix);
+                RuleFor(x => x.Answers).QuestionTypeRadio(e => e.IsRight, errorCodePrefix).When(x => x.QuestionTypeId == SeedData.QuestionTypes.Radio.Id);
+                RuleFor(x => x.Answers).QuestionTypeCheckbox(e => e.IsRight, errorCodePrefix).When(x => x.QuestionTypeId == SeedData.QuestionTypes.Checkbox.Id);
+
             }
         }
 
@@ -114,6 +117,7 @@ namespace SampleExam.Features.Question
 
 
                 question.Text = request.Question.Text ?? question.Text;
+                question.QuestionTypeId = request.Question.QuestionTypeId;
 
                 if (context.IsModified(question) || hasAnswersChanged)
                 {

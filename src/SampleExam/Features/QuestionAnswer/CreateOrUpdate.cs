@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -19,7 +20,8 @@ namespace SampleExam.Features.QuestionAnswer
         public class QuestionAnswerData
         {
             public int UserExamId { get; set; }
-            public int AnswerOptionId { get; set; }
+            public int QuestionId { get; set; }
+            public IEnumerable<int> AnswerOptionIds { get; set; }
         }
 
         public class Request : IRequest<QuestionAnswerDTOEnvelope>
@@ -33,7 +35,7 @@ namespace SampleExam.Features.QuestionAnswer
             {
                 var errorCodePrefix = nameof(CreateOrUpdate);
                 RuleFor(x => x.UserExamId).Id<QuestionAnswerData, int>(errorCodePrefix);
-                RuleFor(x => x.AnswerOptionId).Id<QuestionAnswerData, int>(errorCodePrefix);
+                RuleFor(x => x.AnswerOptionIds).NotEmptyEnumerable<QuestionAnswerData, int>(errorCodePrefix);
             }
         }
 
@@ -59,23 +61,12 @@ namespace SampleExam.Features.QuestionAnswer
             public async Task<QuestionAnswerDTOEnvelope> Handle(Request request, CancellationToken cancellationToken)
             {
                 var requestQA = request.QuestionAnswer;
-                var answerOption = await this.context.AnswerOptions.Include(e => e.Question).Where(e => e.Id == requestQA.AnswerOptionId).FirstOrDefaultAsync(cancellationToken);
-                if (answerOption == null)
-                {
-                    throw new AnswerOptionNotFoundException();
-                }
-
+                var answerOptionIds = requestQA.AnswerOptionIds.ToArray();
                 var userExam = await this.context.UserExams.Include(e => e.Exam).Where(e => e.Id == requestQA.UserExamId).FirstOrDefaultAsync();
                 if (userExam == null)
                 {
                     throw new UserExamNotFoundException();
                 }
-                if (answerOption.Question.ExamId != userExam.ExamId)
-                {
-                    new InvalidAnswerOptionExamException();
-                }
-                var questionAnswer = await this.context.UserExamQuestionAnswers.Where(e => e.QuestionId == answerOption.QuestionId
-                && e.UserExamId == requestQA.UserExamId).FirstOrDefaultAsync(cancellationToken);
 
                 if (userExam.EndedAt.HasValue)
                 {
@@ -88,39 +79,89 @@ namespace SampleExam.Features.QuestionAnswer
                     await context.SaveChangesAsync(cancellationToken);
                     throw new UserExamAlreadyEndedException();
                 }
+                var question = await context.Questions.FindAsync(requestQA.QuestionId);
+                if (question.QuestionTypeId == SeedData.QuestionTypes.Radio.Id && answerOptionIds.Count() > 1)
+                {
+                    throw new RadioQuestionWithMultipleAnswerException();
+                }
 
-
-                UserExamQuestionAnswer newQuestionAnswer = null;
+                var userExamQuestion = await this.context.UserExamQuestions
+                                            .Where(e => e.QuestionId == requestQA.QuestionId
+                                            && e.UserExamId == requestQA.UserExamId).Include(e => e.UserExamQuestionAnswers)
+                                            .FirstOrDefaultAsync(cancellationToken);
+                var isCreate = userExamQuestion == null;
                 var utcNow = DateTime.UtcNow;
-                newQuestionAnswer = new UserExamQuestionAnswer()
+                userExamQuestion = userExamQuestion ?? new UserExamQuestion()
                 {
                     UserExamId = requestQA.UserExamId,
-                    QuestionId = answerOption.QuestionId,
-                    AnswerOptionId = requestQA.AnswerOptionId,
+                    QuestionId = requestQA.QuestionId,
+                    //UserExamQuestionAnswers = new List<UserExamQuestionAnswr>(),
                     CreatedAt = utcNow,
                     UpdatedAt = utcNow
                 };
 
-                if (questionAnswer == null)
+                var isUnchanged = !isCreate && userExamQuestion.UserExamQuestionAnswers
+                .Select(e => e.AnswerOptionId).OrderBy(e => e).ToArray()
+                .SequenceEqual(answerOptionIds.OrderBy(e => e).ToArray());
+                if (isUnchanged)
                 {
-                    await this.context.UserExamQuestionAnswers.AddAsync(newQuestionAnswer);
+                    return MakeEnvelope(userExamQuestion);
                 }
-                else if (questionAnswer.AnswerOptionId == requestQA.AnswerOptionId)//already this answer selected
+                //validation
+                foreach (var answerOptionId in answerOptionIds)
                 {
-                    newQuestionAnswer = questionAnswer;
+                    var answerOption = await this.context.AnswerOptions.Include(e => e.Question).Where(e => e.Id == answerOptionId).FirstOrDefaultAsync(cancellationToken);
+
+                    if (answerOption == null)
+                    {
+                        throw new AnswerOptionNotFoundException() { Extensions = new Dictionary<string, object> { { nameof(answerOptionId), answerOptionId } } };
+                    };
+
+                    if (answerOption.Question.ExamId != userExam.ExamId)
+                    {
+                        new InvalidAnswerOptionExamException() { Extensions = new Dictionary<string, object> { { nameof(answerOptionId), answerOptionId } } };
+                    }
+
+                }
+
+                if (isCreate)
+                {
+                    var answers = answerOptionIds.Select(answerOptionId => new UserExamQuestionAnswr()
+                    {
+                        UserExamId = requestQA.UserExamId,
+                        QuestionId = requestQA.QuestionId,
+                        AnswerOptionId = answerOptionId,
+                        CreatedAt = utcNow,
+                        UpdatedAt = utcNow
+                    }).ToList();
+                    await this.context.UserExamQuestions.AddAsync(userExamQuestion);
+                    await this.context.UserExamQuestionAnswers.AddRangeAsync(answers);
                 }
                 else
                 {
-                    this.context.UserExamQuestionAnswers.Remove(questionAnswer);
-                    await this.context.UserExamQuestionAnswers.AddAsync(newQuestionAnswer);
+                    var answersToDelete = userExamQuestion.UserExamQuestionAnswers.Where(qa => !answerOptionIds.Any(id => id == qa.AnswerOptionId)).ToArray();
+                    var answersToAdd = answerOptionIds.Where(id => !userExamQuestion.UserExamQuestionAnswers.Any(qa => qa.AnswerOptionId == id))
+                    .Select(answerOptionId => new UserExamQuestionAnswr()
+                    {
+                        UserExamId = requestQA.UserExamId,
+                        QuestionId = requestQA.QuestionId,
+                        AnswerOptionId = answerOptionId,
+                        CreatedAt = utcNow,
+                        UpdatedAt = utcNow
+                    });
+                    userExamQuestion.UpdatedAt = utcNow;
+                    this.context.UserExamQuestionAnswers.RemoveRange(answersToDelete);
+                    await this.context.UserExamQuestionAnswers.AddRangeAsync(answersToAdd);
                 }
-
-
                 await context.SaveChangesAsync(cancellationToken);
-                var questionAnswerDto = mapper.Map<Domain.UserExamQuestionAnswer, QuestionAnswerDTO>(newQuestionAnswer);
-                return new QuestionAnswerDTOEnvelope(questionAnswerDto);
+                return MakeEnvelope(userExamQuestion);
             }
 
+            private QuestionAnswerDTOEnvelope MakeEnvelope(UserExamQuestion userExamQuestion)
+            {
+                var questionAnswerDto = mapper.Map<Domain.UserExamQuestion, QuestionAnswerDTO>(userExamQuestion);
+                return new QuestionAnswerDTOEnvelope(questionAnswerDto);
+            }
         }
     }
 }
