@@ -108,6 +108,11 @@ namespace SampleExam.Features.Question
                 });
                 await this.context.Questions.AddAsync(question);
                 await context.SaveChangesAsync();
+                context.Entry(question).Reload();
+                foreach (var answerOption in question.AnswerOptions)
+                {
+                    context.Entry(answerOption).Reload();
+                }
                 var questionDto = mapper.Map<Domain.Question, QuestionDTO>(question);
                 return new QuestionDTOEnvelope(questionDto);
             }

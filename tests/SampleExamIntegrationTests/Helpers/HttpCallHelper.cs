@@ -67,5 +67,18 @@ namespace SampleExamIntegrationTests.Helpers
             return responseExam;
         }
 
+        public async Task<Tuple<LoginUserDTO, ExamCreate.ExamData, ExamDTO, SampleExam.Features.Question.Create.QuestionData, SampleExam.Features.Question.QuestionDTO>> CreateQuestion(
+            bool includeTags = true,
+        bool isPrivate = false, string[] extraTags = null,
+                        LoginUserDTO loggedUser = null, bool isRadio = true)
+        {
+            var examItems = await CreateExam(includeTags, isPrivate, extraTags, loggedUser);
+            var questionData = TestData.Question.Create.NewQuestionData(isRadio);
+            client.Authorize(examItems.Item1.Token);
+            var link = $"/questions/{examItems.Item3.Id}";
+            var envelope = await client.PostSucessfully<SampleExam.Features.Question.QuestionDTOEnvelope>(link, new SampleExam.Features.Question.Create.Request() { Question = questionData });
+            client.Unauthorize();
+            return Tuple.Create(examItems.Item1, examItems.Item2, examItems.Item3, questionData, envelope.Question);
+        }
     }
 }

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using SampleExam.Features.Exam;
+using SampleExam.Features.Question;
 using SampleExam.Features.User;
 using SampleExam.Infrastructure.Errors;
 
@@ -72,6 +73,15 @@ namespace SampleExamIntegrationTests.Helpers
             var response = await client.PostAsJsonAsync<object>(link, data);
             response.EnsureSuccessStatusCode();
         }
+
+        public static async Task<T> PostSucessfully<T>(this HttpClient client, string link, object data)
+        {
+            var response = await client.PostAsJsonAsync<object>(link, data);
+            response.EnsureSuccessStatusCode();
+            var envelope = await response.Content.ReadAsAsync<T>();
+            return envelope;
+        }
+
         public static async Task PostNotFound(this HttpClient client, string link, object data)
         {
             var response = await client.PostAsJsonAsync<object>(link, data);
@@ -139,7 +149,14 @@ namespace SampleExamIntegrationTests.Helpers
             var response = await client.PutAsJsonAsync<object>(link, data);
             response.EnsureSuccessStatusCode();
         }
-
+        public static async Task<QuestionDTO> PutQuestionSucessfully(this HttpClient client, string link, object data)
+        {
+            var response = await client.PutAsJsonAsync<object>(link, data);
+            response.EnsureSuccessStatusCode();
+            var envelope = await response.Content.ReadAsAsync<QuestionDTOEnvelope>();
+            var responseExam = envelope.Question;
+            return responseExam;
+        }
         public static async Task<ApiProblemDetails> PutUnauthorized(this HttpClient client, string link, object data)
         {
             var response = await client.PutAsJsonAsync<object>(link, data);

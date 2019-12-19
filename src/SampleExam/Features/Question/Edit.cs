@@ -47,11 +47,11 @@ namespace SampleExam.Features.Question
             public QuestionDataValidator()
             {
                 var errorCodePrefix = nameof(Edit);
-                RuleFor(x => x.Id).Id<QuestionData, int>(errorCodePrefix + "Question");
                 RuleFor(x => x.Text).QuestionText<QuestionData, string>(errorCodePrefix).When(x => x.Text != null);
-                RuleFor(x => x.Answers).QuestionAnswers<QuestionData, AnswerData>(e => e.IsRight, errorCodePrefix);
-                RuleFor(x => x.Answers).QuestionTypeRadio(e => e.IsRight, errorCodePrefix).When(x => x.QuestionTypeId == SeedData.QuestionTypes.Radio.Id);
-                RuleFor(x => x.Answers).QuestionTypeCheckbox(e => e.IsRight, errorCodePrefix).When(x => x.QuestionTypeId == SeedData.QuestionTypes.Checkbox.Id);
+                Func<QuestionData, bool> whenAnswersProvided = x => x.Answers != null && x.Answers.Count() > 0;
+                RuleFor(x => x.Answers).QuestionAnswers<QuestionData, AnswerData>(e => e.IsRight, errorCodePrefix).When(whenAnswersProvided);
+                RuleFor(x => x.Answers).QuestionTypeRadio(e => e.IsRight, errorCodePrefix).When(whenAnswersProvided).When(x => x.QuestionTypeId == SeedData.QuestionTypes.Radio.Id);
+                RuleFor(x => x.Answers).QuestionTypeCheckbox(e => e.IsRight, errorCodePrefix).When(whenAnswersProvided).When(x => x.QuestionTypeId == SeedData.QuestionTypes.Checkbox.Id);
 
             }
         }
@@ -71,7 +71,6 @@ namespace SampleExam.Features.Question
             public RequestValidator()
             {
                 RuleFor(x => x.Question).NotNull().SetValidator(new QuestionDataValidator());
-                RuleFor(x => x.Question.Answers).NotNull();
                 RuleForEach(x => x.Question.Answers).SetValidator(new AnswerDataValidator());
             }
         }
@@ -139,7 +138,7 @@ namespace SampleExam.Features.Question
                 var answerOptionsToAdd = answers
                .Where(e => !e.Id.HasValue).Select(e => mapper.Map<AnswerData, Domain.AnswerOption>(e)).ToArray();
                 var answerOptionsToDelete = answerOptions.Where(ao => !answers.Any(a => a.Id == ao.Id)).ToArray();
-                var answerOptionsToUpdate = //answerOptions.Where(ao => answers.Any(a => a.Id == ao.Id)).ToArray();
+                var answerOptionsToUpdate =
                 (from answerOption in answerOptions
                  join answer in answers on answerOption.Id equals answer.Id
                  where answer.Id != null
@@ -147,7 +146,7 @@ namespace SampleExam.Features.Question
 
                 if (answerOptionsToAdd.Length > 0 || answerOptionsToDelete.Length > 0 || answerOptionsToUpdate.Length > 0)
                 {
-                    hasChanged = true;
+
                     foreach (var answerOptionItem in answerOptionsToUpdate)
                     {
                         var answer = answerOptionItem.answer;
@@ -156,11 +155,13 @@ namespace SampleExam.Features.Question
                         answerOption.IsRight = answer.IsRight;
                         if (context.IsModified(answerOption))
                         {
+                            hasChanged = true;
                             answerOption.UpdatedAt = utcNow;
                         }
                     }
                     foreach (var answerOption in answerOptionsToAdd)
                     {
+                        hasChanged = true;
                         answerOption.QuestionId = question.Id;
                         answerOption.CreatedAt = utcNow;
                         answerOption.UpdatedAt = utcNow;

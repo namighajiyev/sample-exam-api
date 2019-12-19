@@ -21,14 +21,14 @@ namespace SampleExamIntegrationTests.Features.Question
         {
             var client = httpClientFactory.CreateClient();
             var httpCallHelper = new HttpCallHelper(client);
-            var dbContext = this.dbContextFactory.CreateDbContext();
+            //var dbContext = this.dbContextFactory.CreateDbContext();
             var notPublishedExamItems = await httpCallHelper.CreateExam();
             var user1 = notPublishedExamItems.Item1;
             var examDto1 = notPublishedExamItems.Item3;
             var examDto2 = (await httpCallHelper.CreateExam()).Item3;
             var examDto3Published = (await httpCallHelper.CreatePublishedExam(loggedUser: user1)).Item2;
             var radioQuestionData = TestData.Question.Create.NewQuestionData();
-            var checkboxQuestionData = TestData.Question.Create.NewQuestionData();
+            var checkboxQuestionData = TestData.Question.Create.NewQuestionData(false);
             var link1 = $"/questions/{examDto1.Id}";
             var link2 = $"/questions/{examDto2.Id}";
             var link3Published = $"/questions/{examDto3Published.Id}";

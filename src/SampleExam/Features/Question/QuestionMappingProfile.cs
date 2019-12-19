@@ -13,6 +13,9 @@ namespace SampleExam.Features.Question
             CreateMap<Edit.QuestionData, Domain.Question>(MemberList.Destination)
             .ForMember(e => e.AnswerOptions, options => options.MapFrom(e => e.Answers));
             CreateMap<Edit.AnswerData, Domain.AnswerOption>(MemberList.Destination);
+            CreateMap<QuestionDTO, Edit.QuestionData>(MemberList.Destination)
+           .ForMember(e => e.Answers, options => options.MapFrom(e => e.AnswerOptions));
+            CreateMap<Answer.AnswerOptionDTO, Edit.AnswerData>(MemberList.Destination);
         }
 
     }

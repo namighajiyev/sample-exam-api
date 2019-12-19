@@ -2,7 +2,9 @@ using System;
 using System.Linq;
 using FluentAssertions;
 using SampleExam.Domain;
+using SampleExam.Features.Answer;
 using SampleExam.Features.Exam;
+using SampleExam.Features.Question;
 using Xunit;
 
 namespace SampleExamIntegrationTests.Helpers
@@ -94,6 +96,32 @@ namespace SampleExamIntegrationTests.Helpers
             Assert.Null(responseExam.User);
             Assert.True(responseExam.Tags.Count == 0);
         }
+
+        internal static void AssertEqual(QuestionDTO x, QuestionDTO y)
+        {
+            var comparer = new QuestionDtoComparer();
+            var equal = comparer.Equals(x, y);
+            Assert.True(equal);
+        }
+
+
+        internal static void AssertNotEqual(QuestionDTO x, QuestionDTO y)
+        {
+            var comparer = new QuestionDtoComparer();
+            var equal = comparer.Equals(x, y);
+            Assert.False(equal);
+        }
+
+        internal static void AssertEqual(AnswerOptionDTO answerOption, SampleExam.Features.Question.Edit.AnswerData answer)
+        {
+            if (answer.Id.HasValue)
+            {
+                Assert.True(answer.Id == answerOption.Id);
+            }
+
+            Assert.True(answer.IsRight == answerOption.IsRight && answer.Text == answerOption.Text);
+        }
+
     }
 
 }
