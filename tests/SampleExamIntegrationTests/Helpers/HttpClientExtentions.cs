@@ -52,6 +52,16 @@ namespace SampleExamIntegrationTests.Helpers
             return responseExam;
         }
 
+        public static async Task<QuestionDTO> GetQuestionSuccesfully(this HttpClient client, string link)
+        {
+            var response = await client.GetAsync(link);
+            response.EnsureSuccessStatusCode();
+            var envelope = await response.Content.ReadAsAsync<QuestionDTOEnvelope>();
+            var responseExam = envelope.Question;
+            return responseExam;
+        }
+
+
         public static async Task<IEnumerable<ExamDTO>> GetExamsSuccesfully(this HttpClient client, string link)
         {
             var response = await client.GetAsync(link);

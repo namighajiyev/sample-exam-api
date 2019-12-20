@@ -20,22 +20,16 @@ namespace SampleExam.Features.Question
             public Query(
                     bool isAuthorized,
                     int id,
-                    int? limit,
-                    int? offset,
                     bool? includeAnswerOptions
                  )
             {
                 this.IsAuthorized = isAuthorized;
                 this.Id = id;
-                this.Limit = limit ?? Constants.FETCH_LIMIT;
-                this.Offset = offset ?? Constants.FETCH_OFFSET;
                 this.IncludeAnswerOptions = includeAnswerOptions ?? false;
             }
 
             public bool IsAuthorized { get; private set; }
             public int Id { get; }
-            public int Limit { get; }
-            public int Offset { get; }
             public bool IncludeAnswerOptions { get; }
         }
 

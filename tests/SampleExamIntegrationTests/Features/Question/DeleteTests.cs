@@ -22,11 +22,12 @@ namespace SampleExamIntegrationTests.Features.Question
             var httpCallHelper = new HttpCallHelper(client);
             var questionItems = await httpCallHelper.CreateQuestion();
             var questionItemsPublished = await httpCallHelper.CreateQuestion(loggedUser: questionItems.Item1);
+            var examPublished = questionItemsPublished.Item3;
             var questionItems2 = await httpCallHelper.CreateQuestion();
             var question1 = questionItems.Item5;
             var question2 = questionItems2.Item5;
             var questionPublished = questionItemsPublished.Item5;
-            var examPublished = questionItemsPublished.Item3;
+
             var user1 = questionItems.Item1;
 
             var link1 = $"/questions/{question1.Id}";
@@ -38,9 +39,12 @@ namespace SampleExamIntegrationTests.Features.Question
 
             client.Authorize(user1.Token);
 
+            //publishing exam 
+            await httpCallHelper.PublishExam(examPublished.Id);
+
             await client.DeleteNotFound(linkNoneExisting);
             await client.DeleteNotFound(link2);
-            await client.DeleteNotFound(linkNoneExisting);
+            await client.DeleteNotFound(linkPublished);
 
             await client.DeleteSucessfully(link1);
 
@@ -74,10 +78,5 @@ namespace SampleExamIntegrationTests.Features.Question
 
 
         }
-
-
-
-        //delete published exam
-        //delete normal case check answer options deleted too
     }
 }

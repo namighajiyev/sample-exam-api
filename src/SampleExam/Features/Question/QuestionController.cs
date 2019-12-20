@@ -48,23 +48,19 @@ namespace SampleExam.Features.Question
         [HttpGet("{id}")]
         public async Task<QuestionDTOEnvelope> GetPublishedNotPrivateExamQuestion(
                   int id,
-                  [FromQuery] int? limit,
-                  [FromQuery] int? offset,
                   [FromQuery] bool? includeAnswerOptions
             )
         {
-            return await _mediator.Send(new Details.Query(false, id, limit, offset, includeAnswerOptions));
+            return await _mediator.Send(new Details.Query(false, id, includeAnswerOptions));
         }
 
         [HttpGet("/user/exam/question/{id}")]
         public async Task<QuestionDTOEnvelope> GetUserExamQuestion(
                   int id,
-                  [FromQuery] int? limit,
-                  [FromQuery] int? offset,
                   [FromQuery] bool? includeAnswerOptions
             )
         {
-            return await _mediator.Send(new Details.Query(true, id, limit, offset, includeAnswerOptions));
+            return await _mediator.Send(new Details.Query(true, id, includeAnswerOptions));
         }
 
         [HttpPost("{examId}")]
