@@ -51,28 +51,28 @@ namespace SampleExamIntegrationTests.Features.Question
             using (var dbContext = dbContextFactory.CreateDbContext())
             {
                 var count = dbContext.Questions.Where(e => e.Id == question1.Id).Count();
-                Assert.Equal(count, 0);
+                Assert.Equal(0, count);
                 count = dbContext.Questions.Where(e => e.Id == question2.Id).Count();
-                Assert.Equal(count, 1);
+                Assert.Equal(1, count);
                 count = dbContext.Questions.Where(e => e.Id == questionPublished.Id).Count();
-                Assert.Equal(count, 1);
+                Assert.Equal(1, count);
 
                 foreach (var answerOption in question1.AnswerOptions)
                 {
                     count = dbContext.AnswerOptions.Where(e => e.Id == answerOption.Id).Count();
-                    Assert.Equal(count, 0);
+                    Assert.Equal(0, count);
                 }
 
                 foreach (var answerOption in question2.AnswerOptions)
                 {
                     count = dbContext.AnswerOptions.Where(e => e.Id == answerOption.Id).Count();
-                    Assert.Equal(count, 1);
+                    Assert.Equal(1, count);
                 }
 
                 foreach (var answerOption in questionPublished.AnswerOptions)
                 {
                     count = dbContext.AnswerOptions.Where(e => e.Id == answerOption.Id).Count();
-                    Assert.Equal(count, 1);
+                    Assert.Equal(1, count);
                 }
             }
 

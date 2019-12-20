@@ -77,7 +77,8 @@ namespace SampleExam.Features.Question
                 if (request.IsAuthorized)
                 {
                     var userId = currentUserAccessor.GetCurrentUserId();
-                    examCount = context.Exams.ByIdAndUserId(examId, userId).Count();
+                    examCount = context.Exams.ByUserIdOrPublishedAndNotPrivate(examId, userId)
+                    .Where(e => e.Id == examId).Count();
                 }
                 else
                 {

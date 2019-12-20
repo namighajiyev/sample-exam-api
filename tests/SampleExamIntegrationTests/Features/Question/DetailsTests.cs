@@ -58,7 +58,7 @@ namespace SampleExamIntegrationTests.Features.Question
 
             var questionDto = await client.GetQuestionSuccesfully(linkPublicPublished);
             Assert.Equal(questionDto.Id, questionPublished.Id);
-            Assert.Equal(questionDto.AnswerOptions.Count, 0);
+            Assert.Equal(0, questionDto.AnswerOptions.Count);
 
             questionDto = await client.GetQuestionSuccesfully($"{linkPublicPublished}?includeAnswerOptions=true");
             Assert.Equal(questionDto.Id, questionPublished.Id);

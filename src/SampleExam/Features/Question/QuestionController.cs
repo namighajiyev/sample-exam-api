@@ -31,7 +31,7 @@ namespace SampleExam.Features.Question
             return await _mediator.Send(query);
         }
 
-        [HttpGet("/user/exam/questions")]
+        [HttpGet("private")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<QuestionsDTOEnvelope> GetUserExamQuestions(
                   [FromQuery] int examId,
@@ -54,7 +54,8 @@ namespace SampleExam.Features.Question
             return await _mediator.Send(new Details.Query(false, id, includeAnswerOptions));
         }
 
-        [HttpGet("/user/exam/question/{id}")]
+        [HttpGet("private/{id}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<QuestionDTOEnvelope> GetUserExamQuestion(
                   int id,
                   [FromQuery] bool? includeAnswerOptions
