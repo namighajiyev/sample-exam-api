@@ -1,7 +1,18 @@
+using SampleExam;
+
 namespace SampleExamIntegrationTests.Features.Question
 {
-    public class ListTests
+    public class ListTests : IntegrationTestBase
     {
+        public ListTests(
+            CustomWebApplicationFactory<Startup> factory,
+            DbContextFactory dbContextFactory
+        ) : base(factory, dbContextFactory)
+        {
+
+        }
+
+
         //GET /questions
 
         //create public published exams

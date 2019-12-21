@@ -18,51 +18,45 @@ namespace SampleExamIntegrationTests.Features.Question
         public async void AllDetailsTests()
         {
             var client = httpClientFactory.CreateClient();
-            var httpCallHelper = new HttpCallHelper(client);
-            var questionItems = await httpCallHelper.CreateQuestion();
-            var questionItems2 = await httpCallHelper.CreateQuestion();
-            var questionItemsPublished = await httpCallHelper.CreateQuestion(loggedUser: questionItems.Item1);
-            var questionPrivateItems = await httpCallHelper.CreateQuestion(loggedUser: questionItems.Item1, isPrivate: true);
-            var questionPrivateItemsPublished = await httpCallHelper.CreateQuestion(loggedUser: questionItems.Item1, isPrivate: true);
+            var data = new QuestionTestData(client);
 
-            var examPublished = questionItemsPublished.Item3;
-            var examPrivatePublished = questionPrivateItemsPublished.Item3;
-
-
-            var question1 = questionItems.Item5;
-            var question2 = questionItems2.Item5;
-            var questionPublished = questionItemsPublished.Item5;
-            var questionPrivate = questionPrivateItems.Item5;
-            var questionPrivatePublished = questionPrivateItems.Item5;
-
-            var user1 = questionItems.Item1;
-
-            var linkPrivateNonPublished1 = $"/questions/{question1.Id}";
-            var linkPrivateNonPublished2 = $"/questions/{question2.Id}";
-            var linkPublicPublished = $"/questions/{questionPublished.Id}";
-            var linkPrivateNonPublished = $"/questions/{questionPrivate.Id}";
-            var linkPrivatePublished = $"/questions/{questionPrivatePublished.Id}";
             var linkNoneExisting = $"/questions/{int.MaxValue}";
+            var u1PublicNotPublishedLink = $"/questions/{data.u1PublicNotPublished.Item5.Id}";
+            var u1PublicPublishedLink = $"/questions/{data.u1PublicPublished.Item5.Id}";
+            var u1PrivateNotPublishedLink = $"/questions/{data.u1PrivateNotPublished.Item5.Id}";
+            var u1PrivatePublishedLink = $"/questions/{data.u1PrivatePublished.Item5.Id}";
 
-            client.Authorize(user1.Token);
-            //publishing exams
-            await httpCallHelper.PublishExam(examPublished.Id);
-            await httpCallHelper.PublishExam(examPrivatePublished.Id);
+            var u2PublicNotPublishedLink = $"/questions/{data.u2PublicNotPublished.Item5.Id}";
+            var u2PublicPublishedLink = $"/questions/{data.u2PublicPublished.Item5.Id}";
+            var u2PrivateNotPublishedLink = $"/questions/{data.u2PrivateNotPublished.Item5.Id}";
+            var u2PrivatePublishedLink = $"/questions/{data.u2PrivatePublished.Item5.Id}";
             client.Unauthorize();
-
-            await client.GetNotFound(linkPrivateNonPublished1);
-            await client.GetNotFound(linkPrivateNonPublished2);
-            await client.GetNotFound(linkPrivateNonPublished);
-            await client.GetNotFound(linkPrivatePublished);
+            //non-existing
             await client.GetNotFound(linkNoneExisting);
 
-            var questionDto = await client.GetQuestionSuccesfully(linkPublicPublished);
-            Assert.Equal(questionDto.Id, questionPublished.Id);
+            //user 1
+            await client.GetNotFound(u1PublicNotPublishedLink);
+
+            var questionDto = await client.GetQuestionSuccesfully(u1PublicPublishedLink);
+            Assert.Equal(questionDto.Id, data.u1PublicPublished.Item5.Id);
             Assert.Equal(0, questionDto.AnswerOptions.Count);
 
-            questionDto = await client.GetQuestionSuccesfully($"{linkPublicPublished}?includeAnswerOptions=true");
-            Assert.Equal(questionDto.Id, questionPublished.Id);
-            Assert.Equal(questionDto.AnswerOptions.Count, questionPublished.AnswerOptions.Count);
+            await client.GetNotFound(u1PrivateNotPublishedLink);
+            await client.GetNotFound(u1PrivatePublishedLink);
+
+            //user 2
+            await client.GetNotFound(u2PublicNotPublishedLink);
+
+            questionDto = await client.GetQuestionSuccesfully(u2PublicPublishedLink);
+            Assert.Equal(questionDto.Id, data.u2PublicPublished.Item5.Id);
+            Assert.Equal(0, questionDto.AnswerOptions.Count);
+
+            await client.GetNotFound(u2PrivateNotPublishedLink);
+            await client.GetNotFound(u2PrivatePublishedLink);
+
+            questionDto = await client.GetQuestionSuccesfully($"{u1PublicPublishedLink}?includeAnswerOptions=true");
+            Assert.Equal(questionDto.Id, data.u1PublicPublished.Item5.Id);
+            Assert.Equal(data.u1PublicPublished.Item5.AnswerOptions.Count, questionDto.AnswerOptions.Count);
 
         }
     }
