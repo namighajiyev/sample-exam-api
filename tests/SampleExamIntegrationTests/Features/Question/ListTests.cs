@@ -78,13 +78,9 @@ namespace SampleExamIntegrationTests.Features.Question
             await helper.PublishExam(data.u1PublicNotPublished.Item3.Id);
             client.Unauthorize();
             var limitOffsetTester = new LimitOffsetTester(client, u1PublicPublishedLink);
-            await limitOffsetTester.DoTest(GetQuestions);
+            await limitOffsetTester.DoTest(data.GetQuestions);
         }
 
-        private async Task<Tuple<IEnumerable<QuestionDTO>, int>> GetQuestions(HttpClient client, string link)
-        {
-            var envelope = await client.GetQuestionsSuccesfully(link);
-            return Tuple.Create(envelope.Questions, envelope.QuestionCount);
-        }
+
     }
 }

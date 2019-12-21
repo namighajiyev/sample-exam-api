@@ -47,7 +47,6 @@ namespace SampleExam.Infrastructure.Data
         }
         public static IQueryable<Domain.Exam> ByUserIdOrPublishedAndNotPrivate(
       this IQueryable<Domain.Exam> exams,
-      int examId,
       int userId)
         {
             return exams.Where(e => e.UserId == userId || (e.IsPublished && !e.IsPrivate));

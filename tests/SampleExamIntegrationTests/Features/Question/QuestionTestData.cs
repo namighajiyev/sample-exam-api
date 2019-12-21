@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using SampleExam.Features.Auth;
@@ -46,6 +47,12 @@ namespace SampleExamIntegrationTests.Features.Question
             await httpCallHelper.PublishExam(u2PublicPublished.Item3.Id);
             await httpCallHelper.PublishExam(u2PrivatePublished.Item3.Id);
             client.Unauthorize();
+        }
+
+        public async Task<Tuple<IEnumerable<QuestionDTO>, int>> GetQuestions(HttpClient client, string link)
+        {
+            var envelope = await client.GetQuestionsSuccesfully(link);
+            return Tuple.Create(envelope.Questions, envelope.QuestionCount);
         }
     }
 }
