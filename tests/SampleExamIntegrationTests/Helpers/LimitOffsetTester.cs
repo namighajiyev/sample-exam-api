@@ -31,7 +31,8 @@ namespace SampleExamIntegrationTests.Helpers
             var haveExams = false;
             do
             {
-                var link = $"{getLink}?{QueryStringFunc(Limit, offset)}";
+                var seperator = getLink.Contains("?") ? "&" : "?";
+                var link = $"{getLink}{seperator}{QueryStringFunc(Limit, offset)}";
                 var tuple = await getCallFunc(client, link);
                 var responseExams = tuple.Item1;
                 var responseCount = responseExams.Count();

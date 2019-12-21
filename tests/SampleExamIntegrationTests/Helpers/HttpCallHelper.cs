@@ -80,5 +80,18 @@ namespace SampleExamIntegrationTests.Helpers
             client.Unauthorize();
             return Tuple.Create(examItems.Item1, examItems.Item2, examItems.Item3, questionData, envelope.Question);
         }
+
+        public async Task<Tuple<SampleExam.Features.Question.Create.QuestionData, SampleExam.Features.Question.QuestionDTO>>
+        CreateQuestionInExam(string token, int examId, bool isRadio = true)
+        {
+            var questionData = TestData.Question.Create.NewQuestionData(isRadio);
+            client.Authorize(token);
+            var link = $"/questions/{examId}";
+            var envelope = await client.PostSucessfully<SampleExam.Features.Question.QuestionDTOEnvelope>(link, new SampleExam.Features.Question.Create.Request() { Question = questionData });
+            client.Unauthorize();
+            return Tuple.Create(questionData, envelope.Question);
+        }
+
+
     }
 }

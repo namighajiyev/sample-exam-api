@@ -1,5 +1,10 @@
+using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Threading.Tasks;
 using SampleExam;
+using SampleExam.Features.Question;
 using SampleExamIntegrationTests.Helpers;
 using Xunit;
 
@@ -19,6 +24,7 @@ namespace SampleExamIntegrationTests.Features.Question
         {
             var client = httpClientFactory.CreateClient();
             var data = new QuestionTestData(client);
+            var helper = new HttpCallHelper(client);
             client.Unauthorize();
             var u1PublicNotPublishedLink = $"/questions?examId={data.u1PublicNotPublished.Item3.Id}";
             var u1PublicPublishedLink = $"/questions?examId={data.u1PublicPublished.Item3.Id}";
@@ -61,16 +67,24 @@ namespace SampleExamIntegrationTests.Features.Question
             Assert.Equal(1, questionsEnvelope.QuestionCount);
             Assert.Equal(data.u1PublicPublished.Item5.AnswerOptions.Count, questionsEnvelope.Questions.First().AnswerOptions.Count);
 
-
+            //  limit , offset
+            for (int i = 0; i < 11; i++)
+            {
+                await helper.CreateQuestionInExam(
+                    data.u1PublicNotPublished.Item1.Token,
+                    data.u1PublicNotPublished.Item3.Id, i % 2 == 0);
+            }
+            client.Authorize(data.u1PublicNotPublished.Item1.Token);
+            await helper.PublishExam(data.u1PublicNotPublished.Item3.Id);
+            client.Unauthorize();
+            var limitOffsetTester = new LimitOffsetTester(client, u1PublicPublishedLink);
+            await limitOffsetTester.DoTest(GetQuestions);
         }
 
-        //GET /questions
-
-
-
-        // call methode for all cases make sure only first case returns OK (published and public)
-        // test includeAnswerOptions
-        // limit offset
-
+        private async Task<Tuple<IEnumerable<QuestionDTO>, int>> GetQuestions(HttpClient client, string link)
+        {
+            var envelope = await client.GetQuestionsSuccesfully(link);
+            return Tuple.Create(envelope.Questions, envelope.QuestionCount);
+        }
     }
 }
