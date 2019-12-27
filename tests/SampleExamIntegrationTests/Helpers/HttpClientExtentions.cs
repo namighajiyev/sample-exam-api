@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -68,8 +69,6 @@ namespace SampleExamIntegrationTests.Helpers
             var envelope = await response.Content.ReadAsAsync<QuestionsDTOEnvelope>();
             return envelope;
         }
-
-
 
         public static async Task<IEnumerable<ExamDTO>> GetExamsSuccesfully(this HttpClient client, string link)
         {

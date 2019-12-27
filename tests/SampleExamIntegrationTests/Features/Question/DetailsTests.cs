@@ -1,5 +1,6 @@
 using SampleExam;
 using SampleExamIntegrationTests.Helpers;
+using SampleExamIntegrationTests.Helpers.Data;
 using Xunit;
 
 namespace SampleExamIntegrationTests.Features.Question

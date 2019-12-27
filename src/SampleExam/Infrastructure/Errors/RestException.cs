@@ -14,6 +14,7 @@ namespace SampleExam.Infrastructure.Errors
             Title = title;
             Detail = detail;
             Error = error;
+            Extensions = new Dictionary<string, object>();
         }
 
         public HttpStatusCode Code { get; }

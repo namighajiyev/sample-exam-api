@@ -36,6 +36,11 @@ namespace SampleExam.Infrastructure.Errors
             Constants.NOT_FOUND, new Error(nameof(AnswerOptionNotFoundException), Constants.NOT_FOUND))
             {
             }
+
+            public AnswerOptionNotFoundException(int answerOptionId) : this()
+            {
+                this.Extensions.Add(nameof(answerOptionId), answerOptionId);
+            }
         }
 
         public class UserExamAlreadyEndedException : RestException
@@ -46,9 +51,9 @@ namespace SampleExam.Infrastructure.Errors
             }
         }
 
-        public class RadioQuestionWithMultipleAnswerException : RestException
+        public class AnswerToRadioQuestionFormatException : RestException
         {
-            public RadioQuestionWithMultipleAnswerException() : base(HttpStatusCode.BadRequest, nameof(Domain.UserExam),
+            public AnswerToRadioQuestionFormatException() : base(HttpStatusCode.BadRequest, nameof(Domain.UserExam),
             "Radio type question must only have single user answer", new Error(nameof(UserExamAlreadyEndedException), "Radio type question must only have single user answer"))
             {
             }
@@ -69,6 +74,11 @@ namespace SampleExam.Infrastructure.Errors
             "Answer option is not for this exam", new Error(nameof(InvalidAnswerOptionExamException),
             "Answer option is not for this exam"))
             {
+            }
+
+            public InvalidAnswerOptionExamException(int answerOptionId) : this()
+            {
+                this.Extensions.Add(nameof(answerOptionId), answerOptionId);
             }
         }
 

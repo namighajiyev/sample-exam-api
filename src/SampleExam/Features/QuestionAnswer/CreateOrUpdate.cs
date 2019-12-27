@@ -17,7 +17,7 @@ namespace SampleExam.Features.QuestionAnswer
 {
     public class CreateOrUpdate
     {
-        public class QuestionAnswerData
+        public class UserExamQuestionAnswerData
         {
             public int UserExamId { get; set; }
             public int QuestionId { get; set; }
@@ -26,16 +26,16 @@ namespace SampleExam.Features.QuestionAnswer
 
         public class Request : IRequest<QuestionAnswerDTOEnvelope>
         {
-            public QuestionAnswerData QuestionAnswer { get; set; }
+            public UserExamQuestionAnswerData UserExamQuestionAnswer { get; set; }
         }
 
-        public class QuestionAnswerDataValidator : AbstractValidator<QuestionAnswerData>
+        public class UserExamQuestionAnswerDataValidator : AbstractValidator<UserExamQuestionAnswerData>
         {
-            public QuestionAnswerDataValidator()
+            public UserExamQuestionAnswerDataValidator()
             {
                 var errorCodePrefix = nameof(CreateOrUpdate);
-                RuleFor(x => x.UserExamId).Id<QuestionAnswerData, int>(errorCodePrefix);
-                RuleFor(x => x.AnswerOptionIds).NotEmptyEnumerable<QuestionAnswerData, int>(errorCodePrefix);
+                RuleFor(x => x.UserExamId).Id<UserExamQuestionAnswerData, int>(errorCodePrefix);
+                RuleFor(x => x.AnswerOptionIds).NotEmptyEnumerable<UserExamQuestionAnswerData, int>(errorCodePrefix);
             }
         }
 
@@ -43,7 +43,7 @@ namespace SampleExam.Features.QuestionAnswer
         {
             public RequestValidator()
             {
-                RuleFor(x => x.QuestionAnswer).NotNull().SetValidator(new QuestionAnswerDataValidator());
+                RuleFor(x => x.UserExamQuestionAnswer).NotNull().SetValidator(new UserExamQuestionAnswerDataValidator());
             }
         }
         public class Handler : IRequestHandler<Request, QuestionAnswerDTOEnvelope>
@@ -60,9 +60,13 @@ namespace SampleExam.Features.QuestionAnswer
             }
             public async Task<QuestionAnswerDTOEnvelope> Handle(Request request, CancellationToken cancellationToken)
             {
-                var requestQA = request.QuestionAnswer;
+                var requestQA = request.UserExamQuestionAnswer;
                 var answerOptionIds = requestQA.AnswerOptionIds.ToArray();
-                var userExam = await this.context.UserExams.Include(e => e.Exam).Where(e => e.Id == requestQA.UserExamId).FirstOrDefaultAsync();
+                var userId = this.currentUserAccessor.GetCurrentUserId();
+
+                var userExam = await this.context.UserExams.Include(e => e.Exam)
+                .Where(e => e.Id == requestQA.UserExamId && e.UserId == userId).FirstOrDefaultAsync();
+
                 if (userExam == null)
                 {
                     throw new UserExamNotFoundException();
@@ -79,10 +83,33 @@ namespace SampleExam.Features.QuestionAnswer
                     await context.SaveChangesAsync(cancellationToken);
                     throw new UserExamAlreadyEndedException();
                 }
-                var question = await context.Questions.FindAsync(requestQA.QuestionId);
+
+                var question = await context.Questions.Where(e => e.Id == requestQA.QuestionId && e.ExamId == userExam.ExamId).FirstOrDefaultAsync();
+                if (question == null)
+                {
+                    throw new QuestionNotFoundException();
+                }
+
                 if (question.QuestionTypeId == SeedData.QuestionTypes.Radio.Id && answerOptionIds.Count() > 1)
                 {
-                    throw new RadioQuestionWithMultipleAnswerException();
+                    throw new AnswerToRadioQuestionFormatException();
+                }
+
+                //answer options validation
+                foreach (var answerOptionId in answerOptionIds)
+                {
+                    var answerOption = await this.context.AnswerOptions.Include(e => e.Question).Where(e => e.Id == answerOptionId).FirstOrDefaultAsync(cancellationToken);
+
+                    if (answerOption == null)
+                    {
+                        throw new AnswerOptionNotFoundException(answerOptionId);
+                    };
+
+                    if (answerOption.Question.ExamId != userExam.ExamId)
+                    {
+                        new InvalidAnswerOptionExamException(answerOptionId);
+                    }
+
                 }
 
                 var userExamQuestion = await this.context.UserExamQuestions
@@ -95,7 +122,6 @@ namespace SampleExam.Features.QuestionAnswer
                 {
                     UserExamId = requestQA.UserExamId,
                     QuestionId = requestQA.QuestionId,
-                    //UserExamQuestionAnswers = new List<UserExamQuestionAnswr>(),
                     CreatedAt = utcNow,
                     UpdatedAt = utcNow
                 };
@@ -106,22 +132,6 @@ namespace SampleExam.Features.QuestionAnswer
                 if (isUnchanged)
                 {
                     return MakeEnvelope(userExamQuestion);
-                }
-                //validation
-                foreach (var answerOptionId in answerOptionIds)
-                {
-                    var answerOption = await this.context.AnswerOptions.Include(e => e.Question).Where(e => e.Id == answerOptionId).FirstOrDefaultAsync(cancellationToken);
-
-                    if (answerOption == null)
-                    {
-                        throw new AnswerOptionNotFoundException() { Extensions = new Dictionary<string, object> { { nameof(answerOptionId), answerOptionId } } };
-                    };
-
-                    if (answerOption.Question.ExamId != userExam.ExamId)
-                    {
-                        new InvalidAnswerOptionExamException() { Extensions = new Dictionary<string, object> { { nameof(answerOptionId), answerOptionId } } };
-                    }
-
                 }
 
                 if (isCreate)

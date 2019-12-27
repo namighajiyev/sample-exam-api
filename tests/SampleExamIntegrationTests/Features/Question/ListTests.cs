@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using SampleExam;
 using SampleExam.Features.Question;
 using SampleExamIntegrationTests.Helpers;
+using SampleExamIntegrationTests.Helpers.Data;
 using Xunit;
 
 namespace SampleExamIntegrationTests.Features.Question
@@ -78,7 +79,7 @@ namespace SampleExamIntegrationTests.Features.Question
             await helper.PublishExam(data.u1PublicNotPublished.Item3.Id);
             client.Unauthorize();
             var limitOffsetTester = new LimitOffsetTester(client, u1PublicPublishedLink);
-            await limitOffsetTester.DoTest(data.GetQuestions);
+            await limitOffsetTester.DoTest(QuestionHelper.GetQuestions);
         }
 
 

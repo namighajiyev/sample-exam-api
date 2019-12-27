@@ -1,7 +1,22 @@
+using SampleExam;
+using Xunit;
+
 namespace SampleExamIntegrationTests.Features.UserExam
 {
-    public class CreateTests
+    public class CreateTests : IntegrationTestBase
     {
+        public CreateTests(
+            CustomWebApplicationFactory<Startup> factory,
+            DbContextFactory dbContextFactory
+        ) : base(factory, dbContextFactory)
+        {
+
+        }
+
+        // [Fact]
+        // public async void ShouldCreateTests()
+        // {
+        // }
         //unauthorized
         // nonexisting
 

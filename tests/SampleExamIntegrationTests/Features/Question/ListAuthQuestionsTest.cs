@@ -1,6 +1,7 @@
 using System.Linq;
 using SampleExam;
 using SampleExamIntegrationTests.Helpers;
+using SampleExamIntegrationTests.Helpers.Data;
 using Xunit;
 
 namespace SampleExamIntegrationTests.Features.Question
@@ -85,7 +86,7 @@ namespace SampleExamIntegrationTests.Features.Question
             client.Authorize(data.u1PublicNotPublished.Item1.Token);
 
             var limitOffsetTester = new LimitOffsetTester(client, u1PublicNotPublishedLink);
-            await limitOffsetTester.DoTest(data.GetQuestions);
+            await limitOffsetTester.DoTest(QuestionHelper.GetQuestions);
 
         }
     }
