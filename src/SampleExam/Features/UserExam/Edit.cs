@@ -72,6 +72,7 @@ namespace SampleExam.Features.UserExam
 
                 userExam.EndedAt = DateTime.UtcNow;
                 await context.SaveChangesAsync(cancellationToken);
+                context.Entry(userExam).Reload();
                 var userExamDto = mapper.Map<Domain.UserExam, UserExamDTO>(userExam);
                 return new UserExamDTOEnvelope(userExamDto);
             }

@@ -5,6 +5,7 @@ using SampleExam.Domain;
 using SampleExam.Features.Answer;
 using SampleExam.Features.Exam;
 using SampleExam.Features.Question;
+using SampleExam.Features.UserExam;
 using Xunit;
 
 namespace SampleExamIntegrationTests.Helpers
@@ -41,6 +42,36 @@ namespace SampleExamIntegrationTests.Helpers
             examData.PassPercentage.Should().Be(responseExam.PassPercentage).And.Be(exam.PassPercentage);
             examData.IsPrivate.Should().Be(responseExam.IsPrivate).And.Be(exam.IsPrivate);
             (examData.Tags ?? new string[] { }).Count().Should().Be(responseExam.Tags.Count).And.Be(exam.ExamTags.Count);
+        }
+
+        internal static void AssertEqual(UserExamDTO userExamResponse, UserExamDTO userExam2, bool includeExams = false)
+        {
+            Assert.Equal(userExamResponse.EndedAt, userExam2.EndedAt);
+            Assert.Equal(userExamResponse.ExamId, userExam2.ExamId);
+            Assert.Equal(userExamResponse.Id, userExam2.Id);
+            Assert.Equal(userExamResponse.StartedtedAt, userExam2.StartedtedAt);
+            Assert.Equal(userExamResponse.UserId, userExam2.UserId);
+            if (includeExams)
+            {
+                Assert.True(userExamResponse.Exam != null);
+            }
+            else
+            {
+                Assert.True(userExamResponse.Exam == null);
+            }
+
+        }
+
+        internal static void AssertUpdated(UserExamDTO userExamResponce, UserExamDTO userExamRequest)
+        {
+            Assert.False(userExamRequest.EndedAt.HasValue);
+            Assert.True(userExamResponce.EndedAt.HasValue);
+            Assert.True(userExamResponce.EndedAt < DateTime.UtcNow);
+            Assert.True(userExamResponce.EndedAt > DateTime.MinValue);
+            Assert.Equal(userExamResponce.ExamId, userExamRequest.ExamId);
+            Assert.Equal(userExamResponce.Id, userExamRequest.Id);
+            Assert.Equal(userExamResponce.StartedtedAt, userExamRequest.StartedtedAt);
+            Assert.Equal(userExamResponce.UserId, userExamRequest.UserId);
         }
 
         internal static void AssertExamNotDeleted(Exam exam)
@@ -120,6 +151,16 @@ namespace SampleExamIntegrationTests.Helpers
             }
 
             Assert.True(answer.IsRight == answerOption.IsRight && answer.Text == answerOption.Text);
+        }
+
+        internal static void AsserUserExam(UserExamDTO userExam)
+        {
+            Assert.True(userExam.Id > 0);
+            Assert.True(userExam.ExamId > 0);
+            Assert.True(userExam.StartedtedAt < DateTime.UtcNow);
+            Assert.True(userExam.StartedtedAt > DateTime.MinValue);
+            Assert.True(userExam.UserId > 0);
+            Assert.True(!userExam.EndedAt.HasValue);
         }
 
     }

@@ -19,6 +19,7 @@ namespace SampleExam.Features.UserExam
         }
 
         [HttpGet]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<UserExamsDTOEnvelope> Get(
           [FromQuery] int? limit,
           [FromQuery] int? offset,
@@ -27,6 +28,13 @@ namespace SampleExam.Features.UserExam
         {
             var query = new List.Query(limit, offset, includeExams);
             return await _mediator.Send(query);
+        }
+
+        [HttpGet("{id}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<UserExamDTOEnvelope> Get(int id, [FromQuery] bool? includeExams)
+        {
+            return await _mediator.Send(new Details.Query(id, includeExams));
         }
 
 

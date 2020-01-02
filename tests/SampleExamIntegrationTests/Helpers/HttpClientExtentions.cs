@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using SampleExam.Features.Exam;
 using SampleExam.Features.Question;
 using SampleExam.Features.User;
+using SampleExam.Features.UserExam;
 using SampleExam.Infrastructure.Errors;
 
 namespace SampleExamIntegrationTests.Helpers
@@ -44,6 +45,15 @@ namespace SampleExamIntegrationTests.Helpers
             return problemDetails;
         }
 
+        public static async Task<ApiProblemDetails> PutUnauthorized(this HttpClient client, string link)
+        {
+            var response = await client.PutAsJsonAsync<object>(link, null);
+            response.EnsureUnauthorizedStatusCode();
+            var problemDetails = await response.Content.ReadAsAsync<ApiProblemDetails>();
+            return problemDetails;
+        }
+
+
         public static async Task<ExamDTO> GetExamSuccesfully(this HttpClient client, string link)
         {
             var response = await client.GetAsync(link);
@@ -52,6 +62,24 @@ namespace SampleExamIntegrationTests.Helpers
             var responseExam = envelope.Exam;
             return responseExam;
         }
+        public static async Task<UserExamDTO> GetUserExamSuccesfully(this HttpClient client, string link)
+        {
+            var response = await client.GetAsync(link);
+            response.EnsureSuccessStatusCode();
+            var envelope = await response.Content.ReadAsAsync<UserExamDTOEnvelope>();
+            var responseUserExam = envelope.UserExam;
+            return responseUserExam;
+        }
+
+        public static async Task<UserExamDTO> PutUserExamSuccesfully(this HttpClient client, string link)
+        {
+            var response = await client.PutAsJsonAsync<object>(link, null);
+            response.EnsureSuccessStatusCode();
+            var envelope = await response.Content.ReadAsAsync<UserExamDTOEnvelope>();
+            var responseUserExam = envelope.UserExam;
+            return responseUserExam;
+        }
+
 
         public static async Task<QuestionDTO> GetQuestionSuccesfully(this HttpClient client, string link)
         {
@@ -86,6 +114,15 @@ namespace SampleExamIntegrationTests.Helpers
             return envelope;
         }
 
+        public static async Task<UserExamsDTOEnvelope> GetUserExamsEnvelopeSuccesfully(this HttpClient client, string link)
+        {
+            var response = await client.GetAsync(link);
+            response.EnsureSuccessStatusCode();
+            var envelope = await response.Content.ReadAsAsync<UserExamsDTOEnvelope>();
+            return envelope;
+        }
+
+
         public static async Task PostSucessfully(this HttpClient client, string link, object data)
         {
             var response = await client.PostAsJsonAsync<object>(link, data);
@@ -104,6 +141,11 @@ namespace SampleExamIntegrationTests.Helpers
         {
             var response = await client.PostAsJsonAsync<object>(link, data);
             response.EnsureNotFoundStatusCode();
+        }
+
+        public static Task PostNotFound(this HttpClient client, string link)
+        {
+            return PostNotFound(client, link, null);
         }
         public static async Task<ExamDTO> DeleteExamSucessfully(this HttpClient client, string link)
         {
@@ -126,6 +168,11 @@ namespace SampleExamIntegrationTests.Helpers
             response.EnsureUnauthorizedStatusCode();
             var problemDetails = await response.Content.ReadAsAsync<ApiProblemDetails>();
             return problemDetails;
+        }
+
+        public static Task<ApiProblemDetails> PostUnauthorized(this HttpClient client, string link)
+        {
+            return PostUnauthorized(client, link, null);
         }
 
         public static async Task<ApiProblemDetails> DeleteUnauthorized(this HttpClient client, string link)
@@ -190,6 +237,10 @@ namespace SampleExamIntegrationTests.Helpers
             var problemDetails = await response.Content.ReadAsAsync<SampleExam.Infrastructure.Errors.ApiProblemDetails>();
             return problemDetails;
         }
+        public static Task<ApiProblemDetails> PutBadRequest(this HttpClient client, string link)
+        {
+            return PutBadRequest(client, link, null);
+        }
         public static async Task<ExamDTO> PostExamSuccesfully(this HttpClient client, string link, object data)
         {
             var response = await client.PostAsJsonAsync<object>(link, data);
@@ -198,6 +249,16 @@ namespace SampleExamIntegrationTests.Helpers
             var responseExam = envelope.Exam;
             return responseExam;
         }
+
+        public static async Task<UserExamDTO> PostUserExamSuccesfully(this HttpClient client, string link)
+        {
+            var response = await client.PostAsJsonAsync<object>(link, null);
+            response.EnsureSuccessStatusCode();
+            var envelope = await response.Content.ReadAsAsync<UserExamDTOEnvelope>();
+            var responseUserExam = envelope.UserExam;
+            return responseUserExam;
+        }
+
         public static async Task<UserDTO> PostUserSuccesfully(this HttpClient client, string link, object data)
         {
             var response = await client.PostAsJsonAsync<object>(link, data);
@@ -222,6 +283,11 @@ namespace SampleExamIntegrationTests.Helpers
         {
             var response = await client.PutAsJsonAsync<object>(link, data);
             response.EnsureNotFoundStatusCode();
+        }
+
+        public static Task PutNotFound(this HttpClient client, string link)
+        {
+            return PutNotFound(client, link, null);
         }
     }
 }

@@ -10,8 +10,6 @@ namespace SampleExam.Features.UserExam
         public int UserId { get; set; }
         public DateTime StartedtedAt { get; set; }
         public DateTime? EndedAt { get; set; }
-        public DateTime CreatedAt { get; set; }
-        public DateTime UpdatedAt { get; set; }
         public ExamDTO Exam { get; set; }
     }
 }

@@ -49,7 +49,7 @@ namespace SampleExam.Features.UserExam
             {
 
                 var userId = currentUserAccessor.GetCurrentUserId();
-                var queryable = this.context.UserExams.AsNoTracking().Where(e => e.UserId == userId && e.EndedAt.HasValue);
+                var queryable = this.context.UserExams.AsNoTracking().Where(e => e.UserId == userId);
                 if (request.IncludeExams)
                 {
                     queryable = queryable.Include(e => e.Exam);

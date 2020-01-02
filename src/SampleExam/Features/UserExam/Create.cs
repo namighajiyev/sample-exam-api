@@ -49,7 +49,7 @@ namespace SampleExam.Features.UserExam
             public async Task<UserExamDTOEnvelope> Handle(Request request, CancellationToken cancellationToken)
             {
                 var userId = this.currentUserAccessor.GetCurrentUserId();
-                var exam = context.Exams.Where(e => e.Id == request.ExamId && e.IsPublished == true).First();
+                var exam = context.Exams.Where(e => e.Id == request.ExamId && e.IsPublished == true).FirstOrDefault();
 
                 if (exam == null)
                 {
@@ -66,8 +66,8 @@ namespace SampleExam.Features.UserExam
                 userExam.StartedtedAt = DateTime.UtcNow;
 
                 await this.context.UserExams.AddAsync(userExam, cancellationToken);
-
                 await context.SaveChangesAsync(cancellationToken);
+                context.Entry(userExam).Reload();
                 var userExamDto = mapper.Map<Domain.UserExam, UserExamDTO>(userExam);
                 return new UserExamDTOEnvelope(userExamDto);
             }

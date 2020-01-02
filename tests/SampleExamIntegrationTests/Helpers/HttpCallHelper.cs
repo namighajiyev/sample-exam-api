@@ -6,6 +6,7 @@ using SampleExam.Features.Exam;
 using SampleExam.Features.User;
 using UserCreate = SampleExam.Features.User.Create;
 using ExamCreate = SampleExam.Features.Exam.Create;
+using SampleExam.Features.UserExam;
 
 namespace SampleExamIntegrationTests.Helpers
 {
@@ -93,5 +94,37 @@ namespace SampleExamIntegrationTests.Helpers
         }
 
 
+        public async Task<UserExamDTO> CreateUserExam(int examId)
+        {
+            var link = $"/userexams/{examId}";
+            var userExamDto = await client.PostUserExamSuccesfully(link);
+            return userExamDto;
+        }
+
+        public async Task<Tuple<LoginUserDTO, ExamDTO, UserExamDTO>> CreateUserExam(
+            bool isPrivate = false,
+            LoginUserDTO loggedUser = null,
+            int questionCount = 11)
+        {
+            var exam = await CreateExam(isPrivate: isPrivate, loggedUser: loggedUser);
+            for (int i = 0; i < questionCount; i++)
+            {
+                await CreateQuestionInExam(
+                    exam.Item1.Token,
+                    exam.Item3.Id, i % 2 == 0);
+            }
+            client.Authorize(exam.Item1.Token);
+            var publishedExamDto = await PublishExam(exam.Item3.Id);
+            var userExam = await CreateUserExam(exam.Item3.Id);
+            client.Unauthorize();
+            return Tuple.Create(exam.Item1, publishedExamDto, userExam);
+        }
+
+        public async Task<UserExamDTO> EndUserExam(int userExamId)
+        {
+            var linkUser1PrivateUserExam = $"/userexams/{userExamId}";
+            var userExam = await client.PutUserExamSuccesfully(linkUser1PrivateUserExam);
+            return userExam;
+        }
     }
 }
