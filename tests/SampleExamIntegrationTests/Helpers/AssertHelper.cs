@@ -113,8 +113,6 @@ namespace SampleExamIntegrationTests.Helpers
             Assert.Equal(questionAnswer.UserExamId, userExamQuestionAnswer.UserExamId);
             Assert.True(questionAnswer.AnswerOptions.Select(e => e.AnswerOptionId).OrderBy(e => e).ToArray()
             .SequenceEqual(userExamQuestionAnswer.AnswerOptionIds.OrderBy(e => e).ToArray()));
-
-
         }
 
         public static void AssertUserAndTagsIncluded(ExamDTO responseExam)
@@ -148,6 +146,19 @@ namespace SampleExamIntegrationTests.Helpers
             Assert.True(equal);
         }
 
+        internal static void AssertEqual(QuestionAnswerDTO x, QuestionAnswerDTO y)
+        {
+            var comparer = new QuestionAnswerDtoComparer();
+            var equal = comparer.Equals(x, y);
+            Assert.True(equal);
+        }
+
+        internal static void AssertNotEqual(QuestionAnswerDTO x, QuestionAnswerDTO y)
+        {
+            var comparer = new QuestionAnswerDtoComparer();
+            var equal = comparer.Equals(x, y);
+            Assert.False(equal);
+        }
 
         internal static void AssertNotEqual(QuestionDTO x, QuestionDTO y)
         {

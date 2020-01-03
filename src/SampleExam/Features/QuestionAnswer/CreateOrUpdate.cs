@@ -164,6 +164,11 @@ namespace SampleExam.Features.QuestionAnswer
                     await this.context.UserExamQuestionAnswers.AddRangeAsync(answersToAdd);
                 }
                 await context.SaveChangesAsync(cancellationToken);
+                context.Entry(userExamQuestion).Reload();
+                foreach (var questionAnswer in userExamQuestion.UserExamQuestionAnswers)
+                {
+                    context.Entry(questionAnswer).Reload();
+                }
                 return MakeEnvelope(userExamQuestion);
             }
 

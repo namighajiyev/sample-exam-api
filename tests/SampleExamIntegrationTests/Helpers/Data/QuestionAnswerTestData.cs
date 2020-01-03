@@ -39,19 +39,19 @@ namespace SampleExamIntegrationTests.Helpers.Data
         public int[] CheckboxQuestion1AnswerIds { get; set; }
         public int[] CheckboxQuestion2AnswerIds { get; set; }
 
-        private Request CreateAnswerRequest(bool isRadio, int[] answerOptionIds, bool randomTake)
+        private Request CreateAnswerRequest(UserExamQuestionAnswerData answerData, bool isRadio, int[] answerOptionIds, bool randomTake)
         {
             var request = new Request()
             {
                 UserExamQuestionAnswer = new UserExamQuestionAnswerData()
                 {
-                    UserExamId = RadioQuestion1Answer.UserExamId,
-                    QuestionId = RadioQuestion1Answer.QuestionId
+                    UserExamId = answerData.UserExamId,
+                    QuestionId = answerData.QuestionId
                 }
             };
             if (randomTake)
             {
-                var rnd = new Random();
+                var rnd = new Random(Guid.NewGuid().GetHashCode());
                 answerOptionIds = answerOptionIds.OrderBy(x => rnd.Next()).ToArray();
                 answerOptionIds = isRadio ? new int[] { answerOptionIds[0] } : new int[] { answerOptionIds[0], answerOptionIds[1] };
             }
@@ -59,31 +59,35 @@ namespace SampleExamIntegrationTests.Helpers.Data
             return request;
         }
 
-        public Request CreateRadioQuestion1AnswerRequest(int[] answerOptionIds = null)
+        public Request CreateRadioQuestion1AnswerRequest(int? notThisId = null, int[] answerOptionIds = null)
         {
             var randomTake = answerOptionIds == null;
-            answerOptionIds = answerOptionIds ?? this.RadioQuestion1AnswerIds;
-            return CreateAnswerRequest(true, answerOptionIds, randomTake);
+            answerOptionIds = answerOptionIds ?? (notThisId.HasValue ?
+            this.RadioQuestion1AnswerIds.Where(e => e != notThisId).ToArray() : this.RadioQuestion1AnswerIds);
+            return CreateAnswerRequest(this.RadioQuestion1Answer, true, answerOptionIds, randomTake);
         }
 
-        public Request CreateRadioQuestion2AnswerRequest(int[] answerOptionIds = null)
+        public Request CreateRadioQuestion2AnswerRequest(int? notThisId = null, int[] answerOptionIds = null)
         {
             var randomTake = answerOptionIds == null;
-            answerOptionIds = answerOptionIds ?? this.RadioQuestion2AnswerIds;
-            return CreateAnswerRequest(true, answerOptionIds, randomTake);
+            answerOptionIds = answerOptionIds ?? (notThisId.HasValue ?
+            this.RadioQuestion2AnswerIds.Where(e => e != notThisId).ToArray() : this.RadioQuestion2AnswerIds);
+            return CreateAnswerRequest(this.RadioQuestion2Answer, true, answerOptionIds, randomTake);
         }
 
-        public Request CreateCheckboxQuestion1AnswerRequest(int[] answerOptionIds = null)
+        public Request CreateCheckboxQuestion1AnswerRequest(int? notThisId = null, int[] answerOptionIds = null)
         {
             var randomTake = answerOptionIds == null;
-            answerOptionIds = answerOptionIds ?? this.CheckboxQuestion1AnswerIds;
-            return CreateAnswerRequest(false, answerOptionIds, randomTake);
+            answerOptionIds = answerOptionIds ?? (notThisId.HasValue ?
+            this.CheckboxQuestion1AnswerIds.Where(e => e != notThisId).ToArray() : this.CheckboxQuestion1AnswerIds);
+            return CreateAnswerRequest(this.CheckboxQuestion1Answer, false, answerOptionIds, randomTake);
         }
-        public Request CreateCheckboxQuestion2AnswerRequest(int[] answerOptionIds = null)
+        public Request CreateCheckboxQuestion2AnswerRequest(int? notThisId = null, int[] answerOptionIds = null)
         {
             var randomTake = answerOptionIds == null;
-            answerOptionIds = answerOptionIds ?? this.CheckboxQuestion2AnswerIds;
-            return CreateAnswerRequest(false, answerOptionIds, randomTake);
+            answerOptionIds = answerOptionIds ?? (notThisId.HasValue ?
+            this.CheckboxQuestion2AnswerIds.Where(e => e != notThisId).ToArray() : this.CheckboxQuestion2AnswerIds);
+            return CreateAnswerRequest(this.CheckboxQuestion2Answer, false, answerOptionIds, randomTake);
         }
 
     }
