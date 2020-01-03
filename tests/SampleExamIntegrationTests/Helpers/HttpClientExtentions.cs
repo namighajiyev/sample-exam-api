@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using SampleExam.Features.Exam;
 using SampleExam.Features.Question;
+using SampleExam.Features.QuestionAnswer;
 using SampleExam.Features.User;
 using SampleExam.Features.UserExam;
 using SampleExam.Infrastructure.Errors;
@@ -137,10 +138,18 @@ namespace SampleExamIntegrationTests.Helpers
             return envelope;
         }
 
-        public static async Task PostNotFound(this HttpClient client, string link, object data)
+        // public static async Task PostNotFound(this HttpClient client, string link, object data)
+        // {
+        //     var response = await client.PostAsJsonAsync<object>(link, data);
+        //     response.EnsureNotFoundStatusCode();
+        // }
+
+        public static async Task<ApiProblemDetails> PostNotFound(this HttpClient client, string link, object data)
         {
             var response = await client.PostAsJsonAsync<object>(link, data);
             response.EnsureNotFoundStatusCode();
+            var problemDetails = await response.Content.ReadAsAsync<ApiProblemDetails>();
+            return problemDetails;
         }
 
         public static Task PostNotFound(this HttpClient client, string link)
@@ -248,6 +257,15 @@ namespace SampleExamIntegrationTests.Helpers
             var envelope = await response.Content.ReadAsAsync<ExamDTOEnvelope>();
             var responseExam = envelope.Exam;
             return responseExam;
+        }
+
+        public static async Task<QuestionAnswerDTO> PostQuestionAnswerSuccesfully(this HttpClient client, string link, object data)
+        {
+            var response = await client.PostAsJsonAsync<object>(link, data);
+            response.EnsureSuccessStatusCode();
+            var envelope = await response.Content.ReadAsAsync<QuestionAnswerDTOEnvelope>();
+            var questionAnswer = envelope.QuestionAnswer;
+            return questionAnswer;
         }
 
         public static async Task<UserExamDTO> PostUserExamSuccesfully(this HttpClient client, string link)

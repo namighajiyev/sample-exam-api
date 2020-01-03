@@ -16,7 +16,7 @@ namespace SampleExam.Domain
         public Question Question { get; set; }
         public AnswerOption AnswerOption { get; set; }
 
-        public UserExamQuestionAnswr UserExamQuestionAnswer { get; set; }
+        public UserExamQuestion UserExamQuestion { get; set; }
 
     }
 }

@@ -1,5 +1,11 @@
+using System.Collections.Generic;
+using System.Linq;
 using SampleExam;
+using SampleExam.Infrastructure.Data;
+using SampleExamIntegrationTests.Helpers;
+using SampleExamIntegrationTests.Helpers.Data;
 using Xunit;
+using static SampleExam.Features.QuestionAnswer.CreateOrUpdate;
 
 namespace SampleExamIntegrationTests.Features.QuestionAnswer
 {
@@ -13,35 +19,93 @@ namespace SampleExamIntegrationTests.Features.QuestionAnswer
 
         }
 
-        // [Fact]
-        // public async void ShouldCreateTests()
-        // {
+        [Fact]
+        public async void QuestionAnswerCreateOrUpdateTests()
+        {
+            var client = httpClientFactory.CreateClient();
+            var link = "/questionanswers";
+            var data = new QuestionAnswerTestData(client);
+            var httpCallHelper = new HttpCallHelper(client);
+            var dbContextHelper = new DbContextHelper(this.dbContextFactory);
 
-        // }
+            client.Unauthorize();
 
-        //unauthorized
-        //answeroption not found
-        //userexam not found
-        //answeroption exam doesn't match userexam exam
-        //case ended exam EndedAt.HasValue -should return error
-        //case EndedAt.HasValue is false but examtimesInMinutes expired- should return error and set EndedAt
-        //do for new answeroption- should add one
-        //do for exactly same answeroption -should keep existing
-        //do for question with different asweroption -should remove old and add new
+            var request = data.User1.CreateRadioQuestion1AnswerRequest();
+            await client.PostUnauthorized(link, request);
+
+            client.Authorize(data.User1.User.Token);
+
+            //UserExamNotFoundException 1 non existing
+            request = data.NonExistingRequest;
+            var problem = await client.PostNotFound(link, request);
+
+            // //UserExamNotFoundException different user
+            // request = data.User2.CreateRadioQuestion1AnswerRequest();
+            // problem = await client.PostNotFound(link, request);
+
+            // //UserExamAlreadyEndedException 1 really ended
+            // client.Authorize(data.User3.User.Token);
+            // await httpCallHelper.EndUserExam(data.User3.UserExam.Id);
+            // request = data.User3.CreateRadioQuestion1AnswerRequest();
+            // problem = await client.PostBadRequest(link, request);
+
+            // //UserExamAlreadyEndedException 2 time is too late
+            // client.Authorize(data.User4.User.Token);
+            // await dbContextHelper.UpdateUserExamStartDate(data.User4.UserExam.Id, data.User4.Exam.TimeInMinutes * -1);
+            // request = data.User4.CreateRadioQuestion1AnswerRequest();
+            // problem = await client.PostBadRequest(link, request);
+            // var userExam = await dbContextHelper.SelectUserExamAsync(data.User4.UserExam.Id);
+            // Assert.NotNull(userExam.EndedAt);
+
+            //QuestionNotFoundException 1 none existing question
+            client.Authorize(data.User1.User.Token);
+            request = data.User1.CreateRadioQuestion1AnswerRequest();
+            request.UserExamQuestionAnswer.QuestionId = int.MaxValue;
+            problem = await client.PostNotFound(link, request);
+
+            // //QuestionNotFoundException question of another exam
+            // request = data.User1.CreateRadioQuestion1AnswerRequest();
+            // var userExamDTO = (await httpCallHelper.CreateUserExam(loggedUser: data.User1.User)).Item3;
+            // client.Authorize(data.User1.User.Token);
+            // request.UserExamQuestionAnswer.UserExamId = userExamDTO.Id;
+            // problem = await client.PostNotFound(link, request);
+
+            // //AnswerToRadioQuestionFormatException send multiple answerss to radio
+            // request = data.User1.CreateRadioQuestion1AnswerRequest();
+            // var answerOptionIds = new List<int>(request.UserExamQuestionAnswer.AnswerOptionIds);
+            // answerOptionIds.Add(data.User1.RadioQuestion1AnswerIds[0]);
+            // answerOptionIds.Add(data.User1.RadioQuestion1AnswerIds[1]);
+            // request.UserExamQuestionAnswer.AnswerOptionIds = answerOptionIds.Distinct().ToArray();
+            // problem = await client.PostBadRequest(link, request);
+
+            // //AnswerOptionNotFoundException 
+            // request = data.User1.CreateRadioQuestion1AnswerRequest(new int[] { int.MaxValue });
+            // problem = await client.PostNotFound(link, request);
+
+            // //InvalidAnswerOptionExamException other questions answer option.
+            // request = data.User1.CreateRadioQuestion1AnswerRequest(new int[] { data.User2.RadioQuestion2AnswerIds.First() });
+            // problem = await client.PostBadRequest(link, request);
+
+            request = data.User1.CreateRadioQuestion1AnswerRequest();
+            var questionAnswer = await client.PostQuestionAnswerSuccesfully(link, request);
+            AssertHelper.AssertEqual(questionAnswer, request.UserExamQuestionAnswer);
+
+            questionAnswer = await client.PostQuestionAnswerSuccesfully(link, request);
+            AssertHelper.AssertEqual(questionAnswer, request.UserExamQuestionAnswer);
+
+            request = data.User1.CreateRadioQuestion1AnswerRequest();
+            questionAnswer = await client.PostQuestionAnswerSuccesfully(link, request);
+            AssertHelper.AssertEqual(questionAnswer, request.UserExamQuestionAnswer);
+
+            request = data.User1.CreateRadioQuestion1AnswerRequest();
+            questionAnswer = await client.PostQuestionAnswerSuccesfully(link, request);
+            AssertHelper.AssertEqual(questionAnswer, request.UserExamQuestionAnswer);
+
+        }
 
         // =======================
-        //UserExamNotFoundException 1 non existing
-        //UserExamNotFoundException different user
-        //UserExamAlreadyEndedException 1 really ended
-        //UserExamAlreadyEndedException 2 time is too late
-        //QuestionNotFoundException 1 none existing question
-        //QuestionNotFoundException question of another exam
-        //AnswerToRadioQuestionFormatException send multiple answerss to radio
-        //AnswerOptionNotFoundException 
-        //InvalidAnswerOptionExamException other questions answer option.
+
         //create, add , delete, add delete.
-
-
 
 
     }

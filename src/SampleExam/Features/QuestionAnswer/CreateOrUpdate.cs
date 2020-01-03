@@ -107,7 +107,7 @@ namespace SampleExam.Features.QuestionAnswer
 
                     if (answerOption.Question.ExamId != userExam.ExamId)
                     {
-                        new InvalidAnswerOptionExamException(answerOptionId);
+                        throw new InvalidAnswerOptionExamException(answerOptionId);
                     }
 
                 }

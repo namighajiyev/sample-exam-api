@@ -126,5 +126,12 @@ namespace SampleExamIntegrationTests.Helpers
             var userExam = await client.PutUserExamSuccesfully(linkUser1PrivateUserExam);
             return userExam;
         }
+
+        public async Task<SampleExam.Features.Question.QuestionsDTOEnvelope> GetQuestions(int examId, bool includeAnswerOptions = true)
+        {
+            var link = $"/questions?examId={examId}&includeAnswerOptions={includeAnswerOptions}";
+            var envelope = await client.GetQuestionsSuccesfully(link);
+            return envelope;
+        }
     }
 }

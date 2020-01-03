@@ -61,7 +61,7 @@ namespace SampleExamIntegrationTests.Features.UserExam
 
             var envelope = await client.GetUserExamsEnvelopeSuccesfully(link);
             Assert.Equal(envelope.UserExamCount, envelope.UserExams.Count());
-            Assert.Equal(envelope.UserExamCount, 13);
+            Assert.Equal(13, envelope.UserExamCount);
             foreach (var userExam in envelope.UserExams)
             {
                 Assert.Null(userExam.Exam);
@@ -72,7 +72,7 @@ namespace SampleExamIntegrationTests.Features.UserExam
 
             envelope = await client.GetUserExamsEnvelopeSuccesfully(link);
             Assert.Equal(envelope.UserExamCount, envelope.UserExams.Count());
-            Assert.Equal(envelope.UserExamCount, 13);
+            Assert.Equal(13, envelope.UserExamCount);
             foreach (var userExam in envelope.UserExams)
             {
                 Assert.Null(userExam.Exam);
@@ -80,7 +80,7 @@ namespace SampleExamIntegrationTests.Features.UserExam
             }
             envelope = await client.GetUserExamsEnvelopeSuccesfully(linkIncludeExams);
             Assert.Equal(envelope.UserExamCount, envelope.UserExams.Count());
-            Assert.Equal(envelope.UserExamCount, 13);
+            Assert.Equal(13, envelope.UserExamCount);
             foreach (var userExam in envelope.UserExams)
             {
                 Assert.NotNull(userExam.Exam);
@@ -96,21 +96,5 @@ namespace SampleExamIntegrationTests.Features.UserExam
             var envelope = await client.GetUserExamsEnvelopeSuccesfully(link);
             return Tuple.Create(envelope.UserExams, envelope.UserExamCount);
         }
-
-
-        //create with user 1 - 3 public exam and end them
-        //create with user 1 - 2 public exam and dont end them
-        //create with user 1 - 3 private exam and end them
-        //create with user 1 - 2 private exam and dont end them
-
-        //create with user 2 - 1 public exam and end them
-        //create with user 2 - 1 public exam and dont end them
-        //create with user 2 - 1 private exam and end them
-        //create with user 2 - 1 private exam and dont end them
-
-        //authorize user 1
-        //get should return 6 user exams
-        //get with exam included should be 6
-        // test limit ofset ....
     }
 }

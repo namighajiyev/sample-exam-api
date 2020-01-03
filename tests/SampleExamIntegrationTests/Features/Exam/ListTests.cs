@@ -25,7 +25,7 @@ namespace SampleExamIntegrationTests.Features.Exam
         {
             var client = httpClientFactory.CreateClient();
             var httpCallHelper = new HttpCallHelper(client);
-            var dbContext = this.dbContextFactory.CreateDbContext();
+            var dbContextHelper = new DbContextHelper(this.dbContextFactory);
 
             //create at least two public and two private exams 
             var tuple = await httpCallHelper.CreateExam();
@@ -38,17 +38,11 @@ namespace SampleExamIntegrationTests.Features.Exam
             tuple = await httpCallHelper.CreateExam(true, true);
             var examPrivateDto2 = tuple.Item3;
 
-            var examPublic1 = await dbContext.Exams.FindAsync(examPublicDto1.Id);
-            var examPublic2 = await dbContext.Exams.FindAsync(examPublicDto2.Id);
+            await dbContextHelper.PublishExamAsync(examPublicDto1.Id);
+            await dbContextHelper.PublishExamAsync(examPublicDto2.Id);
 
-            var examPrivate1 = await dbContext.Exams.FindAsync(examPrivateDto1.Id);
-            var examPrivate2 = await dbContext.Exams.FindAsync(examPrivateDto2.Id);
-
-            examPublic1.IsPublished = true;
-            examPublic2.IsPublished = true;
-            examPrivate1.IsPublished = true;
-            examPrivate2.IsPublished = true;
-            await dbContext.SaveChangesAsync();
+            await dbContextHelper.PublishExamAsync(examPrivateDto1.Id);
+            await dbContextHelper.PublishExamAsync(examPrivateDto2.Id);
 
             var getLink = "exams";
             var getLinkIncludeTags = "exams?includeTags=true";

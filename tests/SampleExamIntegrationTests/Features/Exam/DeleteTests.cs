@@ -23,7 +23,7 @@ namespace SampleExamIntegrationTests.Features.Exam
         {
             var client = httpClientFactory.CreateClient();
             var httpCallHelper = new HttpCallHelper(client);
-            var dbContext = this.dbContextFactory.CreateDbContext();
+            var dbContextHelper = new DbContextHelper(this.dbContextFactory);
             var tuple = await httpCallHelper.CreateExam();
             var loggedUser1 = tuple.Item1;
             var examDto1 = tuple.Item3;
@@ -34,8 +34,8 @@ namespace SampleExamIntegrationTests.Features.Exam
             var link2 = $"exams/{examDto2.Id}";
             var linkNotExists = $"exams/{int.MaxValue}";
 
-            var exam1 = await dbContext.Exams.FindAsync(examDto1.Id);
-            var exam2 = await dbContext.Exams.FindAsync(examDto2.Id);
+            var exam1 = await dbContextHelper.FindExamAsync(examDto1.Id);
+            var exam2 = await dbContextHelper.FindExamAsync(examDto2.Id);
             AssertHelper.AssertExamNotDeleted(exam1);
             AssertHelper.AssertExamNotDeleted(exam2);
 
@@ -52,14 +52,10 @@ namespace SampleExamIntegrationTests.Features.Exam
             //success 
             var responseExam = await client.DeleteExamSucessfully(link1);
             Assert.Equal(responseExam.Id, examDto1.Id);
-            exam1 = dbContext.Exams.Where(e => e.Id == examDto1.Id).FirstOrDefault();
+            exam1 = dbContextHelper.SelectExamFirstOrDefault(examDto1.Id);
             Assert.Null(exam1);
 
-            //new db context to work around reload problem
-            dbContext = this.dbContextFactory.CreateDbContext();
-            exam1 = dbContext.Exams.Where(e => e.Id == examDto1.Id)
-            .IgnoreQueryFilters()
-            .First();
+            exam1 = dbContextHelper.SelectExamIgnoreQueryFiltersTakeFirst(examDto1.Id);
             AssertHelper.AssertExamDeleted(exam1);
         }
 

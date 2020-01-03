@@ -21,7 +21,6 @@ namespace SampleExamIntegrationTests.Features.Question
         {
             var client = httpClientFactory.CreateClient();
             var httpCallHelper = new HttpCallHelper(client);
-            //var dbContext = this.dbContextFactory.CreateDbContext();
             var notPublishedExamItems = await httpCallHelper.CreateExam();
             var user1 = notPublishedExamItems.Item1;
             var examDto1 = notPublishedExamItems.Item3;

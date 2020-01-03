@@ -74,9 +74,4 @@ namespace SampleExamIntegrationTests.Features.UserExam
         }
 
     }
-
-    ///include exam
-    //not existing
-    //other users
-    //unautharized
 }

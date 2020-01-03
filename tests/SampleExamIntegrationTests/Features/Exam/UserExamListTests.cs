@@ -27,7 +27,6 @@ namespace SampleExamIntegrationTests.Features.Exam
         {
             var client = httpClientFactory.CreateClient();
             var httpCallHelper = new HttpCallHelper(client);
-            //var dbContext = this.dbContextFactory.CreateDbContext();
 
             //create 4 public user exam out of 2 are published
             var tuple = await httpCallHelper.CreateExam();

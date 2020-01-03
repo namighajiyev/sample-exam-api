@@ -54,7 +54,7 @@ namespace SampleExam.Infrastructure.Errors
         public class AnswerToRadioQuestionFormatException : RestException
         {
             public AnswerToRadioQuestionFormatException() : base(HttpStatusCode.BadRequest, nameof(Domain.UserExam),
-            "Radio type question must only have single user answer", new Error(nameof(UserExamAlreadyEndedException), "Radio type question must only have single user answer"))
+            "Radio type question must only have single user answer", new Error(nameof(AnswerToRadioQuestionFormatException), "Radio type question must only have single user answer"))
             {
             }
         }

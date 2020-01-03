@@ -28,7 +28,7 @@ namespace SampleExamIntegrationTests.Features.Exam
         {
             var client = httpClientFactory.CreateClient();
             var httpCallHelper = new HttpCallHelper(client);
-            var dbContext = this.dbContextFactory.CreateDbContext();
+            var dbContextHelper = new DbContextHelper(this.dbContextFactory);
             var tuple = await httpCallHelper.CreateExam();
             var loggedUser = tuple.Item1;
             var examDto = tuple.Item3;
@@ -60,21 +60,21 @@ namespace SampleExamIntegrationTests.Features.Exam
             var responseExam = await client.PutExamSuccesfully(putLink, new Edit.Request() { Exam = examData });
 
 
-            var exam = dbContext.Exams.Where(e => e.Id == examDto.Id).Include(e => e.ExamTags).First();
+            var exam = dbContextHelper.SelectExamWitTags(examDto.Id);
             var updatedAt1 = exam.UpdatedAt;
             AssertHelper.AssertExam(examData, responseExam, exam);
             AssertHelper.AssertExamTags(examData.Tags.ToArray(), responseExam, exam);
 
             responseExam = await client.PutExamSuccesfully(putLink, new Edit.Request() { Exam = examData });
 
-            exam = dbContext.Exams.Where(e => e.Id == examDto.Id).Include(e => e.ExamTags).First();
+            exam = dbContextHelper.SelectExamWitTags(examDto.Id);
             var updatedAt2 = exam.UpdatedAt;
             AssertHelper.AssertExam(examData, responseExam, exam);
             AssertHelper.AssertExamTags(examData.Tags.ToArray(), responseExam, exam);
             Assert.Equal(updatedAt1, updatedAt2);
 
             responseExam = await client.PutExamSuccesfully(putLink, new Edit.Request() { Exam = new Edit.ExamData() });
-            exam = dbContext.Exams.Where(e => e.Id == examDto.Id).Include(e => e.ExamTags).First();
+            exam = dbContextHelper.SelectExamWitTags(examDto.Id);
             var updatedAt3 = exam.UpdatedAt;
             AssertHelper.AssertExam(examData, responseExam, exam);
             AssertHelper.AssertExamTags(examData.Tags.ToArray(), responseExam, exam);
@@ -87,7 +87,6 @@ namespace SampleExamIntegrationTests.Features.Exam
         {
             var client = httpClientFactory.CreateClient();
             var httpCallHelper = new HttpCallHelper(client);
-            var dbContext = this.dbContextFactory.CreateDbContext();
             var tuple = await httpCallHelper.CreateExam();
             var loggedUser = tuple.Item1;
             var examDto = tuple.Item3;
@@ -118,7 +117,7 @@ namespace SampleExamIntegrationTests.Features.Exam
         {
             var client = httpClientFactory.CreateClient();
             var httpCallHelper = new HttpCallHelper(client);
-            var dbContext = this.dbContextFactory.CreateDbContext();
+            var dbContextHelper = new DbContextHelper(this.dbContextFactory);
             var tuple = await httpCallHelper.CreateExam();
             var loggedUser1 = tuple.Item1;
             var examDto1 = tuple.Item3;
@@ -131,10 +130,7 @@ namespace SampleExamIntegrationTests.Features.Exam
             await client.PutNotFound(putLink2, new Edit.Request() { Exam = new Edit.ExamData() });
             await client.PutExamSuccesfully(putLink1, new Edit.Request() { Exam = new Edit.ExamData() });
 
-            var exam = await dbContext.Exams.FindAsync(examDto1.Id);
-            exam.IsPublished = true;
-            await dbContext.SaveChangesAsync();
-
+            await dbContextHelper.PublishExamAsync(examDto1.Id);
             await client.PutNotFound(putLink1, new Edit.Request() { Exam = new Edit.ExamData() });
         }
 

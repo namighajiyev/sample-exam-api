@@ -20,6 +20,7 @@ namespace SampleExamIntegrationTests.Features.Question
         {
             var client = httpClientFactory.CreateClient();
             var httpCallHelper = new HttpCallHelper(client);
+            var dbContextHelper = new DbContextHelper(this.dbContextFactory);
             var questionItems = await httpCallHelper.CreateQuestion();
             var questionItemsPublished = await httpCallHelper.CreateQuestion(loggedUser: questionItems.Item1);
             var examPublished = questionItemsPublished.Item3;
@@ -48,32 +49,30 @@ namespace SampleExamIntegrationTests.Features.Question
 
             await client.DeleteSucessfully(link1);
 
-            using (var dbContext = dbContextFactory.CreateDbContext())
+
+            var count = dbContextHelper.SelectQuestionCount(question1.Id);
+            Assert.Equal(0, count);
+            count = dbContextHelper.SelectQuestionCount(question2.Id);
+            Assert.Equal(1, count);
+            count = dbContextHelper.SelectQuestionCount(questionPublished.Id);
+            Assert.Equal(1, count);
+
+            foreach (var answerOption in question1.AnswerOptions)
             {
-                var count = dbContext.Questions.Where(e => e.Id == question1.Id).Count();
+                count = dbContextHelper.SelectAnswerOptionCount(answerOption.Id);
                 Assert.Equal(0, count);
-                count = dbContext.Questions.Where(e => e.Id == question2.Id).Count();
+            }
+
+            foreach (var answerOption in question2.AnswerOptions)
+            {
+                count = dbContextHelper.SelectAnswerOptionCount(answerOption.Id);
                 Assert.Equal(1, count);
-                count = dbContext.Questions.Where(e => e.Id == questionPublished.Id).Count();
+            }
+
+            foreach (var answerOption in questionPublished.AnswerOptions)
+            {
+                count = dbContextHelper.SelectAnswerOptionCount(answerOption.Id);
                 Assert.Equal(1, count);
-
-                foreach (var answerOption in question1.AnswerOptions)
-                {
-                    count = dbContext.AnswerOptions.Where(e => e.Id == answerOption.Id).Count();
-                    Assert.Equal(0, count);
-                }
-
-                foreach (var answerOption in question2.AnswerOptions)
-                {
-                    count = dbContext.AnswerOptions.Where(e => e.Id == answerOption.Id).Count();
-                    Assert.Equal(1, count);
-                }
-
-                foreach (var answerOption in questionPublished.AnswerOptions)
-                {
-                    count = dbContext.AnswerOptions.Where(e => e.Id == answerOption.Id).Count();
-                    Assert.Equal(1, count);
-                }
             }
 
 

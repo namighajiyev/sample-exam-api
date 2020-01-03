@@ -21,7 +21,7 @@ namespace SampleExamIntegrationTests.Features.Exam
         {
             var client = httpClientFactory.CreateClient();
             var httpCallHelper = new HttpCallHelper(client);
-            var dbContext = this.dbContextFactory.CreateDbContext();
+            var dbContextHelper = new DbContextHelper(this.dbContextFactory);
 
             var tuple = await httpCallHelper.CreateExam();
             var examPublicDto = tuple.Item3;
@@ -40,11 +40,8 @@ namespace SampleExamIntegrationTests.Features.Exam
             await client.GetNotFound(getExamLink);
             await client.GetNotFound(getPrivateExamLink);
 
-            var examPublic = await dbContext.Exams.FindAsync(examPublicDto.Id);
-            var examPrivate = await dbContext.Exams.FindAsync(examPrivateDto.Id);
-            examPublic.IsPublished = true;
-            examPrivate.IsPublished = true;
-            await dbContext.SaveChangesAsync();
+            await dbContextHelper.PublishExamAsync(examPublicDto.Id);
+            await dbContextHelper.PublishExamAsync(examPrivateDto.Id);
 
             //public and  published
             var responseExam = await client.GetExamSuccesfully(getExamLink);

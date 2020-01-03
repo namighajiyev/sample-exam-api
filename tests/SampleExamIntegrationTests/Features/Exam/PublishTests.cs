@@ -22,7 +22,7 @@ namespace SampleExamIntegrationTests.Features.Exam
         {
             var client = httpClientFactory.CreateClient();
             var httpCallHelper = new HttpCallHelper(client);
-            var dbContext = this.dbContextFactory.CreateDbContext();
+            var dbContextHelper = new DbContextHelper(this.dbContextFactory);
             var tuple = await httpCallHelper.CreateExam();
             var loggedUser1 = tuple.Item1;
             var examDto1 = tuple.Item3;
@@ -39,9 +39,7 @@ namespace SampleExamIntegrationTests.Features.Exam
             await client.PutNotFound(link2, null);
 
             //already published
-            var exam1 = await dbContext.Exams.FindAsync(examDto1.Id);
-            exam1.IsPublished = true;
-            await dbContext.SaveChangesAsync();
+            await dbContextHelper.PublishExamAsync(examDto1.Id);
             await client.PutNotFound(link1, null);
 
             //sucess
@@ -49,7 +47,7 @@ namespace SampleExamIntegrationTests.Features.Exam
             var responseExam = await client.PutExamSuccesfully(link2, null);
 
             //check success
-            var exam2 = await dbContext.Exams.FindAsync(examDto2.Id);
+            var exam2 = await dbContextHelper.FindExamAsync(examDto2.Id);
             Assert.True(exam2.IsPublished);
             Assert.True(responseExam.IsPublished);
 

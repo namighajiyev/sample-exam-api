@@ -24,13 +24,12 @@ namespace SampleExamIntegrationTests.Features.User
         public async void ShouldCreateUserAndFailWithTheSameEmail()
         {
             var client = httpClientFactory.CreateClient();
-            var dbContext = this.dbContextFactory.CreateDbContext();
-
+            var dbContextHelper = new DbContextHelper(this.dbContextFactory);
             var userData = TestData.User.Create.NewUserData();
             var responseUser = await client.PostUserSuccesfully("/users", new Create.Request() { User = userData });
 
 
-            var user = dbContext.Users.Where(e => e.Email == userData.Email).First();
+            var user = dbContextHelper.SelectUserByEmail(userData.Email);
 
             userData.Firstname.Should().Be(responseUser.Firstname).And.Be(user.Firstname);
             userData.Lastname.Should().Be(responseUser.Lastname).And.Be(user.Lastname);
@@ -48,7 +47,6 @@ namespace SampleExamIntegrationTests.Features.User
         public async void ShouldNotCreateUserWithInvalidUserData()
         {
             var client = httpClientFactory.CreateClient();
-            var dbContext = this.dbContextFactory.CreateDbContext();
             var userData = new Create.UserData()
             {
                 Firstname = "",

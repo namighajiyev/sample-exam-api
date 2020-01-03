@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace SampleExam.Features.QuestionAnswer
 {
+    [Route("questionanswers")]
+    [ApiController]
     public class QuestionAnswerController : ControllerBase
     {
         private readonly IMediator _mediator;

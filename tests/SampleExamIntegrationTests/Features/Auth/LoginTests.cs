@@ -22,7 +22,6 @@ namespace SampleExamIntegrationTests.Features.Auth
         public async void ShouldLogin()
         {
             var client = httpClientFactory.CreateClient();
-            var dbContext = this.dbContextFactory.CreateDbContext();
             var userData = TestData.User.Create.NewUserData();
             await client.PostSucessfully("/users", new Create.Request() { User = userData });
             var loginUser = new Login.UserData() { Email = userData.Email, Password = userData.Password };
@@ -37,7 +36,6 @@ namespace SampleExamIntegrationTests.Features.Auth
         public async void ShouldFailLogin()
         {
             var client = httpClientFactory.CreateClient();
-            var dbContext = this.dbContextFactory.CreateDbContext();
             var userData = TestData.User.Create.NewUserData();
             await client.PostSucessfully("/users", new Create.Request() { User = userData });
 

@@ -5,6 +5,7 @@ using SampleExam.Domain;
 using SampleExam.Features.Answer;
 using SampleExam.Features.Exam;
 using SampleExam.Features.Question;
+using SampleExam.Features.QuestionAnswer;
 using SampleExam.Features.UserExam;
 using Xunit;
 
@@ -102,6 +103,18 @@ namespace SampleExamIntegrationTests.Helpers
             Array.Sort(examTags);
             Assert.True(examDataTags.SequenceEqual(responceTags));
             Assert.True(examDataTags.SequenceEqual(examTags));
+        }
+
+        internal static void AssertEqual(QuestionAnswerDTO questionAnswer, CreateOrUpdate.UserExamQuestionAnswerData userExamQuestionAnswer)
+        {
+            Assert.NotNull(questionAnswer.CreatedAt);
+            Assert.NotNull(questionAnswer.UpdatedAt);
+            Assert.Equal(questionAnswer.QuestionId, userExamQuestionAnswer.QuestionId);
+            Assert.Equal(questionAnswer.UserExamId, userExamQuestionAnswer.UserExamId);
+            Assert.True(questionAnswer.AnswerOptions.Select(e => e.AnswerOptionId).OrderBy(e => e).ToArray()
+            .SequenceEqual(userExamQuestionAnswer.AnswerOptionIds.OrderBy(e => e).ToArray()));
+
+
         }
 
         public static void AssertUserAndTagsIncluded(ExamDTO responseExam)
