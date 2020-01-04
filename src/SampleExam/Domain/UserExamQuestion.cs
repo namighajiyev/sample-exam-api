@@ -7,6 +7,7 @@ namespace SampleExam.Domain
     {
         public int UserExamId { get; set; }
         public int QuestionId { get; set; }
+        public bool HasRightAnswer { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
 

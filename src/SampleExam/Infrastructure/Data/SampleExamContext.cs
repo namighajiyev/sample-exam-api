@@ -98,9 +98,7 @@ namespace SampleExam.Infrastructure.Data
             modelBuilder.Entity<UserExamQuestion>().Property(e => e.CreatedAt).IsRequired();
             modelBuilder.Entity<UserExamQuestion>().Property(e => e.UpdatedAt).IsRequired();
             modelBuilder.Entity<UserExamQuestion>().HasKey(e => new { e.UserExamId, e.QuestionId });
-            //modelBuilder.Entity<UserExamQuestionAnswer>().HasIndex(e => new { e.UserExamId, e.AnswerOptionId }).IsUnique();
-            //todo within a answer to a question answer option must be unique
-            //modelBuilder.Entity<UserExamQuestion>().HasIndex(e => new { e.AnswerOptions.First().Id }).IsUnique();
+            modelBuilder.Entity<UserExamQuestion>().Property(e => e.HasRightAnswer).IsRequired().HasDefaultValue(false);
 
             //UserExamQuestionAnswr
             modelBuilder.Entity<UserExamQuestionAnswr>().Property(e => e.CreatedAt).IsRequired();

@@ -6,6 +6,8 @@ namespace SampleExam.Domain
     {
         public int UserExamId { get; set; }
         public int QuestionCount { get; set; }
+        public int AnsweredQuestionCount { get; set; }
+        public int NotAnsweredQuestionCount { get; set; }
         public int RightAnswerCount { get; set; }
         public int WrongAnswerCount { get; set; }
         public bool IsPassed { get; set; }

@@ -81,12 +81,15 @@ namespace SampleExam.Features.UserExamResult
 
                 foreach (var userExamQuestionAnswer in userExamQuestionAnswers)
                 {
-                    if (IsRight(userExamQuestionAnswer)) { userExamResult.RightAnswerCount++; }
-                    else { userExamResult.WrongAnswerCount++; }
+                    userExamQuestionAnswer.HasRightAnswer = IsRight(userExamQuestionAnswer);
                 }
 
+                userExamResult.AnsweredQuestionCount = userExamQuestionAnswers.Length;
+                userExamResult.NotAnsweredQuestionCount = userExamResult.QuestionCount - userExamResult.AnsweredQuestionCount;
+                userExamResult.RightAnswerCount = userExamQuestionAnswers.Where(e => e.HasRightAnswer == true).Count();
+                userExamResult.WrongAnswerCount = userExamQuestionAnswers.Where(e => e.HasRightAnswer == false).Count();
                 userExamResult.IsPassed = (float)userExamResult.RightAnswerCount / (float)userExamResult.QuestionCount * 100
-                 >= userExam.Exam.PassPercentage;
+                                 >= userExam.Exam.PassPercentage;
 
                 await context.UserExamResults.AddAsync(userExamResult);
                 await context.SaveChangesAsync();

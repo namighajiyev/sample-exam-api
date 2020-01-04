@@ -17,6 +17,7 @@ namespace SampleExam.Features.QuestionAnswer
     {
         public int UserExamId { get; set; }
         public int QuestionId { get; set; }
+        public bool HasRightAnswer { get; set; }
         public IEnumerable<QuestionAnswerOptionDTO> AnswerOptions { get; set; }
 
         public DateTime CreatedAt { get; set; }
