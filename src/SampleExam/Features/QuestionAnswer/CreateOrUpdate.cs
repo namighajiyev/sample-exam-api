@@ -77,10 +77,8 @@ namespace SampleExam.Features.QuestionAnswer
                     throw new UserExamAlreadyEndedException();
                 }
 
-                if (userExam.StartedtedAt.AddMinutes(userExam.Exam.TimeInMinutes) <= DateTime.UtcNow)
+                if (await UserExam.UserExamHelper.EndUserExamIfTimeExpired(context, cancellationToken, userExam))
                 {
-                    userExam.EndedAt = userExam.StartedtedAt.AddMinutes(userExam.Exam.TimeInMinutes);
-                    await context.SaveChangesAsync(cancellationToken);
                     throw new UserExamAlreadyEndedException();
                 }
 

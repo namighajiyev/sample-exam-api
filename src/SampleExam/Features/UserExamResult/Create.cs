@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -5,6 +6,7 @@ using AutoMapper;
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using SampleExam.Domain;
 using SampleExam.Infrastructure.Data;
 using SampleExam.Infrastructure.Errors;
 using SampleExam.Infrastructure.Security;
@@ -57,44 +59,54 @@ namespace SampleExam.Features.UserExamResult
                     throw new Exceptions.UserExamNotFoundException();
                 }
 
-                //check userexam exists
-                //check userExam is current users.
-                //exam published
-                //check exam is ended.
-                //get userexam result if exist return that with created false
-                //create exam result and return that with is created true
+                if (!userExam.EndedAt.HasValue)
+                {
+                    await UserExam.UserExamHelper.EndUserExamIfTimeExpired(context, cancellationToken, userExam);
+                }
+                if (!userExam.EndedAt.HasValue)
+                {
+                    throw new Exceptions.UserExamNotFoundException();
+                }
+                var userExamResult = await context.UserExamResults.FindAsync(userExam.Id);
+                if (userExamResult != null)
+                {
+                    return MakeEnvelope(userExamResult);
+                }
+                userExamResult = new Domain.UserExamResult() { UserExamId = userExam.Id };
 
-                /////////////////create exam////////////////////////////
-                //should calculate : 1) QuestionCount, 2) RightAnswerCount, 3) WrongAnswerCount, 
-                //4) NoAnswerCount, 5) IsPassed
-                //QuestionCount = get count(all) of  Question with ExamId = userExam.ExamId
-                //RightAnswerCount = get count(all) where UserExamId = request.UserExamId && UserExamQuestionAnswer.?foreach&.forall.AnswerOption.IsRight == true
+                userExamResult.QuestionCount = context.Questions.Where(e => e.ExamId == userExam.ExamId).Count();
 
-                // var userId = this.currentUserAccessor.GetCurrentUserId();
-                // var exam = context.Exams.Where(e => e.Id == request.ExamId && e.IsPublished == true).First();
+                var userExamQuestionAnswers = context.UserExamQuestions.Where(e => e.UserExamId == userExam.Id)
+                .Include(e => e.UserExamQuestionAnswers).ToArray();
 
-                // if (exam == null)
-                // {
-                //     throw new Exceptions.ExamNotFoundException();
-                // }
-                // if (exam.IsPrivate && exam.UserId != userId)
-                // {
-                //     throw new Exceptions.ExamNotFoundException();
-                // }
+                foreach (var userExamQuestionAnswer in userExamQuestionAnswers)
+                {
+                    if (IsRight(userExamQuestionAnswer)) { userExamResult.RightAnswerCount++; }
+                    else { userExamResult.WrongAnswerCount++; }
+                }
 
-                // var userExam = new Domain.UserExam();
-                // userExam.ExamId = request.ExamId;
-                // userExam.UserId = userId;
-                // userExam.StartedtedAt = DateTime.UtcNow;
+                userExamResult.IsPassed = (float)userExamResult.RightAnswerCount / (float)userExamResult.QuestionCount * 100
+                 >= userExam.Exam.PassPercentage;
 
-                // await this.context.UserExams.AddAsync(userExam, cancellationToken);
-
-                // await context.SaveChangesAsync(cancellationToken);
-                // var userExamDto = mapper.Map<Domain.UserExam, UserExamDTO>(userExam);
-                // return new UserExamDTOEnvelope(userExamDto);
-                return null;
+                await context.UserExamResults.AddAsync(userExamResult);
+                await context.SaveChangesAsync();
+                context.Entry(userExamResult).Reload();
+                return MakeEnvelope(userExamResult);
             }
 
+            private bool IsRight(UserExamQuestion userExamQuestionAnswer)
+            {
+                var userAnswers = userExamQuestionAnswer.UserExamQuestionAnswers.Select(e => e.AnswerOptionId).OrderBy(e => e).ToArray();
+                var rightAnswers = context.AnswerOptions
+                .Where(e => e.QuestionId == userExamQuestionAnswer.QuestionId && e.IsRight == true).Select(e => e.Id).OrderBy(e => e).ToArray();
+                return userAnswers.Length == rightAnswers.Length && userAnswers.SequenceEqual(rightAnswers);
+            }
+
+            private UserExamResultDTOEnvelope MakeEnvelope(Domain.UserExamResult userExamResult)
+            {
+                var userExamResultDto = mapper.Map<Domain.UserExamResult, UserExamResultDTO>(userExamResult);
+                return new UserExamResultDTOEnvelope(userExamResultDto);
+            }
         }
     }
 }

@@ -107,8 +107,6 @@ namespace SampleExamIntegrationTests.Helpers
 
         internal static void AssertEqual(QuestionAnswerDTO questionAnswer, CreateOrUpdate.UserExamQuestionAnswerData userExamQuestionAnswer)
         {
-            Assert.NotNull(questionAnswer.CreatedAt);
-            Assert.NotNull(questionAnswer.UpdatedAt);
             Assert.Equal(questionAnswer.QuestionId, userExamQuestionAnswer.QuestionId);
             Assert.Equal(questionAnswer.UserExamId, userExamQuestionAnswer.UserExamId);
             Assert.True(questionAnswer.AnswerOptions.Select(e => e.AnswerOptionId).OrderBy(e => e).ToArray()

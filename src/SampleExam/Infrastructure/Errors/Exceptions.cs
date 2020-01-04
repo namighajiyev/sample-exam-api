@@ -30,6 +30,14 @@ namespace SampleExam.Infrastructure.Errors
             }
         }
 
+        public class UserExamResultNotFoundException : RestException
+        {
+            public UserExamResultNotFoundException() : base(HttpStatusCode.NotFound, nameof(Domain.UserExam),
+            Constants.NOT_FOUND, new Error(nameof(UserExamResultNotFoundException), Constants.NOT_FOUND))
+            {
+            }
+        }
+
         public class AnswerOptionNotFoundException : RestException
         {
             public AnswerOptionNotFoundException() : base(HttpStatusCode.NotFound, nameof(Domain.AnswerOption),
