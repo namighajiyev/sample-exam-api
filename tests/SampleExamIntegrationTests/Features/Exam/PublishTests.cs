@@ -39,7 +39,7 @@ namespace SampleExamIntegrationTests.Features.Exam
             await client.PutNotFound(link2, null);
 
             //already published
-            await dbContextHelper.PublishExamAsync(examDto1.Id);
+            await dbContextHelper.SetPublishExamAsync(examDto1.Id);
             await client.PutNotFound(link1, null);
 
             //sucess

@@ -40,7 +40,7 @@ namespace SampleExamIntegrationTests.Helpers.Data
                      bool includeTags = true, bool isPrivate = false, string[] extraTags = null)
                 {
                     var uniqueString = Guid.NewGuid().ToGuidString();
-                    var random = new Random();
+                    var random = Utils.NewRandom();
                     var examData = new SampleExam.Features.Exam.Create.ExamData()
                     {
                         Title = $"{uniqueString}_Title",

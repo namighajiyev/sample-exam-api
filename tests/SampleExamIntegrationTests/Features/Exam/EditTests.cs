@@ -130,7 +130,7 @@ namespace SampleExamIntegrationTests.Features.Exam
             await client.PutNotFound(putLink2, new Edit.Request() { Exam = new Edit.ExamData() });
             await client.PutExamSuccesfully(putLink1, new Edit.Request() { Exam = new Edit.ExamData() });
 
-            await dbContextHelper.PublishExamAsync(examDto1.Id);
+            await dbContextHelper.SetPublishExamAsync(examDto1.Id);
             await client.PutNotFound(putLink1, new Edit.Request() { Exam = new Edit.ExamData() });
         }
 

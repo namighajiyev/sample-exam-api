@@ -7,6 +7,7 @@ using SampleExam.Features.User;
 using UserCreate = SampleExam.Features.User.Create;
 using ExamCreate = SampleExam.Features.Exam.Create;
 using SampleExam.Features.UserExam;
+using SampleExam.Features.UserExamResult;
 
 namespace SampleExamIntegrationTests.Helpers
 {
@@ -126,6 +127,14 @@ namespace SampleExamIntegrationTests.Helpers
             var userExam = await client.PutUserExamSuccesfully(linkUser1PrivateUserExam);
             return userExam;
         }
+
+        public async Task<UserExamResultDTO> PostUserExamResult(int userExamId)
+        {
+            var link = $"/userexamresults/{userExamId}";
+            var userExamResult = await client.PostUserExamResultSucessfully(link);
+            return userExamResult;
+        }
+
 
         public async Task<SampleExam.Features.Question.QuestionsDTOEnvelope> GetQuestions(int examId, bool includeAnswerOptions = true)
         {

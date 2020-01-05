@@ -53,13 +53,13 @@ namespace SampleExamIntegrationTests.Helpers
             return exam;
         }
 
-        public async Task<SampleExam.Domain.Exam> PublishExamAsync(int examId)
+        public async Task<SampleExam.Domain.Exam> SetPublishExamAsync(int examId, bool isPublished = true)
         {
             SampleExam.Domain.Exam exam = null;
             using (var dbContext = this.dbContextFactory.CreateDbContext())
             {
                 exam = await dbContext.Exams.FindAsync(examId);
-                exam.IsPublished = true;
+                exam.IsPublished = isPublished;
                 await dbContext.SaveChangesAsync();
             }
             return exam;

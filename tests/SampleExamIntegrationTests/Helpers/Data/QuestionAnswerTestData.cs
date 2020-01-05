@@ -51,8 +51,7 @@ namespace SampleExamIntegrationTests.Helpers.Data
             };
             if (randomTake)
             {
-                var rnd = new Random(Guid.NewGuid().GetHashCode());
-                answerOptionIds = answerOptionIds.OrderBy(x => rnd.Next()).ToArray();
+                answerOptionIds = answerOptionIds.Shuffle().ToArray();
                 answerOptionIds = isRadio ? new int[] { answerOptionIds[0] } : new int[] { answerOptionIds[0], answerOptionIds[1] };
             }
             request.UserExamQuestionAnswer.AnswerOptionIds = answerOptionIds;

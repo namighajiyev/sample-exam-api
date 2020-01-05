@@ -40,7 +40,7 @@ namespace SampleExamIntegrationTests.Helpers
                      bool includeTags = true, bool isPrivate = false, string[] extraTags = null)
                 {
                     var uniqueString = Guid.NewGuid().ToGuidString();
-                    var random = new Random();
+                    var random = Utils.NewRandom();
                     var examData = new SampleExam.Features.Exam.Create.ExamData()
                     {
                         Title = $"{uniqueString}_Title",
@@ -49,7 +49,7 @@ namespace SampleExamIntegrationTests.Helpers
 
                         TimeInMinutes = random.Next(30, 120),
 
-                        PassPercentage = random.Next(50, 100),
+                        PassPercentage = random.Next(40, 90),
 
                         IsPrivate = isPrivate,
                     };

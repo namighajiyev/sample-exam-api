@@ -33,5 +33,7 @@ namespace SampleExam.Domain
 
         public ICollection<ExamTag> ExamTags { get; set; }
         public ICollection<UserExam> UserExams { get; set; }
+
+        public ICollection<Question> Questions { get; set; }
     }
 }

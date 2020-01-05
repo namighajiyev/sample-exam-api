@@ -7,6 +7,7 @@ using SampleExam.Features.Question;
 using SampleExam.Features.QuestionAnswer;
 using SampleExam.Features.User;
 using SampleExam.Features.UserExam;
+using SampleExam.Features.UserExamResult;
 using SampleExam.Infrastructure.Errors;
 
 namespace SampleExamIntegrationTests.Helpers
@@ -152,7 +153,7 @@ namespace SampleExamIntegrationTests.Helpers
             return problemDetails;
         }
 
-        public static Task PostNotFound(this HttpClient client, string link)
+        public static Task<ApiProblemDetails> PostNotFound(this HttpClient client, string link)
         {
             return PostNotFound(client, link, null);
         }
@@ -307,5 +308,14 @@ namespace SampleExamIntegrationTests.Helpers
         {
             return PutNotFound(client, link, null);
         }
+        public static async Task<UserExamResultDTO> PostUserExamResultSucessfully(this HttpClient client, string link)
+        {
+            var response = await client.PostAsJsonAsync<object>(link, null);
+            response.EnsureSuccessStatusCode();
+            var envelope = await response.Content.ReadAsAsync<UserExamResultDTOEnvelope>();
+            var userExamResult = envelope.UserExamResult;
+            return userExamResult;
+        }
+
     }
 }

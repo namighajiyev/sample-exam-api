@@ -40,8 +40,8 @@ namespace SampleExamIntegrationTests.Features.Exam
             await client.GetNotFound(getExamLink);
             await client.GetNotFound(getPrivateExamLink);
 
-            await dbContextHelper.PublishExamAsync(examPublicDto.Id);
-            await dbContextHelper.PublishExamAsync(examPrivateDto.Id);
+            await dbContextHelper.SetPublishExamAsync(examPublicDto.Id);
+            await dbContextHelper.SetPublishExamAsync(examPrivateDto.Id);
 
             //public and  published
             var responseExam = await client.GetExamSuccesfully(getExamLink);

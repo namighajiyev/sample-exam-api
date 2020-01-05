@@ -38,11 +38,11 @@ namespace SampleExamIntegrationTests.Features.Exam
             tuple = await httpCallHelper.CreateExam(true, true);
             var examPrivateDto2 = tuple.Item3;
 
-            await dbContextHelper.PublishExamAsync(examPublicDto1.Id);
-            await dbContextHelper.PublishExamAsync(examPublicDto2.Id);
+            await dbContextHelper.SetPublishExamAsync(examPublicDto1.Id);
+            await dbContextHelper.SetPublishExamAsync(examPublicDto2.Id);
 
-            await dbContextHelper.PublishExamAsync(examPrivateDto1.Id);
-            await dbContextHelper.PublishExamAsync(examPrivateDto2.Id);
+            await dbContextHelper.SetPublishExamAsync(examPrivateDto1.Id);
+            await dbContextHelper.SetPublishExamAsync(examPrivateDto2.Id);
 
             var getLink = "exams";
             var getLinkIncludeTags = "exams?includeTags=true";
