@@ -73,6 +73,15 @@ namespace SampleExamIntegrationTests.Helpers
             return responseUserExam;
         }
 
+        public static async Task<UserExamResultDTO> GetUserExamResultSuccesfully(this HttpClient client, string link)
+        {
+            var response = await client.GetAsync(link);
+            response.EnsureSuccessStatusCode();
+            var envelope = await response.Content.ReadAsAsync<UserExamResultDTOEnvelope>();
+            var userExamResult = envelope.UserExamResult;
+            return userExamResult;
+        }
+
         public static async Task<UserExamDTO> PutUserExamSuccesfully(this HttpClient client, string link)
         {
             var response = await client.PutAsJsonAsync<object>(link, null);

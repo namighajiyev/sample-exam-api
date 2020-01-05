@@ -103,5 +103,22 @@ namespace SampleExamIntegrationTests.Features.UserExamResult
 
         }
 
+        public async Task TakeExamAndAssertResult(
+    HttpCallHelper httpCallHelper,
+    int userExamId, bool fail, bool skipSomeQuestions = false)
+        {
+            var testResult = await TakeExam(userExamId, fail, skipSomeQuestions);
+            var userExamDto = await httpCallHelper.EndUserExam(userExamId);
+            var userExamResult = await httpCallHelper.PostUserExamResult(userExamId);
+            Assert.True(userExamResult.IsPassed == !fail);
+            Assert.True(userExamResult.RightAnswerCount == testResult.Item1);
+            Assert.True(userExamResult.AnsweredQuestionCount == testResult.Item2);
+            var passed = ((float)userExamResult.RightAnswerCount / (float)userExamResult.QuestionCount * 100) >= userExamDto.Exam.PassPercentage;
+            Assert.True(passed == userExamResult.IsPassed);
+            Assert.True(userExamResult.AnsweredQuestionCount == userExamResult.WrongAnswerCount + userExamResult.RightAnswerCount);
+            Assert.True(userExamResult.QuestionCount >= userExamResult.AnsweredQuestionCount);
+            Assert.True(userExamResult.QuestionCount == userExamResult.AnsweredQuestionCount + userExamResult.NotAnsweredQuestionCount);
+        }
+
     }
 }

@@ -43,10 +43,6 @@ namespace SampleExamIntegrationTests.Features.UserExamResult
             client.Authorize(userExam1.Item1.Token);
             await client.PostNotFound($"/userexamresults/{int.MaxValue}");
 
-            //other users
-            client.Authorize(userExam2.Item1.Token);
-            await client.PostNotFound($"/userexamresults/{userExam2.Item3.Id}");
-
             //not published
             var userExamNotPublished = await httpCallHelper.CreateUserExam();
             await dbContextHelper.SetPublishExamAsync(userExamNotPublished.Item2.Id, false);
@@ -64,37 +60,24 @@ namespace SampleExamIntegrationTests.Features.UserExamResult
             await client.PostUserExamResultSucessfully($"/userexamresults/{userExamNotEnded.Item3.Id}");
 
             client.Authorize(userExam1.Item1.Token);
-            await TakeExamAndAssertResult(testHelper, httpCallHelper, userExam1.Item3.Id, false, false);
+            await testHelper.TakeExamAndAssertResult(httpCallHelper, userExam1.Item3.Id, false, false);
+
+            //other users
+            client.Authorize(userExam2.Item1.Token);
+            await client.PostNotFound($"/userexamresults/{userExam2.Item3.Id}");
 
             client.Authorize(userExam2.Item1.Token);
-            await TakeExamAndAssertResult(testHelper, httpCallHelper, userExam2.Item3.Id, false, true);
+            await testHelper.TakeExamAndAssertResult(httpCallHelper, userExam2.Item3.Id, false, true);
 
             client.Authorize(userExam3.Item1.Token);
-            await TakeExamAndAssertResult(testHelper, httpCallHelper, userExam3.Item3.Id, true, false);
+            await testHelper.TakeExamAndAssertResult(httpCallHelper, userExam3.Item3.Id, true, false);
 
             client.Authorize(userExam4.Item1.Token);
-            await TakeExamAndAssertResult(testHelper, httpCallHelper, userExam4.Item3.Id, true, true);
+            await testHelper.TakeExamAndAssertResult(httpCallHelper, userExam4.Item3.Id, true, true);
 
         }
 
 
-        private async Task TakeExamAndAssertResult(
-            UserExamResultTestHelper testHelper,
-            HttpCallHelper httpCallHelper,
-            int userExamId, bool fail, bool skipSomeQuestions = false)
-        {
-            var testResult = await testHelper.TakeExam(userExamId, fail, skipSomeQuestions);
-            var userExamDto = await httpCallHelper.EndUserExam(userExamId);
-            var userExamResult = await httpCallHelper.PostUserExamResult(userExamId);
-            Assert.True(userExamResult.IsPassed == !fail);
-            Assert.True(userExamResult.RightAnswerCount == testResult.Item1);
-            Assert.True(userExamResult.AnsweredQuestionCount == testResult.Item2);
-            var passed = ((float)userExamResult.RightAnswerCount / (float)userExamResult.QuestionCount * 100) >= userExamDto.Exam.PassPercentage;
-            Assert.True(passed == userExamResult.IsPassed);
-            Assert.True(userExamResult.AnsweredQuestionCount == userExamResult.WrongAnswerCount + userExamResult.RightAnswerCount);
-            Assert.True(userExamResult.QuestionCount >= userExamResult.AnsweredQuestionCount);
-            Assert.True(userExamResult.QuestionCount == userExamResult.AnsweredQuestionCount + userExamResult.NotAnsweredQuestionCount);
-        }
 
     }
 }
